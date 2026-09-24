@@ -130,3 +130,50 @@ html:has(.register-page),body:has(.register-page),#root:has(.register-page){over
 .otp-helper{display:block;margin:5px 2px 0;font-size:9px}
 .otp-sent{color:#71808d}
 .otp-confirmed{color:#17835d}
+
+
+/* Registration form overflow and spacing */
+html:has(.register-page),
+body:has(.register-page),
+#root:has(.register-page){height:auto;min-height:100%;overflow-y:auto;overflow-x:hidden}
+
+.register-page{height:auto;min-height:100dvh;overflow:visible}
+
+.register-main{height:auto;min-height:calc(100dvh - 64px);overflow:visible}
+
+.register-shell{
+  min-height:calc(100dvh - 64px);
+  height:auto;
+  align-items:center;
+  padding:34px 0 40px;
+}
+
+.register-card{
+  margin:0;
+  padding:28px 32px 30px;
+}
+
+.register-email-notice{
+  margin:-2px -2px 17px;
+}
+
+.register-card-heading{
+  margin-bottom:18px;
+}
+
+.register-form{
+  gap:10px;
+}
+
+@media (min-width:901px){
+  .register-shell{align-items:center}
+}
+
+@media (max-width:900px){
+  .register-main{min-height:calc(100dvh - 62px)}
+  .register-shell{
+    min-height:0;
+    padding:30px 0 38px;
+  }
+  .register-card{margin:0}
+}
