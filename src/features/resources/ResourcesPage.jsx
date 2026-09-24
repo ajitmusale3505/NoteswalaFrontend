@@ -1,5 +1,5 @@
 import {
-  FiArrowRight, FiBookOpen, FiBox, FiChevronDown, FiClock, FiCloud,
+  FiArrowRight, FiBookOpen, FiBox, FiCalendar, FiChevronDown, FiClock, FiCloud,
   FiCode, FiDatabase, FiDownload, FiFileText, FiGitBranch, FiGrid,
   FiMonitor, FiSearch, FiSettings, FiShield, FiStar, FiTarget, FiTool,
   FiUploadCloud
