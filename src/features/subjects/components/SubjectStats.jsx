@@ -1,0 +1,3 @@
+import {FiBookOpen,FiFileText,FiMonitor,FiStar} from "react-icons/fi";
+const items=[["total","Total Resources",FiFileText,"blue"],["pyqs","PYQs",FiFileText,"red"],["notes","Notes",FiFileText,"blue"],["practicals","Practicals",FiMonitor,"green"],["books","Books",FiBookOpen,"purple"],["rating","Average Rating",FiStar,"gold"]];
+export default function SubjectStats({subject}){return <section className="subject-stats">{items.map(([key,label,Icon,tone])=><div className={"subject-stat stat-"+tone} key={key}><span className="subject-stat-icon"><Icon/></span><div><strong>{subject.stats[key]??subject.rating}</strong><small>{label}</small></div></div>)}</section>}

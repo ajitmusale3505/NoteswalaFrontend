@@ -1,0 +1,3 @@
+import {FiBookOpen,FiCode,FiEdit3,FiGrid} from "react-icons/fi";
+const tabs=[["Overview",FiBookOpen],["Study Material",FiBookOpen],["Exam Preparation",FiEdit3],["Practicals",FiCode],["Academic",FiGrid]];
+export default function SubjectTabs({activeTab,setActiveTab}){return <nav className="subject-tabs"><div className="subject-tab-list">{tabs.map(([label,Icon])=><button className={activeTab===label?"active":""} onClick={()=>setActiveTab(label)} key={label}><Icon/>{label}</button>)}</div><div className="subject-tab-actions"><button className="follow-button"><FiBookOpen/> Follow Subject</button><button className="contribute-button"><FiEdit3/> Contribute Resource</button></div></nav>}

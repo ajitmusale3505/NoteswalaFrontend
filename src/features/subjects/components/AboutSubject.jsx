@@ -1,0 +1,2 @@
+import {FiBookOpen,FiGlobe,FiLayers,FiUsers} from "react-icons/fi";
+export default function AboutSubject({subject}){return <section className="subject-side-card about-subject"><h3><FiGlobe/> About this Subject</h3><p>{subject.description}</p><dl><div><dt><FiBookOpen/>Semester</dt><dd>{subject.semester}</dd></div><div><dt><FiUsers/>Branch</dt><dd>{subject.branch}</dd></div><div><dt><FiGlobe/>University</dt><dd>SPPU</dd></div><div><dt><FiLayers/>Credits</dt><dd>{subject.credits}</dd></div></dl><button>View Syllabus <span>→</span></button></section>}
