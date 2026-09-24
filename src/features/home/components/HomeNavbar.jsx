@@ -18,8 +18,8 @@ export default function HomeNavbar() {
         })}
       </nav>
       <div className="home-user">
-        <button className="home-notification" type="button" aria-label="Notifications"><FiBell /><b>5</b></a>
-        <a className="home-profile" href="/profile" aria-label="Open profile"><span className="home-avatar">S</span><span className="home-profile-copy"><strong>Student</strong><small>Computer Engineering</small></span><FiChevronDown /></button>
+        <button className="home-notification" type="button" aria-label="Notifications"><FiBell /><b>5</b></button>
+        <a className="home-profile" href="/profile" aria-label="Open profile"><span className="home-avatar">S</span><span className="home-profile-copy"><strong>Student</strong><small>Computer Engineering</small></span><FiChevronDown /></a>
       </div>
     </header>
   );
