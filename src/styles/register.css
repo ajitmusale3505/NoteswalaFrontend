@@ -8,7 +8,7 @@
 .register-header nav a:hover,.register-header-actions a:hover{color:#a87640}
 .register-header-actions{display:flex;align-items:center;gap:18px;font-size:12px;color:#68788a}
 .register-header-actions a,.card-login a{display:flex;align-items:center;gap:6px;color:#102b45;font-weight:700}
-.register-main{position:relative;min-height:calc(100vh - 70px);overflow:hidden;background:linear-gradient(110deg,#fff 0%,#fff 49%,#fbfcfc 100%)}
+.register-main{position:relative;min-height:calc(100vh - 70px);overflow:hidden;background:#fff}
 .register-shell{position:relative;z-index:5;width:min(1320px,calc(100% - 96px));min-height:calc(100vh - 70px);margin:0 auto;display:grid;grid-template-columns:1fr 610px;gap:70px;align-items:center;padding:42px 0 55px}
 .register-benefits{align-self:start;padding-top:20px}
 .register-kicker{display:flex;align-items:center;gap:16px;margin-bottom:17px;color:#a46f3a;text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:600}
@@ -23,6 +23,10 @@
 .benefit-item span{display:block;margin-top:4px;color:#68798c;font-size:12px}
 .register-quote{position:relative;margin-top:23px;padding:20px 0 0;border-top:2px solid #a67542;max-width:560px;font-family:"Libre Baskerville",serif;font-size:15px;line-height:1.5;font-style:italic;color:#66788b}
 .register-card{position:relative;width:100%;padding:32px 36px 34px;border:1px solid #e2e7ea;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 22px 65px rgba(20,42,61,.11)}
+.register-email-notice{display:flex;align-items:center;gap:12px;margin:-7px -7px 22px;padding:12px 14px;border:1px solid #dbe7e1;border-radius:8px;background:#f5faf7;color:#173b2e}
+.register-email-notice-icon{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;border-radius:7px;background:#e3f2ea;color:#19835d;font-size:16px}
+.register-email-notice strong{display:block;font-size:11px;font-weight:700;line-height:1.3}
+.register-email-notice p{margin:3px 0 0;color:#687c74;font-size:10px;line-height:1.4}
 .register-card-heading{display:flex;justify-content:space-between;gap:24px;margin-bottom:24px}
 .register-card-heading p{margin:0 0 6px;color:#a46f3a;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600}
 .register-card-heading h2{margin:0;font-family:"Libre Baskerville",serif;font-weight:400;letter-spacing:-.05em;font-size:40px;line-height:1.12;color:#102b45}
@@ -55,20 +59,7 @@
 .social-register button{height:43px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #e0e5e8;border-radius:6px;background:#fff;color:#213950;font-size:12px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
 .social-register button:hover{transform:translateY(-2px);border-color:#bdc9d1;box-shadow:0 7px 16px rgba(20,42,61,.07)}
 .social-register svg{font-size:18px}
-.campus-backdrop{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;opacity:.96}
-.campus-building{position:absolute;left:31%;bottom:-9px;width:440px;height:430px;color:#d2a770;filter:drop-shadow(0 8px 18px rgba(49,49,35,.08))}
-.campus-wings{position:absolute;bottom:0;left:0;width:100%;height:195px;background:linear-gradient(90deg,#d5b78a,#e0c59b 15%,#d4b485 80%,#c8a36c);clip-path:polygon(0 28%,14% 19%,14% 7%,31% 12%,31% 0,69% 0,69% 12%,86% 7%,86% 19%,100% 28%,100% 100%,0 100%)}
-.campus-wings:after{content:"";position:absolute;inset:17px 22px;background:repeating-linear-gradient(90deg,transparent 0 35px,rgba(90,70,43,.35) 36px 39px);opacity:.7}
-.campus-tower{position:absolute;z-index:2;left:42%;bottom:142px;width:85px;height:245px;background:linear-gradient(90deg,#b9915f,#e0bd88 50%,#bd9766);border-radius:2px 2px 0 0;box-shadow:inset 10px 0 rgba(115,81,42,.09)}
-.campus-tower:before{content:"";position:absolute;left:-16px;top:-31px;width:117px;height:38px;background:#c29b68;clip-path:polygon(50% 0,100% 100%,0 100%)}
-.campus-tower:after{content:"";position:absolute;left:18px;top:-56px;width:49px;height:34px;border-radius:50% 50% 0 0;background:#c49b65;box-shadow:0 -22px 0 -18px #9b784c}
-.campus-tower span{display:block;width:25px;height:31px;margin:15px auto 0;border:3px solid rgba(103,75,42,.42);border-bottom:0;border-radius:15px 15px 0 0}
-.campus-path{position:absolute;bottom:-100px;left:-12%;width:130%;height:270px;background:radial-gradient(ellipse at center,#efe1c9 0 18%,#ddc7a4 19% 24%,transparent 25%),linear-gradient(170deg,transparent 0 40%,rgba(229,213,187,.9) 41% 100%);clip-path:polygon(43% 0,58% 0,88% 100%,12% 100%)}
-.campus-trees{position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#a9b64a,#657c24 42%,#465d1c 70%);filter:blur(.2px)}
-.campus-trees:before,.campus-trees:after{content:"";position:absolute;background:#566021}
-.campus-trees:before{width:9px;height:145px;left:55px;top:95px;transform:rotate(-14deg)}
-.campus-trees:after{width:8px;height:125px;left:95px;top:100px;transform:rotate(12deg)}
-.tree-one{left:-40px;bottom:80px}.tree-two{right:-55px;bottom:105px}
-@media (max-width:1150px){.register-header{padding-inline:28px;gap:30px}.register-header nav{gap:20px}.register-shell{width:min(100% - 50px,1100px);grid-template-columns:1fr 560px;gap:35px}.register-benefits h1{font-size:43px}.campus-building{left:17%}}
-@media (max-width:900px){.register-header nav{display:none}.register-shell{grid-template-columns:1fr;padding-top:38px}.register-benefits{padding-top:0}.register-card{max-width:650px}.campus-backdrop{opacity:.35}.campus-building{left:30%;bottom:-20px}}
-@media (max-width:640px){.register-header{height:62px;padding-inline:16px}.register-header-actions>span{display:none}.register-header .brand{font-size:18px}.register-main{min-height:calc(100vh - 62px)}.register-shell{width:min(100% - 28px,540px);padding:28px 0 35px;gap:28px}.register-benefits h1{font-size:35px}.register-lead{font-size:14px}.benefit-list{gap:13px}.benefit-item{grid-template-columns:35px 1fr;gap:10px}.benefit-item>svg{font-size:23px}.benefit-item b{font-size:13px}.benefit-item span{font-size:10px}.register-card{padding:25px 19px 24px;border-radius:10px}.register-card-heading{display:block}.register-card-heading h2{font-size:34px}.card-login{text-align:left;padding-top:10px}.card-login a{justify-content:flex-start}.password-rules{gap:8px}.password-rules span{font-size:9px}.social-register{grid-template-columns:1fr}.campus-building{left:12%;transform:scale(.72);transform-origin:bottom left}.register-quote{font-size:13px}}
+.campus-backdrop{position:absolute;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(90deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.82) 24%,rgba(255,255,255,.22) 56%,rgba(255,255,255,.08) 100%),url("/images/auth/register-campus.png");background-repeat:no-repeat;background-position:center bottom;background-size:cover}
+@media (max-width:1150px){.register-header{padding-inline:28px;gap:30px}.register-header nav{gap:20px}.register-shell{width:min(100% - 50px,1100px);grid-template-columns:1fr 560px;gap:35px}.register-benefits h1{font-size:43px}}
+@media (max-width:900px){.register-header nav{display:none}.register-shell{grid-template-columns:1fr;padding-top:38px}.register-benefits{padding-top:0}.register-card{max-width:650px}.campus-backdrop{opacity:.45;background-image:linear-gradient(90deg,rgba(255,255,255,.97),rgba(255,255,255,.72)),url("/images/auth/register-campus.png")}}
+@media (max-width:640px){.register-header{height:62px;padding-inline:16px}.register-header-actions>span{display:none}.register-header .brand{font-size:18px}.register-main{min-height:calc(100vh - 62px)}.register-shell{width:min(100% - 28px,540px);padding:28px 0 35px;gap:28px}.register-benefits h1{font-size:35px}.register-lead{font-size:14px}.benefit-list{gap:13px}.benefit-item{grid-template-columns:35px 1fr;gap:10px}.benefit-item>svg{font-size:23px}.benefit-item b{font-size:13px}.benefit-item span{font-size:10px}.register-card{padding:25px 19px 24px;border-radius:10px}.register-email-notice{margin:-2px -2px 20px;padding:11px}.register-card-heading{display:block}.register-card-heading h2{font-size:34px}.card-login{text-align:left;padding-top:10px}.card-login a{justify-content:flex-start}.password-rules{gap:8px}.password-rules span{font-size:9px}.social-register{grid-template-columns:1fr}.campus-backdrop{background-position:center bottom;background-size:auto 100%;opacity:.28}}

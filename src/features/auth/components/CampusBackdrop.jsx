@@ -1,3 +1,3 @@
 export default function CampusBackdrop() {
-  return <div className="campus-backdrop" aria-hidden="true"><div className="campus-building"><div className="campus-roof" /><div className="campus-tower"><span /><span /><span /><span /><span /></div><div className="campus-wings"><i /><i /><i /><i /><i /><i /></div></div><div className="campus-trees tree-one" /><div className="campus-trees tree-two" /><div className="campus-path" /></div>;
+  return <div className="campus-backdrop" aria-hidden="true" />;
 }
