@@ -39,15 +39,15 @@ const recent = [
 function SubjectCard({ item }) {
   const [code, name, count, Icon, tone, stats] = item;
   return (
-    <article className={`resource-subject resource-tone-${tone}`}>
+    <Link className={`resource-subject resource-tone-${tone}`} to={`/resources/${code}`} aria-label={`Open ${code} resources`}>
       <div className="resource-subject-icon"><Icon /></div>
       <div className="resource-subject-copy"><b>{code}</b><small>{name}</small></div>
       <div className="resource-subject-count"><strong>{count}</strong><small>resources</small></div>
       <div className="resource-subject-meta">
         <span>PYQs&nbsp; {stats[0]}</span><span>Notes&nbsp; {stats[1]}</span><span>Practicals&nbsp; {stats[2]}</span><span>+3</span>
       </div>
-      <Link className="resource-subject-open" to={`/resources/${code}`} aria-label={`Open ${code} resources`}><FiArrowRight /></Link>
-    </article>
+      <span className="resource-subject-open" aria-hidden="true"><FiArrowRight /></span>
+    </Link>
   );
 }
 
