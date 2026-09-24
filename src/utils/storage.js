@@ -1,0 +1,1 @@
+const KEY="noteswala_access_token";export const storage={getAccessToken:()=>localStorage.getItem(KEY),setAccessToken:token=>localStorage.setItem(KEY,token),clearAccessToken:()=>localStorage.removeItem(KEY)};

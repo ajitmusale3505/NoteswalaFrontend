@@ -1,0 +1,1 @@
+import {apiClient} from "./api";export const getForumPosts=params=>apiClient.get("/forum/posts",{params});export const getForumPost=id=>apiClient.get("/forum/posts/"+id);export const createForumPost=payload=>apiClient.post("/forum/posts",payload);

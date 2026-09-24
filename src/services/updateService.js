@@ -1,0 +1,1 @@
+import {apiClient} from "./api";export const getUniversityUpdates=params=>apiClient.get("/updates",{params});

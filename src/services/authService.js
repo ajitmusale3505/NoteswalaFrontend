@@ -1,0 +1,1 @@
+import {apiClient} from "./api";export const login=payload=>apiClient.post("/auth/login",payload);export const register=payload=>apiClient.post("/auth/register",payload);export const refreshToken=payload=>apiClient.post("/auth/refresh",payload);

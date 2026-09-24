@@ -1,0 +1,1 @@
+export const APP_NAME=import.meta.env.VITE_APP_NAME||"Noteswala";export const USER_ROLES={STUDENT:"STUDENT",MODERATOR:"MODERATOR",ADMIN:"ADMIN"};

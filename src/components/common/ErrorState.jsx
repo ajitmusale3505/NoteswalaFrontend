@@ -1,0 +1,1 @@
+export default function ErrorState({title="Something went wrong.",description}){return <div className="rounded-2xl border border-red-100 bg-red-50 p-6"><h3 className="text-base font-semibold text-red-900">{title}</h3>{description&&<p className="mt-2 text-sm text-red-700">{description}</p>}</div>;}
