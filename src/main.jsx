@@ -7,6 +7,7 @@ import { store } from "./app/store";
 import "./styles/index.css";
 import "./styles/register.css";
 import "./styles/login.css";
+import "./styles/home.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
