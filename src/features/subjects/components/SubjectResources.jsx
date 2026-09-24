@@ -1,0 +1,4 @@
+const resources=[["DBMS - 2024 End Semester Paper","PYQ · SPPU · Semester VI","2.4 MB"],["DBMS - Normalization Notes","Notes · Unit II","4.1 MB"],["DBMS - Important Questions","Important Questions · Exam Prep","1.8 MB"],["DBMS - Transactions & SQL Practical","Practical · Manual","5.2 MB"]];
+export default function SubjectResources(){
+  return <section className="subject-panel subject-resources"><div className="subject-panel-heading"><div><span className="subject-eyebrow">LATEST RESOURCES</span><h2>Start learning from here.</h2></div><button className="subject-link-button">View all <span>→</span></button></div><div className="subject-resource-list">{resources.map(([title,meta,size],i)=><article className="subject-resource-row" key={title}><div className={"subject-resource-icon tone-"+i%3}>PDF</div><div><b>{title}</b><small>{meta}</small></div><span>{size}</span><button aria-label={"Download "+title}>↓</button></article>)}</div></section>;
+}

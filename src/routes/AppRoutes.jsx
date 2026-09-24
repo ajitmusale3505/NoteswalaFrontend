@@ -4,6 +4,7 @@ import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import ResourcesPage from "../features/resources/ResourcesPage";
+import SubjectPage from "../features/subjects/SubjectPage";
 
 export default function AppRoutes() {
   return (
@@ -12,6 +13,7 @@ export default function AppRoutes() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/dashboard" element={<HomePage />} />
       <Route path="/resources" element={<ResourcesPage />} />
+      <Route path="/resources/:subjectCode" element={<SubjectPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

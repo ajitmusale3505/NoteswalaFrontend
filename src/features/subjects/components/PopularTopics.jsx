@@ -1,0 +1,4 @@
+const topics=[["Normalization","DBMS fundamentals",18],["Transactions & ACID","Frequently asked",15],["SQL Queries","Practice & interview",13],["ER Model & Keys","Core concepts",11],["Indexing","Performance concepts",9],["Concurrency Control","Exam preparation",8]];
+export default function PopularTopics(){
+  return <section className="subject-panel subject-topics"><div className="subject-panel-heading"><div><span className="subject-eyebrow">POPULAR TOPICS</span><h2>What students are exploring.</h2></div><button className="subject-link-button">View all <span>→</span></button></div><div className="topic-grid">{topics.map(([title,meta,count],i)=><button className="topic-card" key={title}><span className="topic-index">{String(i+1).padStart(2,"0")}</span><span><b>{title}</b><small>{meta}</small></span><em>{count} resources</em></button>)}</div></section>;
+}
