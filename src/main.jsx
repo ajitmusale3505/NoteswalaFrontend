@@ -10,6 +10,7 @@ import "./styles/register.css";
 import "./styles/login.css";
 import "./styles/home.css";
 import "./styles/resources.css";
+import "./styles/profile.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
