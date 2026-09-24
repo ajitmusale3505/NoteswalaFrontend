@@ -63,3 +63,60 @@
 @media (max-width:1150px){.register-header{padding-inline:28px;gap:30px}.register-header nav{gap:20px}.register-shell{width:min(100% - 50px,1100px);grid-template-columns:1fr 560px;gap:35px}.register-benefits h1{font-size:43px}}
 @media (max-width:900px){.register-header nav{display:none}.register-shell{grid-template-columns:1fr;padding-top:38px}.register-benefits{padding-top:0}.register-card{max-width:650px}.campus-backdrop{opacity:.45;background-image:linear-gradient(90deg,rgba(255,255,255,.97),rgba(255,255,255,.72)),url("/images/auth/register-campus.png")}}
 @media (max-width:640px){.register-header{height:62px;padding-inline:16px}.register-header-actions>span{display:none}.register-header .brand{font-size:18px}.register-main{min-height:calc(100vh - 62px)}.register-shell{width:min(100% - 28px,540px);padding:28px 0 35px;gap:28px}.register-benefits h1{font-size:35px}.register-lead{font-size:14px}.benefit-list{gap:13px}.benefit-item{grid-template-columns:35px 1fr;gap:10px}.benefit-item>svg{font-size:23px}.benefit-item b{font-size:13px}.benefit-item span{font-size:10px}.register-card{padding:25px 19px 24px;border-radius:10px}.register-email-notice{margin:-2px -2px 20px;padding:11px}.register-card-heading{display:block}.register-card-heading h2{font-size:34px}.card-login{text-align:left;padding-top:10px}.card-login a{justify-content:flex-start}.password-rules{gap:8px}.password-rules span{font-size:9px}.social-register{grid-template-columns:1fr}.campus-backdrop{background-position:center bottom;background-size:auto 100%;opacity:.28}}
+
+
+/* Registration viewport fit */
+html:has(.register-page),
+body:has(.register-page),
+#root:has(.register-page){height:100%;overflow:hidden}
+.register-page{height:100dvh;min-height:0;overflow:hidden}
+.register-header{height:64px;flex:0 0 64px}
+.register-main{height:calc(100dvh - 64px);min-height:0;overflow:hidden}
+.register-shell{height:100%;min-height:0;width:min(1320px,calc(100% - 80px));padding:22px 0 24px;gap:54px}
+.register-benefits{padding-top:8px}
+.register-benefits h1{font-size:47px;line-height:1.08}
+.register-lead{margin:14px 0 19px;font-size:15px;line-height:1.45}
+.benefit-list{gap:12px}
+.benefit-item{grid-template-columns:40px 1fr;gap:13px}
+.benefit-item>svg{font-size:25px}
+.benefit-item b{font-size:14px}
+.benefit-item span{margin-top:2px;font-size:11px}
+.register-quote{margin-top:15px;padding-top:12px;font-size:13px}
+.register-card{padding:24px 32px 25px}
+.register-email-notice{margin:-2px -2px 15px;padding:9px 11px}
+.register-email-notice-icon{width:29px;height:29px;flex-basis:29px}
+.register-email-notice strong{font-size:10px}
+.register-email-notice p{font-size:9px}
+.register-card-heading{margin-bottom:16px}
+.register-card-heading h2{font-size:35px}
+.register-card-heading>div>span{margin-top:4px;font-size:14px}
+.card-login{padding-top:19px}
+.register-form{gap:9px}
+.form-field>span{margin-bottom:5px;font-size:12px}
+.field-control{height:39px}
+.password-rules{gap:14px;margin-top:-2px}
+.password-rules span{font-size:9px}
+.terms-check{margin-top:6px;padding-top:12px;font-size:11px}
+.terms-check input{width:18px;height:18px}
+.register-submit{height:43px}
+.social-divider{margin:12px 0 9px}
+.social-register button{height:37px}
+.campus-backdrop{background-image:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 26%,rgba(255,255,255,.48) 51%,rgba(255,255,255,.12) 72%),url("/images/auth/register-campus.png");background-position:center bottom;background-size:cover}
+@media (max-width:1150px) and (min-width:901px){
+.register-shell{width:calc(100% - 50px);grid-template-columns:1fr 540px;gap:32px}
+.register-benefits h1{font-size:39px}
+.register-lead{font-size:14px}
+}
+@media (max-width:900px){
+html:has(.register-page),body:has(.register-page),#root:has(.register-page){overflow:auto}
+.register-page{height:auto;min-height:100dvh;overflow:visible}
+.register-header{height:62px}
+.register-main{height:auto;min-height:calc(100dvh - 62px);overflow:hidden}
+.register-shell{height:auto;min-height:0;padding:30px 0 36px}
+.campus-backdrop{background-image:linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.72)),url("/images/auth/register-campus.png");background-position:center bottom;background-size:cover}
+}
+@media (max-width:640px){
+.register-shell{padding-top:24px}
+.register-benefits h1{font-size:34px}
+.register-card{padding:22px 18px 22px}
+}
