@@ -15,7 +15,7 @@ function buildViewerResource(subject,resourceId){
 }
 
 const CODE_TYPES=new Set(["java","c","c++","cpp","python","javascript","js","typescript","ts","c#","csharp"]);
-const isCodeResource=resource=>CODE_TYPES.has(String(resource.type||"").toLowerCase())||/\\.(java|c|cpp|py|js|ts|cs)$/i.test(resource.title||"");
+const isCodeResource=resource=>CODE_TYPES.has(String(resource.type||"").toLowerCase())||/\\.(java|c|cpp|py|js|ts|cs)$/i.test(resource.title||"")||/\\b(java|c\\+\\+|cpp|python|javascript|typescript|program|practical|source code|coding)\\b/i.test((resource.title+" "+resource.description).toLowerCase());
 const languageLabel=resource=>String(resource.type||"Java").toLowerCase()==="cpp"?"C++":String(resource.type||"Java");
 const codeSamples={
  Java:{file:"Main.java",folder:"src",code:`import java.sql.*;
