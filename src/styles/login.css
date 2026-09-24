@@ -1,0 +1,62 @@
+
+.login-page{min-height:100dvh;background:#fff;color:#102b45;overflow:hidden}
+.login-header{position:relative;z-index:20;height:68px;display:flex;align-items:center;gap:54px;padding:0 max(32px,calc((100vw - 1310px)/2));border-bottom:1px solid #e9edf0;background:rgba(255,255,255,.96);backdrop-filter:blur(14px)}
+.login-header .brand{font-size:23px}
+.login-header nav{display:flex;align-items:center;gap:34px;flex:1}
+.login-header nav a,.login-header-actions>a:first-child{font-size:13px;font-weight:500;color:#102b45;transition:color .2s ease}
+.login-header nav a:hover,.login-header-actions>a:first-child:hover{color:#a87640}
+.login-header-actions{display:flex;align-items:center;gap:28px}
+.login-main{position:relative;min-height:calc(100dvh - 68px);overflow:hidden}
+.login-background{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.93) 29%,rgba(255,255,255,.64) 53%,rgba(255,255,255,.20) 77%,rgba(255,255,255,.08) 100%),url("/images/auth/login-campus.png");background-position:center bottom;background-size:cover;background-repeat:no-repeat}
+.login-shell{position:relative;z-index:2;width:min(1310px,calc(100% - 80px));min-height:calc(100dvh - 68px);margin:0 auto;display:grid;grid-template-columns:1fr 625px;gap:70px;align-items:center;padding:32px 0 38px}
+.login-benefits{padding:0 0 20px}
+.login-kicker{display:flex;align-items:center;gap:15px;margin-bottom:18px;color:#a46f3a;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600}
+.login-kicker span{width:44px;height:2px;background:#a46f3a}
+.login-benefits h1{margin:0;color:#102b45;font-family:"Libre Baskerville",serif;font-size:52px;line-height:1.1;font-weight:400;letter-spacing:-.055em}
+.login-benefits h1 em{font-style:normal;color:#a67542}
+.login-lead{max-width:590px;margin:18px 0 27px;color:#5e7085;font-size:17px;line-height:1.48}
+.login-benefit-list{display:grid;gap:21px}
+.login-benefit-item{display:grid;grid-template-columns:50px 1fr;gap:17px;align-items:center}
+.login-benefit-icon{display:grid;place-items:center;width:45px;height:45px;color:#a67542;font-family:"Libre Baskerville",serif;font-size:29px}
+.login-benefit-icon>svg{font-size:31px}
+.login-benefit-item b{display:block;font-family:"Libre Baskerville",serif;font-size:15px;font-weight:400;color:#102b45}
+.login-benefit-item>div>span{display:block;margin-top:4px;color:#68798c;font-size:12px}
+.benefit-users{letter-spacing:-7px;font-size:20px}
+.benefit-university{font-size:38px;line-height:1}
+.benefit-career{font-size:32px}
+.login-card{width:100%;padding:36px 60px 31px;border:1px solid #e1e6e9;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 20px 60px rgba(20,42,61,.10)}
+.login-card-heading>p{margin:0 0 8px;color:#a46f3a;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600}
+.login-card-heading h2{margin:0;font-family:"Libre Baskerville",serif;font-size:42px;line-height:1.1;font-weight:400;letter-spacing:-.055em;color:#102b45}
+.login-card-heading>span{display:block;margin-top:11px;color:#607287;font-size:16px;line-height:1.45}
+.login-form{display:grid;gap:15px;margin-top:29px}
+.login-form .form-field>span{margin-bottom:8px}
+.login-form .field-control{height:57px;padding-inline:15px}
+.login-form .field-control>svg{font-size:21px}
+.login-form .field-control input{font-size:14px}
+.login-form .inline-action{height:31px;font-size:10px}
+.login-otp-box{padding:13px 14px 12px;border:1px solid #e4e9ec;border-radius:8px;background:rgba(249,251,252,.72)}
+.otp-box-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:10px}
+.otp-box-heading strong{display:block;font-size:12px;color:#17314b}
+.otp-box-heading span{display:block;margin-top:3px;color:#7a8794;font-size:10px}
+.otp-box-heading>svg{color:#a67542;font-size:17px}
+.login-otp-box .field-control{background:#fff;height:43px}
+.login-options{display:flex;align-items:center;justify-content:space-between;margin-top:-2px;font-size:13px;color:#647487}
+.login-options label{display:flex;align-items:center;gap:10px}
+.login-options input{width:24px;height:24px;margin:0;accent-color:#102b45}
+.login-options a{color:#a16f3d;transition:color .2s ease}
+.login-options a:hover{color:#102b45}
+.login-submit{height:56px;display:flex;align-items:center;justify-content:center;gap:11px;border:0;border-radius:6px;background:#12334c;color:#fff;font-size:14px;font-weight:600;box-shadow:0 8px 18px rgba(18,51,76,.14);transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+.login-submit:hover{transform:translateY(-2px);background:#173f5d;box-shadow:0 12px 25px rgba(18,51,76,.18)}
+.login-submit svg{font-size:17px}
+.social-login{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.social-login button{height:54px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #e0e5e8;border-radius:6px;background:#fff;color:#213950;font-size:13px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.social-login button:hover{transform:translateY(-2px);border-color:#bdc9d1;box-shadow:0 7px 16px rgba(20,42,61,.07)}
+.social-login svg{font-size:19px}
+.login-register-link{margin:28px 0 0;text-align:center;color:#637387;font-size:13px}
+.login-register-link a{display:inline-flex;align-items:center;gap:7px;margin-left:7px;color:#a16f3d;font-weight:600}
+.login-register-link a:hover{color:#102b45}
+.login-card .social-divider{margin:16px 0 13px}
+.login-card .otp-helper{margin-top:5px}
+@media (max-width:1150px){.login-header{padding-inline:28px;gap:30px}.login-header nav{gap:20px}.login-shell{width:calc(100% - 50px);grid-template-columns:1fr 550px;gap:32px}.login-benefits h1{font-size:42px}.login-card{padding-inline:35px}}
+@media (max-width:900px){.login-page{overflow:auto}.login-header nav{display:none}.login-shell{grid-template-columns:1fr;min-height:0;padding:38px 0 45px}.login-benefits{padding:0}.login-card{max-width:650px}.login-background{background-image:linear-gradient(90deg,rgba(255,255,255,.95),rgba(255,255,255,.76)),url("/images/auth/login-campus.png");opacity:.9}}
+@media (max-width:640px){.login-header{height:62px;padding-inline:16px}.login-header-actions{gap:14px}.login-header-actions>a:first-child{display:none}.login-header .brand{font-size:18px}.login-main{min-height:calc(100dvh - 62px)}.login-shell{width:calc(100% - 28px);padding:25px 0 35px}.login-benefits h1{font-size:35px}.login-lead{font-size:14px}.login-benefit-list{gap:14px}.login-benefit-item{grid-template-columns:38px 1fr;gap:10px}.login-benefit-item b{font-size:13px}.login-benefit-item>div>span{font-size:10px}.login-card{padding:25px 19px 24px;border-radius:10px}.login-card-heading h2{font-size:34px}.login-card-heading>span{font-size:14px}.login-form{margin-top:23px;gap:12px}.login-options{font-size:11px}.social-login{grid-template-columns:1fr}.login-register-link{margin-top:20px;font-size:11px}}
