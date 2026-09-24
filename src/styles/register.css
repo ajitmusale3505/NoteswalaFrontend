@@ -120,3 +120,13 @@ html:has(.register-page),body:has(.register-page),#root:has(.register-page){over
 .register-benefits h1{font-size:34px}
 .register-card{padding:22px 18px 22px}
 }
+
+.field-control-action{padding-right:6px}
+.field-control-action input{min-width:0}
+.inline-action{height:29px;flex:0 0 auto;padding:0 10px;border:1px solid #d4a36c;border-radius:5px;background:#fffaf5;color:#986c3d;font-size:10px;font-weight:700;transition:background .2s ease,color .2s ease,transform .2s ease,border-color .2s ease}
+.inline-action:hover:not(:disabled){background:#a67542;color:#fff;border-color:#a67542;transform:translateY(-1px)}
+.inline-action:disabled{cursor:not-allowed;opacity:.45}
+.inline-action.confirmed{background:#e8f5ef;border-color:#b9ddcb;color:#17835d}
+.otp-helper{display:block;margin:5px 2px 0;font-size:9px}
+.otp-sent{color:#71808d}
+.otp-confirmed{color:#17835d}

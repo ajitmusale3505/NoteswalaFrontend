@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { FiCheck, FiEye, FiEyeOff, FiGithub, FiLinkedin, FiLock, FiMail, FiUser } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 
-const initialForm = { fullName: "", email: "", password: "", confirmPassword: "", terms: false };
+const initialForm = { fullName: "", email: "", otp: "", password: "", confirmPassword: "", terms: false };
 
 function passwordRules(password) {
   return [
@@ -17,14 +17,32 @@ export default function RegisterForm() {
   const [form, setForm] = useState(initialForm);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpConfirmed, setOtpConfirmed] = useState(false);
   const rules = useMemo(() => passwordRules(form.password), [form.password]);
 
   const update = (field) => (event) =>
     setForm((current) => ({ ...current, [field]: event.target.value }));
 
+  const sendOtp = () => {
+    if (!form.email) return;
+    setOtpSent(true);
+    setOtpConfirmed(false);
+  };
+
+  const confirmOtp = () => {
+    if (form.otp.trim().length !== 6) return;
+    setOtpConfirmed(true);
+  };
+
   const submit = (event) => {
     event.preventDefault();
-    if (!form.terms || form.password !== form.confirmPassword || rules.some(([, valid]) => !valid)) return;
+    if (
+      !form.terms ||
+      !otpConfirmed ||
+      form.password !== form.confirmPassword ||
+      rules.some(([, valid]) => !valid)
+    ) return;
   };
 
   return (
@@ -32,29 +50,54 @@ export default function RegisterForm() {
       <FormField icon={FiUser} label="Full Name">
         <input value={form.fullName} onChange={update("fullName")} placeholder="Enter your full name" autoComplete="name" required />
       </FormField>
-      <FormField icon={FiMail} label="Email Address">
-        <input value={form.email} onChange={update("email")} placeholder="Enter your email address" type="email" autoComplete="email" required />
-      </FormField>
+
+      <div className="form-field">
+        <span>Email Address</span>
+        <div className="field-control field-control-action">
+          <FiMail />
+          <input value={form.email} onChange={(event) => { setForm((current) => ({ ...current, email: event.target.value })); setOtpSent(false); setOtpConfirmed(false); }} placeholder="Enter your email address" type="email" autoComplete="email" required />
+          <button className="inline-action" type="button" onClick={sendOtp} disabled={!form.email}>Send OTP</button>
+        </div>
+        {otpSent && <small className="otp-helper otp-sent">OTP sent to your email address.</small>}
+      </div>
+
+      <div className="form-field">
+        <span>Confirm Email OTP</span>
+        <div className="field-control field-control-action">
+          <FiMail />
+          <input value={form.otp} onChange={(event) => { setForm((current) => ({ ...current, otp: event.target.value.replace(/\D/g, "").slice(0, 6) })); setOtpConfirmed(false); }} placeholder="Enter 6-digit OTP" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required />
+          <button className={`inline-action ${otpConfirmed ? "confirmed" : ""}`} type="button" onClick={confirmOtp} disabled={!otpSent || form.otp.length !== 6}>
+            {otpConfirmed ? "Confirmed" : "Confirm OTP"}
+          </button>
+        </div>
+        {otpConfirmed && <small className="otp-helper otp-confirmed">Email verified successfully.</small>}
+      </div>
+
       <FormField icon={FiLock} label="Password">
         <div className="password-input">
           <input value={form.password} onChange={update("password")} placeholder="Create a strong password" type={showPassword ? "text" : "password"} autoComplete="new-password" required />
           <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)}>{showPassword ? <FiEyeOff /> : <FiEye />}</button>
         </div>
       </FormField>
+
       <div className="password-rules">
         {rules.map(([label, valid]) => <span className={valid ? "valid" : ""} key={label}><FiCheck />{label}</span>)}
       </div>
+
       <FormField icon={FiLock} label="Confirm Password">
         <div className="password-input">
           <input value={form.confirmPassword} onChange={update("confirmPassword")} placeholder="Confirm your password" type={showConfirm ? "text" : "password"} autoComplete="new-password" required />
           <button type="button" aria-label={showConfirm ? "Hide password" : "Show password"} onClick={() => setShowConfirm((value) => !value)}>{showConfirm ? <FiEyeOff /> : <FiEye />}</button>
         </div>
       </FormField>
+
       <label className="terms-check">
         <input type="checkbox" checked={form.terms} onChange={(event) => setForm((current) => ({ ...current, terms: event.target.checked }))} required />
         <span>I agree to EduHub’s <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.</span>
       </label>
+
       <button className="register-submit" type="submit">Create Account <span>→</span></button>
+
       <div className="social-divider"><span>or continue with</span></div>
       <div className="social-register">
         <button type="button"><FcGoogle />Google</button>
