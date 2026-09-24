@@ -5,7 +5,6 @@ import {
   FiMapPin, FiMessageSquare, FiPhone, FiSettings, FiUser, FiUsers
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
-import "./profile.css";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
