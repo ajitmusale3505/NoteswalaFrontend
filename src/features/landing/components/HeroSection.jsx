@@ -12,7 +12,7 @@ export default function HeroSection() {
           <p className="hero-description">Access academic resources, solve doubts, stay updated, prepare for your career and use essential student tools — all in one place.</p>
           <div className="hero-actions">
             <a className="button button-dark" href="#resources">Explore Resources <FiArrowRight /></a>
-            <a className="button button-outline" href="#cta">Create Free Account</a>
+            <a className="button button-outline" href="/register">Create Account</a>
           </div>
           <div className="hero-trust"><FiCheck /> Free to start · Built for engineering students</div>
           <div className="stats-row">
