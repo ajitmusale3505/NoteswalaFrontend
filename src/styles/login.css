@@ -60,3 +60,48 @@
 @media (max-width:1150px){.login-header{padding-inline:28px;gap:30px}.login-header nav{gap:20px}.login-shell{width:calc(100% - 50px);grid-template-columns:1fr 550px;gap:32px}.login-benefits h1{font-size:42px}.login-card{padding-inline:35px}}
 @media (max-width:900px){.login-page{overflow:auto}.login-header nav{display:none}.login-shell{grid-template-columns:1fr;min-height:0;padding:38px 0 45px}.login-benefits{padding:0}.login-card{max-width:650px}.login-background{background-image:linear-gradient(90deg,rgba(255,255,255,.95),rgba(255,255,255,.76)),url("/images/auth/login-campus.png");opacity:.9}}
 @media (max-width:640px){.login-header{height:62px;padding-inline:16px}.login-header-actions{gap:14px}.login-header-actions>a:first-child{display:none}.login-header .brand{font-size:18px}.login-main{min-height:calc(100dvh - 62px)}.login-shell{width:calc(100% - 28px);padding:25px 0 35px}.login-benefits h1{font-size:35px}.login-lead{font-size:14px}.login-benefit-list{gap:14px}.login-benefit-item{grid-template-columns:38px 1fr;gap:10px}.login-benefit-item b{font-size:13px}.login-benefit-item>div>span{font-size:10px}.login-card{padding:25px 19px 24px;border-radius:10px}.login-card-heading h2{font-size:34px}.login-card-heading>span{font-size:14px}.login-form{margin-top:23px;gap:12px}.login-options{font-size:11px}.social-login{grid-template-columns:1fr}.login-register-link{margin-top:20px;font-size:11px}}
+
+/* Compact login card */
+.login-card{
+  height:560px;
+  min-height:560px;
+  box-sizing:border-box;
+  padding:24px 42px 20px;
+  overflow:hidden;
+}
+.login-card-heading>p{margin-bottom:4px;font-size:10px}
+.login-card-heading h2{font-size:36px;line-height:1.06}
+.login-card-heading>span{margin-top:6px;font-size:13px;line-height:1.35}
+.login-form{gap:8px;margin-top:18px}
+.login-form .form-field>span{margin-bottom:4px;font-size:11px}
+.login-form .field-control{height:40px;padding-inline:12px}
+.login-form .field-control>svg{font-size:17px}
+.login-form .field-control input{font-size:12px}
+.login-form .inline-action{height:27px;padding-inline:8px;font-size:9px}
+.login-otp-box{padding:8px 10px 8px}
+.otp-box-heading{margin-bottom:6px;gap:10px}
+.otp-box-heading strong{font-size:10px}
+.otp-box-heading span{margin-top:2px;font-size:8px}
+.otp-box-heading>svg{font-size:14px}
+.login-otp-box .field-control{height:34px}
+.login-otp-box .otp-helper{font-size:8px;margin-top:3px}
+.login-options{font-size:11px;margin-top:0}
+.login-options input{width:18px;height:18px}
+.login-submit{height:42px;font-size:12px}
+.login-submit svg{font-size:15px}
+.login-card .social-divider{margin:8px 0 6px}
+.login-card .social-divider span{font-size:9px;top:-7px;padding-inline:9px}
+.social-login{gap:8px}
+.social-login button{height:34px;font-size:10px;gap:6px}
+.social-login svg{font-size:15px}
+.login-register-link{margin:9px 0 0;font-size:10px}
+.login-register-link a{gap:5px;margin-left:5px}
+@media (max-width:1150px) and (min-width:901px){
+  .login-card{height:560px;min-height:560px;padding-inline:28px}
+}
+@media (max-width:900px){
+  .login-card{height:auto;min-height:0;overflow:visible;padding:25px 35px 24px}
+}
+@media (max-width:640px){
+  .login-card{height:auto;min-height:0;padding:22px 18px 22px}
+}
