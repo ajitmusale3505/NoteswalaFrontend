@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {useParams} from "react-router-dom";
 import HomeNavbar from "../home/components/HomeNavbar";
 import SubjectHero from "./components/SubjectHero";
 import SubjectStats from "./components/SubjectStats";
@@ -12,8 +13,8 @@ import {getSubject} from "./subjectData";
 import "../../styles/subject.css";
 
 export default function SubjectPage(){
- const {pathname}=window.location;
- const code=pathname.split("/").filter(Boolean).pop()?.toUpperCase()||"DBMS";
+ const {subjectCode}=useParams();
+ const code=subjectCode?.toUpperCase()||"DBMS";
  const subject=getSubject(code);
  const [activeTab,setActiveTab]=useState("Overview");
  const [activeSection,setActiveSection]=useState("Notes");
