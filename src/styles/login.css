@@ -105,3 +105,29 @@
 @media (max-width:640px){
   .login-card{height:auto;min-height:0;padding:22px 18px 22px}
 }
+
+/* Balanced desktop login card proportions */
+@media (min-width:1151px){
+  .login-shell{
+    grid-template-columns:minmax(0,1fr) 560px;
+    gap:64px;
+  }
+  .login-card{
+    width:560px;
+    height:560px;
+    min-height:560px;
+    padding:24px 34px 20px;
+  }
+}
+@media (max-width:1150px) and (min-width:901px){
+  .login-shell{
+    grid-template-columns:minmax(0,1fr) 520px;
+    gap:30px;
+  }
+  .login-card{
+    width:520px;
+    height:560px;
+    min-height:560px;
+    padding:24px 28px 20px;
+  }
+}
