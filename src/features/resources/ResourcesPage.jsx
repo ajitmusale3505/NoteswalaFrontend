@@ -5,6 +5,7 @@ import {
   FiUploadCloud
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
+import { Link } from "react-router-dom";
 
 const subjects = [
   ["DBMS", "Database Management Systems", 42, FiDatabase, "blue", [12, 9, 7]],
@@ -45,7 +46,7 @@ function SubjectCard({ item }) {
       <div className="resource-subject-meta">
         <span>PYQs&nbsp; {stats[0]}</span><span>Notes&nbsp; {stats[1]}</span><span>Practicals&nbsp; {stats[2]}</span><span>+3</span>
       </div>
-      <button aria-label={`Open ${code} resources`}><FiArrowRight /></button>
+      <Link className="resource-subject-open" to={`/resources/${code}`} aria-label={`Open ${code} resources`}><FiArrowRight /></Link>
     </article>
   );
 }
