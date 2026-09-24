@@ -6,6 +6,7 @@ import RegisterPage from "../pages/RegisterPage";
 import ResourcesPage from "../features/resources/ResourcesPage";
 import SubjectPage from "../features/subjects/SubjectPage";
 import ResourceViewerPage from "../features/resources/ResourceViewerPage";
+import ProfilePage from "../features/profile/ProfilePage";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ export default function AppRoutes() {
       <Route path="/resources/:subjectCode/:resourceId" element={<ResourceViewerPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
