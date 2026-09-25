@@ -1,6 +1,9 @@
 import { FiArrowRight, FiBookOpen, FiEye, FiEyeOff, FiGithub, FiLinkedin, FiLock, FiMail } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sendOtp, verifyOtp, login } from "../../services/authService";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const initialForm = { email: "", otp: "", password: "", remember: false };
@@ -10,24 +13,60 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpConfirmed, setOtpConfirmed] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const update = (field) => (event) =>
     setForm((current) => ({ ...current, [field]: event.target.value }));
 
-  const sendOtp = () => {
-    if (!form.email) return;
-    setOtpSent(true);
-    setOtpConfirmed(false);
+  const handleSendOtp = async () => {
+    if (!form.email || sendingOtp) return;
+    try {
+      setSendingOtp(true);
+      await sendOtp(form.email, "LOGIN");
+      setOtpSent(true);
+      setOtpConfirmed(false);
+      toast.success("OTP sent to your email.");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Unable to send OTP.");
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
-  const confirmOtp = () => {
-    if (form.otp.length !== 6) return;
-    setOtpConfirmed(true);
+  const handleConfirmOtp = async () => {
+    if (form.otp.length !== 6 || verifyingOtp) return;
+    try {
+      setVerifyingOtp(true);
+      await verifyOtp(form.email, "LOGIN", form.otp);
+      setOtpConfirmed(true);
+      toast.success("Email verified.");
+    } catch (error) {
+      setOtpConfirmed(false);
+      toast.error(error?.response?.data?.message || "Invalid OTP.");
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    if (!form.email || !form.password || !otpConfirmed) return;
+    if (!form.email || !form.password || !otpConfirmed || submitting) return;
+    try {
+      setSubmitting(true);
+      const response = await login({ email: form.email, password: form.password });
+      const data = response.data?.data;
+      if (data?.accessToken) localStorage.setItem("noteswala_access_token", data.accessToken);
+      if (data?.refreshToken) localStorage.setItem("noteswala_refresh_token", data.refreshToken);
+      toast.success("Login successful.");
+      navigate("/home", { replace: true });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Login failed.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -79,7 +118,7 @@ export default function LoginPage() {
                 <div className="field-control field-control-action">
                   <FiMail />
                   <input value={form.email} onChange={(event) => { setForm((current) => ({ ...current, email: event.target.value })); setOtpSent(false); setOtpConfirmed(false); }} placeholder="Enter your email address" type="email" autoComplete="email" required />
-                  <button className="inline-action" type="button" onClick={sendOtp} disabled={!form.email}>Send OTP</button>
+                  <button className="inline-action" type="button" onClick={handleSendOtp} disabled={!form.email || sendingOtp}>{sendingOtp ? "Sending..." : "Send OTP"}</button>
                 </div>
               </div>
 
@@ -94,8 +133,8 @@ export default function LoginPage() {
                 <div className="field-control field-control-action">
                   <FiLock />
                   <input value={form.otp} onChange={(event) => { setForm((current) => ({ ...current, otp: event.target.value.replace(/\D/g, "").slice(0, 6) })); setOtpConfirmed(false); }} placeholder="Enter 6-digit OTP" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required />
-                  <button className={`inline-action ${otpConfirmed ? "confirmed" : ""}`} type="button" onClick={confirmOtp} disabled={!otpSent || form.otp.length !== 6}>
-                    {otpConfirmed ? "Confirmed" : "Confirm OTP"}
+                  <button className={`inline-action ${otpConfirmed ? "confirmed" : ""}`} type="button" onClick={handleConfirmOtp} disabled={!otpSent || form.otp.length !== 6}>
+                    {verifyingOtp ? "Verifying..." : otpConfirmed ? "Confirmed" : "Confirm OTP"}
                   </button>
                 </div>
                 {otpConfirmed && <small className="otp-helper otp-confirmed">Email verified successfully.</small>}
@@ -117,7 +156,7 @@ export default function LoginPage() {
                 <Link to="/forgot-password">Forgot password?</Link>
               </div>
 
-              <button className="login-submit" type="submit">Login <FiArrowRight /></button>
+              <button className="login-submit" type="submit" disabled={submitting}>{submitting ? "Signing in..." : "Login"} <FiArrowRight /></button>
 
               <div className="social-divider"><span>or continue with</span></div>
               <div className="social-login">
