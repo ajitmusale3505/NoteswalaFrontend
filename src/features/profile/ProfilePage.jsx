@@ -340,7 +340,11 @@ export default function ProfilePage() {
         setEditing(null);
       }}
     />}
-    {editing==="about"&&<AboutMeEditModal\n      onClose={()=>setEditing(null)}\n      onSaved={(data)=>{setPersonal(data||personal);setEditing(null);}}\n    />}\n    {editing==="academic"&&<AcademicProfileEditModal
+    {editing==="about"&&<AboutMeEditModal
+      onClose={()=>setEditing(null)}
+      onSaved={(data)=>{setPersonal(data||personal);setEditing(null);}}
+    />}
+    {editing==="academic"&&<AcademicProfileEditModal
       academic={academic}
       onClose={()=>setEditing(null)}
       onSaved={(data)=>{setAcademic(data||academic);setEditing(null);}}
