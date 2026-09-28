@@ -201,7 +201,7 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
     collegeId: academic?.collegeId || "",
     branchId: academic?.branchId || "",
     academicYearId: academic?.academicYearId || "",
-    currentStatus: academic?.currentStatus || "",
+    currentStatus: academic?.currentStatus === "Studying" ? "Pursuing" : (academic?.currentStatus || ""),
     graduationYear: academic?.graduationYear ? String(academic.graduationYear) : "",
     cgpa: academic?.cgpa ?? ""
   });
