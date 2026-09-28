@@ -87,6 +87,10 @@ export function SkillsEditModal({ onClose, onSaved }) {
       toast.error("Only predefined skills can be added.");
       return;
     }
+    if (skills.length >= 30) {
+      toast.error("You can add at most 30 skills.");
+      return;
+    }
     if (skills.some((item) => item.toLowerCase() === predefined.toLowerCase())) return;
 
     setSkills((current) => [...current, predefined]);
@@ -212,7 +216,7 @@ export function SkillsEditModal({ onClose, onSaved }) {
               onClick={() => setSkills((current) => {
                 const next = [...current];
                 SUGGESTED_SKILLS.forEach((skill) => {
-                  if (!next.some((selected) => selected.toLowerCase() === skill.toLowerCase())) next.push(skill);
+                  if (next.length < 30 && !next.some((selected) => selected.toLowerCase() === skill.toLowerCase())) next.push(skill);
                 });
                 return next;
               })}
