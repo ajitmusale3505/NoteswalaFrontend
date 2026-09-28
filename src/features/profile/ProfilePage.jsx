@@ -265,7 +265,8 @@ export default function ProfilePage() {
       onClose={()=>setEditing(null)}
       onSaved={(data)=>{
         setUser((u)=>u?{...u,fullName:data?.fullName||u.fullName}:u);
-        setPersonal(data||null);\n        setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
+        setPersonal(data||null);
+        setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
         setEditing(null);
       }}
     />}
