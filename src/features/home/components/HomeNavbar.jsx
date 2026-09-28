@@ -4,13 +4,13 @@ import { useLocation } from "react-router-dom";
 import { getCurrentUser, getUserAcademicProfile } from "../../../services/profileService";
 import { homeNavItems } from "../homeData";
 
-export default function HomeNavbar({ user: userProp = null, academic: academicProp = null }) {
+export default function HomeNavbar({ user: userProp = null, academic: academicProp = null, loading: userLoading = false }) {
   const { pathname } = useLocation();
   const [user, setUser] = useState(userProp);
   const [academic, setAcademic] = useState(academicProp);
 
   useEffect(() => {
-    if (userProp) {
+    if (userProp || userLoading) {
       setUser(userProp);
       setAcademic(academicProp);
       return;
@@ -41,7 +41,7 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
     return () => {
       mounted = false;
     };
-  }, [userProp, academicProp]);
+  }, [userProp, academicProp, userLoading]);
   return (
     <header className="home-navbar">
       <a className="home-brand" href="/home" aria-label="EduHub home">
