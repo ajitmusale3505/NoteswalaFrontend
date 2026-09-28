@@ -93,7 +93,8 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     fullName: "", email: "", phoneNumber: "", dateOfBirth: "", gender: "",
-    state: "", city: "", address: ""
+    state: "", city: "", address: "", aboutMe: "", skills: [], interests: [],
+    preferredRole: "", preferredLocation: "", employmentType: "", availability: ""
   });
   const initialForm = useRef(null);
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
@@ -110,7 +111,14 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
           gender: d.gender || "",
           state: d.state || "",
           city: d.city || "",
-          address: d.address || ""
+          address: d.address || "",
+          aboutMe: d.aboutMe || "",
+          skills: Array.isArray(d.skills) ? d.skills : [],
+          interests: Array.isArray(d.interests) ? d.interests : [],
+          preferredRole: d.preferredRole || "",
+          preferredLocation: d.preferredLocation || "",
+          employmentType: d.employmentType || "",
+          availability: d.availability || ""
         };
         initialForm.current = loaded;
         setForm(loaded);
@@ -124,7 +132,7 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
   const save = async () => {
     const initial = initialForm.current || {};
     const payload = {};
-    const keys = ["fullName", "phoneNumber", "dateOfBirth", "gender", "state", "city", "address"];
+    const keys = ["fullName", "phoneNumber", "dateOfBirth", "gender", "state", "city", "address", "aboutMe", "preferredRole", "preferredLocation", "employmentType", "availability"];
 
     keys.forEach((key) => {
       const current = typeof form[key] === "string" ? form[key].trim() : form[key];
@@ -137,6 +145,13 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
     if (payload.phoneNumber && !/^[6-9]\d{9}$/.test(payload.phoneNumber)) {
       toast.error("Please enter a valid 10-digit Indian mobile number.");
       return;
+    }
+
+    if (Array.isArray(form.skills) && JSON.stringify(form.skills) !== JSON.stringify(initial.skills || [])) {
+      payload.skills = form.skills.filter(Boolean);
+    }
+    if (Array.isArray(form.interests) && JSON.stringify(form.interests) !== JSON.stringify(initial.interests || [])) {
+      payload.interests = form.interests.filter(Boolean);
     }
 
     if (!Object.keys(payload).length) {
@@ -184,6 +199,15 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
             <div className="profile-edit-field"><span><FiMapPin />Location<b>*</b></span><div className="profile-edit-location"><SelectField label="" icon={FiMapPin} value={form.state} onChange={(v) => setForm((f) => ({ ...f, state: v, city: "" }))} options={INDIAN_STATES.map((x) => ({ value: x, label: x }))} placeholder="State" /><SelectField label="" icon={FiMapPin} value={form.city} onChange={(v) => set("city", v)} options={cities.map((x) => ({ value: x, label: x }))} placeholder="City" disabled={!form.state} /></div></div>
           </div>
           <label className="profile-edit-field full"><span><FiMapPin />Address <small>(Optional)</small></span><div className="profile-edit-textarea"><textarea maxLength={200} value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Enter your address (Optional)" /><small>{form.address.length}/200</small></div></label>
+          <div className="profile-edit-section-label">Career Preferences</div>
+          <div className="profile-edit-grid two">
+            <InputField label="Preferred Role" icon={FiBriefcase} value={form.preferredRole} onChange={(v) => set("preferredRole", v)} placeholder="e.g. Java Full Stack Developer" />
+            <InputField label="Preferred Location" icon={FiMapPin} value={form.preferredLocation} onChange={(v) => set("preferredLocation", v)} placeholder="e.g. Pune, Bengaluru, Remote" />
+            <InputField label="Employment Type" icon={FiBriefcase} value={form.employmentType} onChange={(v) => set("employmentType", v)} placeholder="e.g. Full Time / Internship" />
+            <InputField label="Availability" icon={FiCalendar} value={form.availability} onChange={(v) => set("availability", v)} placeholder="e.g. Available to join from Oct 2026" />
+          </div>
+          <label className="profile-edit-field full"><span><FiCode />Skills <small>(comma separated)</small></span><div className="profile-edit-input"><input value={form.skills.join(", ")} onChange={(e) => set("skills", e.target.value.split(",").map(x => x.trim()).filter(Boolean))} placeholder="Java, Spring Boot, React.js" /></div></label>
+          <label className="profile-edit-field full"><span><FiTarget />Interests <small>(comma separated)</small></span><div className="profile-edit-input"><input value={form.interests.join(", ")} onChange={(e) => set("interests", e.target.value.split(",").map(x => x.trim()).filter(Boolean))} placeholder="Web Development, AI & ML" /></div></label>
         </>
       )}
     </EditShell>
