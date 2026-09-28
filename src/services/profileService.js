@@ -7,5 +7,6 @@ export const getUserAcademicProfile = (userId) =>
 
 export const getPersonalProfile = () => apiClient.get("/user-profile/personal");
 export const updatePersonalProfile = (payload) => apiClient.patch("/user-profile/personal", payload);
+export const updateSkills = (skills) => apiClient.patch("/user-profile/personal", { skills });
 
 export const updateAboutMe = (aboutMe) => apiClient.patch("/user-profile/personal/about-me", JSON.stringify(aboutMe));
