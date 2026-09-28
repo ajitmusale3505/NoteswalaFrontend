@@ -7,6 +7,7 @@ import {
 import HomeNavbar from "../home/components/HomeNavbar";
 import { getCurrentUser, getPersonalProfile, getUserAcademicProfile } from "../../services/profileService";
 import { PersonalProfileEditModal, AcademicProfileEditModal, AboutMeEditModal } from "./ProfileEditModals";
+import { SkillsEditModal } from "./SkillsEditModal";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -320,7 +321,7 @@ export default function ProfilePage() {
               <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
               <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
               <AboutMe onEdit={() => edit("about")} personal={personal}/>
-              <TagCard title="Skills" icon={FiCode} items={personal?.skills || defaultSkills} onEdit={() => edit("personal")}/>
+              <TagCard title="Skills" icon={FiCode} items={personal?.skills || defaultSkills} onEdit={() => edit("skills")}/>
               <CareerPreferences onEdit={() => edit("personal")} personal={personal}/>
               <TagCard title="Interests" icon={FiHeart} items={personal?.interests || defaultInterests} onEdit={() => edit("personal")}/>
             </div>
@@ -340,6 +341,10 @@ export default function ProfilePage() {
         setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
         setEditing(null);
       }}
+    />}
+    {editing==="skills"&&<SkillsEditModal
+      onClose={()=>setEditing(null)}
+      onSaved={(data)=>{setPersonal((current)=>({...current,...(data||{})}));setEditing(null);}}
     />}
     {editing==="about"&&<AboutMeEditModal
       onClose={()=>setEditing(null)}
