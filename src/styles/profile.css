@@ -558,3 +558,48 @@
   .career-preferences-edit-art{display:none}
   .career-employment-options{grid-template-columns:1fr}
 }
+
+
+/* Social Links edit modal - reference design */
+.social-links-edit-modal{grid-template-columns:34% 66%}
+.social-links-edit-art{background:linear-gradient(150deg,#fff 0%,#fffaf2 65%,#f5ecdd 100%)}
+.social-links-art-copy{margin-top:62px}
+.social-links-art-copy h2{font:400 34px/1.13 "Libre Baskerville",serif;color:#102b45;margin:0}
+.social-links-art-copy h2 span{color:#a8783d}
+.social-links-art-copy p{max-width:300px}
+.social-links-edit-art>img{height:56%;object-fit:contain;object-position:center bottom}
+.social-links-quote{position:absolute;z-index:3;right:34px;bottom:18px;margin:0;text-align:center;color:#a46a25;font:italic 14px/1.55 "Libre Baskerville",serif;max-width:190px}
+.social-links-brand-icon{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:3px solid #12385e;border-radius:5px;font-size:13px;letter-spacing:-4px;color:#12385e}
+.social-links-heading h1{font-size:28px}
+.social-links-scroll{padding-right:2px}
+.social-links-count{margin:0 0 10px;color:#8393a5;font-size:10px;text-align:right}
+.social-links-fields{display:grid;gap:16px}
+.social-link-field{padding:16px 18px 14px;border:1px solid #dce5ee;border-radius:11px;background:#fff;transition:.18s}
+.social-link-field.enabled{box-shadow:0 3px 10px rgba(25,55,80,.025)}
+.social-link-field.disabled{background:#fbfcfd}
+.social-link-top{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.social-link-identity{display:flex;align-items:center;gap:14px;min-width:0}
+.social-link-icon{width:35px;height:35px;display:grid;place-items:center;font-size:29px;flex:0 0 auto}
+.social-link-identity h3{margin:0;color:#153b6d;font-size:15px;font-weight:700}
+.social-link-identity p{margin:4px 0 0;color:#71859f;font-size:11px;line-height:1.4}
+.social-toggle{position:relative;width:38px;height:23px;border:0;border-radius:20px;background:#c8d2dc;flex:0 0 auto;padding:0;cursor:pointer;transition:.18s}
+.social-toggle span{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:.18s}
+.social-toggle.on{background:#16ae88}
+.social-toggle.on span{left:18px}
+.social-link-input{height:43px;margin:12px 0 0 49px;border:1px solid #cfdbe7;border-radius:8px;background:#fff;display:flex;align-items:center;gap:9px;padding:0 11px;color:#45627f}
+.social-link-input:focus-within{border-color:#8aaac9;box-shadow:0 0 0 2px rgba(34,102,160,.06)}
+.social-link-input>svg{font-size:16px;flex:0 0 auto}
+.social-link-input input{width:100%;height:100%;border:0;outline:0;background:transparent;color:#173d68;font-size:12px}
+.social-link-input input::placeholder{color:#91a0b0}
+.social-link-input input:disabled{color:#9ca8b4}
+.social-link-open{width:28px;height:28px;display:grid;place-items:center;color:#214f7e;flex:0 0 auto;border-radius:5px}
+.social-link-open:hover{background:#edf4fa}
+.social-link-open.disabled{color:#aab5c0;cursor:default}
+.social-links-actions{padding-top:14px}
+.social-links-save{min-width:190px}
+@media(max-width:850px){
+  .social-links-edit-modal{grid-template-columns:1fr}
+  .social-links-edit-art{display:none}
+  .social-link-input{margin-left:0}
+  .social-links-save{min-width:150px}
+}
