@@ -64,12 +64,38 @@ export default function ProfileCompletionModal({user,academic,onCompleted}){
  const back=()=>setStep(s=>Math.max(1,s-1));
  const save=async()=>{
    if(!valid()||!form.semesterId){setStep(3);return;}
-   const year=name(years.find(x=>String(id(x))===String(form.academicYearId)))||"";
-   const matches=String(year).match(/20\d{2}/g)||[];
-   const end=Number(matches.at(-1)||new Date().getFullYear());
-   const current=Number(form.currentYear);
-   const payload={...form,currentYear:current,graduationYear:Number(form.graduationYear)||end+Math.max(0,4-current)};
-   try{setSaving(true);academic?.id?await updateAcademicProfile(user.userId,payload):await createAcademicProfile(payload);toast.success("Profile completed successfully.");await onCompleted();}catch(e){toast.error(e?.response?.data?.message||"Unable to save your profile.");}finally{setSaving(false);}
+   const selectedYear=years.find(x=>String(id(x))===String(form.academicYearId));
+   const yearName=name(selectedYear)||"";
+   const matches=String(yearName).match(/20\d{2}/g)||[];
+   const endYear=Number(selectedYear?.endYear||matches.at(-1)||new Date().getFullYear());
+   const currentYear=Number(form.currentYear);
+   const graduationYear=Number(form.graduationYear)||endYear+Math.max(0,4-currentYear);
+   const payload={
+     universityId:String(form.universityId),
+     collegeId:String(form.collegeId),
+     branchId:String(form.branchId),
+     academicYearId:String(form.academicYearId),
+     semesterId:String(form.semesterId),
+     graduationYear,
+     phoneNumber:String(form.phoneNumber).trim(),
+     gender:form.gender,
+     currentYear,
+     state:String(form.state).trim(),
+     city:String(form.city).trim()
+   };
+   try{
+     setSaving(true);
+     if(academic?.id) await updateAcademicProfile(user.userId,payload);
+     else await createAcademicProfile(payload);
+     toast.success("Profile completed successfully.");
+     await onCompleted();
+   }catch(e){
+     const validationErrors=e?.response?.data?.data;
+     const details=validationErrors&&typeof validationErrors==="object"
+       ? Object.values(validationErrors).filter(Boolean).join(" • ")
+       : "";
+     toast.error(details||e?.response?.data?.message||"Unable to save your profile.");
+   }finally{setSaving(false);}
  };
 
  const percent=step*25;
