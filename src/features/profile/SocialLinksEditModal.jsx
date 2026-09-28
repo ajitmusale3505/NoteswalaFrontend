@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  FiCode, FiExternalLink, FiGithub, FiLink, FiLinkedin, FiSave, FiUser, FiX
+  FiBookOpen, FiCode, FiExternalLink, FiGithub, FiLink, FiLinkedin, FiSave, FiX
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { getSocialLinks, updateSocialLinks } from "../../services/profileService";
@@ -207,7 +207,7 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
     <div className="profile-edit-overlay social-links-overlay" role="dialog" aria-modal="true" aria-labelledby="social-links-title">
       <div className="profile-edit-modal social-links-edit-modal">
         <aside className="profile-edit-art social-links-edit-art">
-          <div className="profile-edit-brand"><FiBookOpenFallback /> EduHub</div>
+          <div className="profile-edit-brand"><FiBookOpen /> EduHub</div>
           <div className="profile-edit-art-copy social-links-art-copy">
             <h2>Update Your<br /><span>Social Links</span></h2>
             <p>Add your social profiles to showcase your work, connect with others and get noticed by opportunities.</p>
@@ -312,6 +312,3 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
   );
 }
 
-function FiBookOpenFallback() {
-  return <span className="social-links-brand-icon">▮▮</span>;
-}
