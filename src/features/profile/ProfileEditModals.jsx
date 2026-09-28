@@ -56,7 +56,7 @@ function GenderField({ value, onChange }) {
   );
 }
 
-function EditShell({ title, subtitle, eyebrow, image, onClose, children, onSave, saving }) {
+function EditShell({ title, artTitle, subtitle, eyebrow, image, onClose, children, onSave, saving }) {
   return (
     <div className="profile-edit-overlay" role="dialog" aria-modal="true">
       <div className="profile-edit-modal">
@@ -64,7 +64,7 @@ function EditShell({ title, subtitle, eyebrow, image, onClose, children, onSave,
           <div className="profile-edit-brand"><FiBookOpen /> EduHub</div>
           <div className="profile-edit-art-copy">
             <small>{eyebrow}</small>
-            <h2>{title}</h2>
+            <h2>{artTitle || title}</h2>
             <p>{subtitle}</p>
           </div>
           <img src={image} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} />
@@ -148,6 +148,7 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
     <EditShell
       eyebrow="Keep your profile up to date"
       title="Personal Information"
+      artTitle="Update Your Personal Information"
       subtitle="Update your basic details. This information will be visible on your profile."
       image="/images/profile-edit/personal-information-art.png"
       onClose={onClose}
@@ -238,6 +239,7 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
     <EditShell
       eyebrow="Keep your academic details updated"
       title="Academic Information"
+      artTitle="Update Your Academic Information"
       subtitle="Update your academic details. This information will be visible on your profile."
       image="/images/profile-edit/academic-information-art.png"
       onClose={onClose}
