@@ -8,7 +8,7 @@ import {
   getAcademicYearsByUniversity, getBranchesByCollege, getCollegesByUniversity,
   getSemestersByAcademicYear, getUniversities, patchAcademicProfile
 } from "../../services/academicService";
-import { getPersonalProfile, updatePersonalProfile } from "../../services/profileService";
+import { getPersonalProfile, updatePersonalProfile, updateAboutMe } from "../../services/profileService";
 import { CITY_BY_STATE, INDIAN_STATES } from "./locationData";
 
 const list = (r) => Array.isArray(r?.data) ? r.data : r?.data?.data || [];
@@ -477,7 +477,7 @@ export function AboutMeEditModal({ onClose, onSaved }) {
   };
 
   const save = async () => {
-    const current = aboutMe.trim();
+    const current = String(aboutMe || "").replace(/\u0000/g, "").trim();
     const previous = initialValue.current.trim();
 
     if (current === previous) {
@@ -498,7 +498,7 @@ export function AboutMeEditModal({ onClose, onSaved }) {
 
     try {
       setSaving(true);
-      await updatePersonalProfile({ aboutMe: current });
+      await updateAboutMe(current);
 
       // Read the saved profile again so the parent receives the database value,
       // not a possibly stale PATCH response.
