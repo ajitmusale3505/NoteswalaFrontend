@@ -227,7 +227,7 @@ export default function ProfilePage() {
   }, []);
 
   return <div className="profile-page">
-    <HomeNavbar user={user} loading={loading}/>
+    <HomeNavbar user={user} academic={academic}/>
     <div className="profile-layout">
       <ProfileSidebar/>
       <main className="profile-main">
