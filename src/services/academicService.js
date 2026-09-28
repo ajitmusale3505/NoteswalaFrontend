@@ -7,3 +7,5 @@ export const getAcademicYearsByUniversity=(id)=>apiClient.get(`/academic-years/u
 export const getSemestersByAcademicYear=(id)=>apiClient.get(`/semesters/academic-year/${id}`);
 export const createAcademicProfile=(payload)=>apiClient.post("/user-profile",payload);
 export const updateAcademicProfile=(id,payload)=>apiClient.put(`/user-profile/${id}`,payload);
+
+export const patchAcademicProfile=(id,payload)=>apiClient.patch(`/user-profile/${id}`,payload);
