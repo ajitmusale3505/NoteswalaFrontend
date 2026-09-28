@@ -11,6 +11,7 @@ import "./styles/login.css";
 import "./styles/home.css";
 import "./styles/resources.css";
 import "./styles/profile.css";
+import "./styles/profile-completion.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
