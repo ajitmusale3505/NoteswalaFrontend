@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiAward, FiBookOpen, FiCalendar, FiCheck, FiChevronDown, FiFileText,
   FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX
@@ -18,7 +18,7 @@ const name = (x) => x?.name ?? x?.universityName ?? x?.collegeName ?? x?.branchN
 function SelectField({ label, icon: Icon, value, onChange, options, placeholder, disabled = false }) {
   return (
     <label className="profile-edit-field">
-      <span><Icon />{label}<b>*</b></span>
+      <span><Icon />{label}</span>
       <div className="profile-edit-select">
         <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
           <option value="">{placeholder}</option>
@@ -30,7 +30,7 @@ function SelectField({ label, icon: Icon, value, onChange, options, placeholder,
   );
 }
 
-function InputField({ label, icon: Icon, value, onChange, type = "text", disabled = false, placeholder = "", required = true, ...rest }) {
+function InputField({ label, icon: Icon, value, onChange, type = "text", disabled = false, placeholder = "", required = false, ...rest }) {
   return (
     <label className="profile-edit-field">
       <span><Icon />{label}{required && <b>*</b>}</span>
@@ -95,13 +95,14 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
     fullName: "", email: "", phoneNumber: "", dateOfBirth: "", gender: "",
     state: "", city: "", address: ""
   });
+  const initialForm = useRef(null);
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
   useEffect(() => {
     getPersonalProfile()
       .then((r) => {
         const d = r.data?.data || {};
-        setForm({
+        const loaded = {
           fullName: d.fullName || "",
           email: d.email || "",
           phoneNumber: d.phoneNumber || "",
@@ -110,7 +111,9 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
           state: d.state || "",
           city: d.city || "",
           address: d.address || ""
-        });
+        };
+        initialForm.current = loaded;
+        setForm(loaded);
       })
       .catch((e) => toast.error(e?.response?.data?.message || "Unable to load personal profile."))
       .finally(() => setLoading(false));
@@ -119,21 +122,32 @@ export function PersonalProfileEditModal({ onClose, onSaved }) {
   const cities = useMemo(() => CITY_BY_STATE[form.state] || [], [form.state]);
 
   const save = async () => {
-    if (!form.fullName.trim() || !/^[6-9]\d{9}$/.test(form.phoneNumber) || !form.dateOfBirth || !form.gender || !form.state || !form.city) {
-      toast.error("Please complete all required personal details.");
+    const initial = initialForm.current || {};
+    const payload = {};
+    const keys = ["fullName", "phoneNumber", "dateOfBirth", "gender", "state", "city", "address"];
+
+    keys.forEach((key) => {
+      const current = typeof form[key] === "string" ? form[key].trim() : form[key];
+      const previous = typeof initial[key] === "string" ? initial[key].trim() : initial[key];
+      if (current && current !== previous) {
+        payload[key] = current;
+      }
+    });
+
+    if (payload.phoneNumber && !/^[6-9]\d{9}$/.test(payload.phoneNumber)) {
+      toast.error("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
+
+    if (!Object.keys(payload).length) {
+      toast("No changes to save.");
+      onClose();
+      return;
+    }
+
     try {
       setSaving(true);
-      const r = await updatePersonalProfile({
-        fullName: form.fullName.trim(),
-        phoneNumber: form.phoneNumber,
-        dateOfBirth: form.dateOfBirth,
-        gender: form.gender,
-        state: form.state,
-        city: form.city,
-        address: form.address.trim() || null
-      });
+      const r = await updatePersonalProfile(payload);
       toast.success("Personal information updated.");
       onSaved(r.data?.data);
     } catch (e) {
@@ -186,14 +200,20 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
   const [form, setForm] = useState({
     universityId: academic?.universityId || "", collegeId: academic?.collegeId || "",
     branchId: academic?.branchId || "", academicYearId: academic?.academicYearId || "",
-    semesterId: academic?.semesterId || "", degree: academic?.degree || "B.E. (Bachelor of Engineering)",
-    mode: academic?.mode || "Regular", currentStatus: academic?.currentStatus || "",
-    graduationYear: academic?.graduationYear || "", currentYear: academic?.currentYear ? String(academic.currentYear) : "",
+    semesterId: academic?.semesterId || "", degree: academic?.degree || "",
+    mode: academic?.mode || "", currentStatus: academic?.currentStatus || "",
+    graduationYear: academic?.graduationYear ? String(academic.graduationYear) : "",
+    currentYear: academic?.currentYear ? String(academic.currentYear) : "",
     cgpa: academic?.cgpa ?? "", lastYearSgpa: academic?.lastYearSgpa ?? "",
     tenthPercentage: academic?.tenthPercentage ?? "", twelfthPercentage: academic?.twelfthPercentage ?? "",
-    diplomaDetails: academic?.diplomaDetails || "None", additionalInformation: academic?.additionalInformation || ""
+    diplomaDetails: academic?.diplomaDetails || "", additionalInformation: academic?.additionalInformation || ""
   });
+  const initialForm = useRef(null);
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+
+  useEffect(() => {
+    initialForm.current = { ...form };
+  }, []);
 
   useEffect(() => { getUniversities().then((r) => setUniversities(list(r))).catch(() => toast.error("Unable to load universities.")); }, []);
   useEffect(() => {
@@ -211,21 +231,52 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
   }, [form.academicYearId]);
 
   const save = async () => {
-    if (!form.universityId || !form.collegeId || !form.branchId || !form.academicYearId || !form.semesterId || !form.currentYear || !form.graduationYear || !form.cgpa || !form.lastYearSgpa || !form.tenthPercentage || !form.twelfthPercentage || !form.currentStatus) {
-      toast.error("Please complete all required academic details.");
+    const initial = initialForm.current || {};
+    const payload = {};
+
+    const hierarchyKeys = ["universityId", "collegeId", "branchId", "academicYearId", "semesterId"];
+    const hierarchyChanged = hierarchyKeys.some((key) => form[key] !== initial[key]);
+
+    if (hierarchyChanged) {
+      if (!hierarchyKeys.every((key) => String(form[key] || "").trim())) {
+        toast.error("Please keep the academic hierarchy complete when changing university, college, branch, academic year, or semester.");
+        return;
+      }
+      hierarchyKeys.forEach((key) => {
+        if (form[key] !== initial[key]) payload[key] = form[key];
+      });
+    }
+
+    const textKeys = ["degree", "mode", "currentStatus", "diplomaDetails", "additionalInformation"];
+    textKeys.forEach((key) => {
+      const current = typeof form[key] === "string" ? form[key].trim() : form[key];
+      const previous = typeof initial[key] === "string" ? initial[key].trim() : initial[key];
+      if (current && current !== previous) payload[key] = current;
+    });
+
+    const numericKeys = [
+      ["graduationYear", "graduationYear"],
+      ["currentYear", "currentYear"],
+      ["cgpa", "cgpa"],
+      ["lastYearSgpa", "lastYearSgpa"],
+      ["tenthPercentage", "tenthPercentage"],
+      ["twelfthPercentage", "twelfthPercentage"]
+    ];
+    numericKeys.forEach(([key, apiKey]) => {
+      if (form[key] !== "" && form[key] != null && String(form[key]) !== String(initial[key] ?? "")) {
+        payload[apiKey] = Number(form[key]);
+      }
+    });
+
+    if (!Object.keys(payload).length) {
+      toast("No changes to save.");
+      onClose();
       return;
     }
+
     try {
       setSaving(true);
-      const r = await patchAcademicProfile(academic.userId, {
-        universityId: form.universityId, collegeId: form.collegeId, branchId: form.branchId,
-        academicYearId: form.academicYearId, semesterId: form.semesterId,
-        graduationYear: Number(form.graduationYear), currentYear: Number(form.currentYear),
-        cgpa: Number(form.cgpa), lastYearSgpa: Number(form.lastYearSgpa),
-        tenthPercentage: Number(form.tenthPercentage), twelfthPercentage: Number(form.twelfthPercentage),
-        degree: form.degree, mode: form.mode, currentStatus: form.currentStatus,
-        diplomaDetails: form.diplomaDetails || null, additionalInformation: form.additionalInformation.trim() || null
-      });
+      const r = await patchAcademicProfile(academic.userId, payload);
       toast.success("Academic information updated.");
       onSaved(r.data?.data);
     } catch (e) {
