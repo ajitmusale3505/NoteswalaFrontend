@@ -6,7 +6,7 @@ import {
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
 import { getCurrentUser, getPersonalProfile, getUserAcademicProfile } from "../../services/profileService";
-import { PersonalProfileEditModal, AcademicProfileEditModal } from "./ProfileEditModals";
+import { PersonalProfileEditModal, AcademicProfileEditModal, AboutMeEditModal } from "./ProfileEditModals";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -132,9 +132,10 @@ function InfoRow({icon:Icon,label,value}) {
   return <div className="info-row"><Icon/><span>{label}</span><strong>{value}</strong></div>;
 }
 
-function AboutMe({onEdit}) {
+function AboutMe({onEdit, personal}) {
+  const aboutMe = personal?.aboutMe?.trim();
   return <Card title="About Me" icon={FiBriefcase} onEdit={onEdit} className="about-card">
-    <p>I am a Computer Engineering student with a strong interest in full stack development, problem solving, and building real world projects. I enjoy learning new technologies, exploring innovative ideas and contributing to the developer community. My goal is to become a skilled software developer and work on projects that create meaningful impact.</p>
+    <p>{aboutMe || "Tell us about yourself, your interests, skills, goals, and what you’re passionate about."}</p>
   </Card>;
 }
 
@@ -317,7 +318,7 @@ export default function ProfilePage() {
             <div className="profile-grid-two">
               <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
               <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
-              <AboutMe onEdit={() => edit("personal")}/>
+              <AboutMe onEdit={() => edit("about")} personal={personal}/>
               <TagCard title="Skills" icon={FiCode} items={skills} onEdit={() => edit("personal")}/>
               <CareerPreferences onEdit={() => edit("personal")}/>
               <TagCard title="Interests" icon={FiHeart} items={interests} onEdit={() => edit("personal")}/>
@@ -339,7 +340,7 @@ export default function ProfilePage() {
         setEditing(null);
       }}
     />}
-    {editing==="academic"&&<AcademicProfileEditModal
+    {editing==="about"&&<AboutMeEditModal\n      onClose={()=>setEditing(null)}\n      onSaved={(data)=>{setPersonal(data||personal);setEditing(null);}}\n    />}\n    {editing==="academic"&&<AcademicProfileEditModal
       academic={academic}
       onClose={()=>setEditing(null)}
       onSaved={(data)=>{setAcademic(data||academic);setEditing(null);}}
