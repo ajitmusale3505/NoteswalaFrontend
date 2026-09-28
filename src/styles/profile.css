@@ -476,3 +476,46 @@
 .skills-suggested-list button.selected{background:#eef8f4;border-color:#b9e0d1;color:#148269}
 .skills-suggested-list button:disabled{cursor:default}
 @media(max-width:850px){.skills-edit-modal{grid-template-columns:1fr}.skills-edit-art{display:none}.skills-search-row{grid-template-columns:1fr}.skills-search-box{border-right:1px solid #cfdae6;border-radius:9px}.skills-add-button{margin-top:8px;border-radius:9px}.skills-search-results{right:0;top:61px}}
+
+/* Interests edit modal - reference design */
+.interests-edit-modal{grid-template-columns:34% 66%}
+.interests-edit-art{background:linear-gradient(150deg,#fff 0%,#fffaf2 62%,#eef6ff 100%)}
+.interests-edit-heading h1{display:flex;align-items:center;gap:12px}
+.interests-edit-heading h1 svg{color:#a8783d;font-size:27px}
+.interests-edit-scroll{padding-right:6px}
+.interests-editor{position:relative}
+.interests-search-box{height:50px;border:1px solid #cfdae6;border-radius:9px;background:#fff;display:flex;align-items:center;gap:11px;padding:0 15px;color:#54708e}
+.interests-search-box:focus-within{border-color:#2e65a2;box-shadow:0 0 0 1px #2e65a2}
+.interests-search-box svg{font-size:21px;flex:0 0 auto}
+.interests-search-box input{width:100%;border:0;outline:0;background:transparent;color:#173657;font-size:13px}
+.interests-search-box input::placeholder{color:#8294a8}
+.interests-search-results{position:absolute;left:0;right:0;top:62px;z-index:10;padding:6px;background:#fff;border:1px solid #dce5ee;border-radius:9px;box-shadow:0 14px 30px rgba(20,45,70,.12)}
+.interests-search-results button{width:100%;height:36px;border:0;border-radius:6px;background:#fff;color:#274c70;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:12px;text-align:left}
+.interests-search-results button:hover{background:#f2f7fc}
+.interests-search-results svg{color:#1767b0}
+.interests-section-heading{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px;color:#173d67}
+.interests-section-heading>div{display:flex;align-items:center;gap:10px}
+.interests-section-heading>div>svg{font-size:21px;color:#ad7b2d}
+.interests-section-heading strong{font-size:15px}
+.interests-section-heading>span{font-size:11px;color:#8091a5}
+.interests-selected-list{display:flex;flex-wrap:wrap;gap:10px;min-height:108px;align-content:flex-start}
+.interest-chip{min-height:43px;padding:0 11px 0 16px;border-radius:9px;background:#eef4fa;color:#123f73;display:flex;align-items:center;gap:9px;border:1px solid #e6edf4;font-size:12px;cursor:grab;transition:.15s}
+.interest-chip:hover{border-color:#c7d9eb;box-shadow:0 3px 10px rgba(20,50,80,.06)}
+.interest-chip:active{cursor:grabbing}
+.interest-chip button{width:22px;height:22px;border:0;border-radius:50%;display:grid;place-items:center;background:transparent;color:#2f79c9}
+.interest-chip button:hover{background:#dcebf9;color:#175b9d}
+.interests-empty{width:100%;padding:18px;border:1px dashed #cbd9e5;border-radius:9px;color:#7890a7;font-size:12px;text-align:center}
+.interests-divider{height:1px;background:#e5ebf0;margin:20px 0 18px}
+.suggested-interests-heading{margin-top:0}
+.suggested-interests-heading>div>span.interest-bulb{width:22px;height:22px;display:grid;place-items:center;color:#1765ae;font-size:21px}
+.suggested-interests-heading button{border:0;background:transparent;color:#126ed0;font-size:12px;font-weight:600;cursor:pointer}
+.suggested-interests-heading button:disabled{color:#9aa9b7;cursor:not-allowed}
+.interests-suggested-list{display:flex;flex-wrap:wrap;gap:10px}
+.interests-suggested-list button{min-height:41px;padding:0 14px;border:1px solid #d6e2ed;border-radius:21px;background:#fff;color:#294d70;display:flex;align-items:center;gap:7px;font-size:12px}
+.interests-suggested-list button:hover:not(:disabled){border-color:#6e9ec8;background:#f7fbff}
+.interests-suggested-list button svg{color:#176dca;font-size:17px}
+.interests-suggested-list button.selected{background:#eef8f4;border-color:#b9e0d1;color:#148269}
+.interests-suggested-list button:disabled{cursor:default}
+.interests-save{background:#b27b28}
+.interests-save:hover:not(:disabled){background:#99691f}
+@media(max-width:850px){.interests-edit-modal{grid-template-columns:1fr}.interests-edit-art{display:none}.interests-selected-list{min-height:60px}}
