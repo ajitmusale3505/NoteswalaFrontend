@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#eef6ff"/></linearGradient>
+<linearGradient id="hoodie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2180d4"/><stop offset="1" stop-color="#0c4e9b"/></linearGradient>
+</defs>
+<rect width="720" height="720" rx="40" fill="url(#bg)"/>
+<path d="M0 570c125-42 220-24 310 26 92 51 192 61 410 10v114H0z" fill="#fff1d8"/>
+<circle cx="565" cy="135" r="110" fill="#e3f1ff" opacity=".8"/><circle cx="125" cy="545" r="115" fill="#fff0ce" opacity=".8"/>
+<path d="M82 575c12-80 32-117 73-150 8 66-12 118-73 150z" fill="#77b78e"/><path d="M114 575c39-69 78-91 132-103-22 61-66 91-132 103z" fill="#a3cfaa"/><path d="M574 596c-16-69-2-112 39-157 20 65 8 111-39 157z" fill="#77b78e"/><path d="M567 589c-34-49-31-91-5-128 35 44 34 87 5 128z" fill="#a5d1ad"/>
+<g transform="translate(240 270)"><ellipse cx="128" cy="260" rx="150" ry="36" fill="#d5dde4" opacity=".6"/>
+<path d="M35 142c-10-67 5-119 65-145 58-25 113 8 132 69 15 49 0 92-31 123l-26 24H75z" fill="#f2b48c"/>
+<path d="M52 88c-9-62 21-101 71-111 51-10 93 19 102 62-35-22-71-25-106-6-21 11-42 33-67 55z" fill="#1d2734"/>
+<path d="M68 132c-2 37 22 61 59 63 35 2 61-16 70-48-20 14-43 21-68 20-24-1-43-13-61-35z" fill="#f0a980"/>
+<circle cx="101" cy="126" r="5" fill="#223449"/><circle cx="151" cy="126" r="5" fill="#223449"/><path d="M116 154c12 8 25 8 37 0" fill="none" stroke="#9a584a" stroke-width="4" stroke-linecap="round"/>
+<path d="M27 214c28-34 70-53 111-53 46 0 91 23 117 61l-6 130H9z" fill="url(#hoodie)"/><path d="M85 207c20 27 44 39 70 39s51-13 72-40" fill="none" stroke="#74b6ed" stroke-width="10" opacity=".65"/>
+<path d="M85 318h145l-19 34H102z" fill="#bfcad3"/>
+<path d="M54 252c-32 26-49 60-59 94 41 7 77-9 103-45z" fill="#e7edf2"/>
+<path d="M192 251c37 22 59 51 72 86-40 12-79 0-109-31z" fill="#e7edf2"/>
+</g>
+<g fill="#fff" stroke="#dfe8ef" stroke-width="3">
+<circle cx="126" cy="290" r="44"/><circle cx="235" cy="215" r="43"/><circle cx="515" cy="275" r="45"/><circle cx="548" cy="390" r="45"/><circle cx="135" cy="420" r="45"/><circle cx="465" cy="180" r="42"/>
+</g>
+<g font-family="Arial,sans-serif" font-weight="700" text-anchor="middle">
+<text x="126" y="304" font-size="40" fill="#e5a63a">&lt;/&gt;</text><text x="235" y="229" font-size="38" fill="#f2bd42">★</text>
+<text x="515" y="290" font-size="36" fill="#4976b8">☁</text><text x="548" y="405" font-size="34" fill="#6f83d7">✦</text>
+<text x="135" y="434" font-size="35" fill="#2d8bd2">⌘</text><text x="465" y="194" font-size="34" fill="#5c8cc7">▣</text>
+</g>
+<g transform="translate(185 602)"><rect width="350" height="54" rx="24" fill="#f4e2c4"/><rect x="50" y="14" width="245" height="10" rx="5" fill="#bd8446" opacity=".65"/><rect x="92" y="33" width="166" height="8" rx="4" fill="#d1a66e"/></g>
+</svg>
