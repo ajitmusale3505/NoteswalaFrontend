@@ -286,3 +286,39 @@
   .completion-ring{width:120px;height:120px}
   .completion-cap{right:20px}
 }
+
+/* Fix legacy completion-card rules overriding checklist item widths */
+.completion-checklist li > .completion-status{
+  width:21px;
+  min-width:21px;
+  max-width:21px;
+  height:21px;
+  min-height:21px;
+  padding:0;
+  flex:none;
+  box-sizing:border-box;
+}
+.completion-checklist li > .completion-item-name{
+  width:auto;
+  min-width:0;
+  max-width:none;
+  height:auto;
+  padding:0;
+  border:0;
+  border-radius:0;
+  box-sizing:border-box;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  display:block;
+}
+.completion-checklist li > .completion-arrow{
+  width:14px;
+  min-width:14px;
+  height:14px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#6e8499;
+}
