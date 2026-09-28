@@ -45,7 +45,7 @@ function ProfileHero({onEdit, user, academic}) {
   const initial = displayName.trim().charAt(0).toUpperCase() || "S";
   const branch = academic?.branchName || "Academic profile not completed";
   const university = academic?.universityName || "University not provided";
-  const location = academic?.collegeName || "Location not provided";
+  const location = academic?.city || "Location not provided";
   return (
     <section className="profile-hero">
       <div className="profile-hero-bg" />
@@ -105,10 +105,10 @@ function PersonalInformation({onEdit, user}) {
     <div className="info-grid">
       <InfoRow icon={FiUser} label="Full Name" value={user?.fullName || "Not provided"}/>
       <InfoRow icon={FiMessageSquare} label="Email" value={user?.email || "Not provided"}/>
-      <InfoRow icon={FiPhone} label="Phone" value="Not provided"/>
-      <InfoRow icon={FiMapPin} label="Location" value="Not provided"/>
+      <InfoRow icon={FiPhone} label="Phone" value={academic?.phoneNumber || "Not provided"}/>
+      <InfoRow icon={FiMapPin} label="Location" value={academic?.city || "Not provided"}/>
       <InfoRow icon={FiCalendar} label="Date of Birth" value="Not provided"/>
-      <InfoRow icon={FiUsers} label="Gender" value="Not provided"/>
+      <InfoRow icon={FiUsers} label="Gender" value={academic?.gender ? academic.gender.charAt(0) + academic.gender.slice(1).toLowerCase() : "Not provided"}/>
     </div>
   </Card>;
 }
