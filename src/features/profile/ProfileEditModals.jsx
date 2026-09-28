@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiAward, FiBookOpen, FiCalendar, FiCheck, FiChevronDown, FiFileText,
-  FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX
+  FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX, FiInfo
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import {
@@ -196,77 +196,98 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
   const [colleges, setColleges] = useState([]);
   const [branches, setBranches] = useState([]);
   const [years, setYears] = useState([]);
-  const [semesters, setSemesters] = useState([]);
   const [form, setForm] = useState({
-    universityId: academic?.universityId || "", collegeId: academic?.collegeId || "",
-    branchId: academic?.branchId || "", academicYearId: academic?.academicYearId || "",
-    semesterId: academic?.semesterId || "", degree: academic?.degree || "",
-    mode: academic?.mode || "", currentStatus: academic?.currentStatus || "",
+    universityId: academic?.universityId || "",
+    collegeId: academic?.collegeId || "",
+    branchId: academic?.branchId || "",
+    academicYearId: academic?.academicYearId || "",
+    currentStatus: academic?.currentStatus || "",
     graduationYear: academic?.graduationYear ? String(academic.graduationYear) : "",
-    currentYear: academic?.currentYear ? String(academic.currentYear) : "",
-    cgpa: academic?.cgpa ?? "", lastYearSgpa: academic?.lastYearSgpa ?? "",
-    tenthPercentage: academic?.tenthPercentage ?? "", twelfthPercentage: academic?.twelfthPercentage ?? "",
-    diplomaDetails: academic?.diplomaDetails || "", additionalInformation: academic?.additionalInformation || ""
+    cgpa: academic?.cgpa ?? ""
   });
-  const initialForm = useRef(null);
-  const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+  const initialForm = useRef({ ...form });
+  const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
   useEffect(() => {
-    initialForm.current = { ...form };
+    getUniversities()
+      .then((r) => setUniversities(list(r)))
+      .catch(() => toast.error("Unable to load universities."));
   }, []);
 
-  useEffect(() => { getUniversities().then((r) => setUniversities(list(r))).catch(() => toast.error("Unable to load universities.")); }, []);
   useEffect(() => {
-    if (!form.universityId) return;
-    Promise.all([getCollegesByUniversity(form.universityId), getAcademicYearsByUniversity(form.universityId)])
-      .then(([a, b]) => { setColleges(list(a)); setYears(list(b)); }).catch(() => toast.error("Unable to load academic data."));
+    if (!form.universityId) {
+      setColleges([]);
+      setYears([]);
+      return;
+    }
+
+    Promise.all([
+      getCollegesByUniversity(form.universityId),
+      getAcademicYearsByUniversity(form.universityId)
+    ])
+      .then(([collegeResponse, yearResponse]) => {
+        setColleges(list(collegeResponse));
+        setYears(list(yearResponse));
+      })
+      .catch(() => toast.error("Unable to load academic options."));
   }, [form.universityId]);
+
   useEffect(() => {
-    if (!form.collegeId) return;
-    getBranchesByCollege(form.collegeId).then((r) => setBranches(list(r))).catch(() => toast.error("Unable to load branches."));
+    if (!form.collegeId) {
+      setBranches([]);
+      return;
+    }
+
+    getBranchesByCollege(form.collegeId)
+      .then((r) => setBranches(list(r)))
+      .catch(() => toast.error("Unable to load branches."));
   }, [form.collegeId]);
-  useEffect(() => {
-    if (!form.academicYearId) return;
-    getSemestersByAcademicYear(form.academicYearId).then((r) => setSemesters(list(r))).catch(() => toast.error("Unable to load semesters."));
-  }, [form.academicYearId]);
 
   const save = async () => {
     const initial = initialForm.current || {};
     const payload = {};
 
-    const hierarchyKeys = ["universityId", "collegeId", "branchId", "academicYearId", "semesterId"];
-    const hierarchyChanged = hierarchyKeys.some((key) => form[key] !== initial[key]);
-
-    if (hierarchyChanged) {
-      if (!hierarchyKeys.every((key) => String(form[key] || "").trim())) {
-        toast.error("Please keep the academic hierarchy complete when changing university, college, branch, academic year, or semester.");
-        return;
+    ["universityId", "collegeId", "branchId", "academicYearId"].forEach((key) => {
+      if (form[key] && form[key] !== initial[key]) {
+        payload[key] = form[key];
       }
-      hierarchyKeys.forEach((key) => {
-        if (form[key] !== initial[key]) payload[key] = form[key];
-      });
+    });
+
+    if (form.currentStatus && form.currentStatus !== initial.currentStatus) {
+      payload.currentStatus = form.currentStatus;
     }
 
-    const textKeys = ["degree", "mode", "currentStatus", "diplomaDetails", "additionalInformation"];
-    textKeys.forEach((key) => {
-      const current = typeof form[key] === "string" ? form[key].trim() : form[key];
-      const previous = typeof initial[key] === "string" ? initial[key].trim() : initial[key];
-      if (current && current !== previous) payload[key] = current;
-    });
+    if (
+      form.graduationYear !== "" &&
+      String(form.graduationYear) !== String(initial.graduationYear ?? "")
+    ) {
+      payload.graduationYear = Number(form.graduationYear);
+    }
 
-    const numericKeys = [
-      ["graduationYear", "graduationYear"],
-      ["currentYear", "currentYear"],
-      ["cgpa", "cgpa"],
-      ["lastYearSgpa", "lastYearSgpa"],
-      ["tenthPercentage", "tenthPercentage"],
-      ["twelfthPercentage", "twelfthPercentage"]
-    ];
-    numericKeys.forEach(([key, apiKey]) => {
-      if (form[key] !== "" && form[key] != null && String(form[key]) !== String(initial[key] ?? "")) {
-        payload[apiKey] = Number(form[key]);
+    if (
+      form.cgpa !== "" &&
+      form.cgpa != null &&
+      String(form.cgpa) !== String(initial.cgpa ?? "")
+    ) {
+      payload.cgpa = Number(form.cgpa);
+    }
+
+    const hierarchyChanged = ["universityId", "collegeId", "branchId", "academicYearId"]
+      .some((key) => Object.prototype.hasOwnProperty.call(payload, key));
+
+    if (hierarchyChanged) {
+      // The backend keeps the existing semester. A changed exam pattern must still
+      // belong to the same university/branch hierarchy.
+      if (!form.universityId || !form.collegeId || !form.branchId || !form.academicYearId) {
+        toast.error("Please keep University, College, Branch and Exam Pattern selected.");
+        return;
       }
-    });
+      // PATCH the complete hierarchy only when one of its values changes.
+      payload.universityId = form.universityId;
+      payload.collegeId = form.collegeId;
+      payload.branchId = form.branchId;
+      payload.academicYearId = form.academicYearId;
+    }
 
     if (!Object.keys(payload).length) {
       toast("No changes to save.");
@@ -276,44 +297,126 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
 
     try {
       setSaving(true);
-      const r = await patchAcademicProfile(academic.userId, payload);
+      const response = await patchAcademicProfile(academic.userId, payload);
       toast.success("Academic information updated.");
-      onSaved(r.data?.data);
+      onSaved(response.data?.data);
     } catch (e) {
       const details = e?.response?.data?.data && typeof e.response.data.data === "object"
-        ? Object.values(e.response.data.data).filter(Boolean).join(" • ") : "";
+        ? Object.values(e.response.data.data).filter(Boolean).join(" • ")
+        : "";
       toast.error(details || e?.response?.data?.message || "Unable to update academic information.");
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <EditShell
-      eyebrow="Keep your academic details updated"
+      eyebrow=""
       title="Academic Information"
       artTitle="Update Your Academic Information"
       subtitle="Update your academic details. This information will be visible on your profile."
-      image="/images/profile-edit/academic-information-art.png"
+      image="/illustrations/engineering-campus.svg"
       onClose={onClose}
       onSave={save}
       saving={saving}
     >
-      <div className="profile-edit-grid two">
-        <SelectField label="University" icon={FiBookOpen} value={form.universityId} onChange={(v) => setForm((f) => ({ ...f, universityId: v, collegeId: "", branchId: "", academicYearId: "", semesterId: "" }))} options={universities} placeholder="Select university" />
-        <SelectField label="College" icon={FiBookOpen} value={form.collegeId} onChange={(v) => setForm((f) => ({ ...f, collegeId: v, branchId: "" }))} options={colleges} placeholder="Select college" disabled={!form.universityId} />
-        <SelectField label="Branch / Department" icon={FiBookOpen} value={form.branchId} onChange={(v) => set("branchId", v)} options={branches} placeholder="Select branch" disabled={!form.collegeId} />
-        <SelectField label="Degree" icon={FiAward} value={form.degree} onChange={(v) => set("degree", v)} options={["B.E. (Bachelor of Engineering)", "B.Tech (Bachelor of Technology)", "M.E. (Master of Engineering)", "M.Tech (Master of Technology)"].map((x) => ({ value: x, label: x }))} placeholder="Select degree" />
-        <SelectField label="Mode" icon={FiBookOpen} value={form.mode} onChange={(v) => set("mode", v)} options={["Regular", "Distance"].map((x) => ({ value: x, label: x }))} placeholder="Select mode" />
-        <SelectField label="Academic Year" icon={FiCalendar} value={form.academicYearId} onChange={(v) => setForm((f) => ({ ...f, academicYearId: v, semesterId: "" }))} options={years} placeholder="Select academic year" disabled={!form.universityId} />
-        <SelectField label="Current Status" icon={FiAward} value={form.currentStatus} onChange={(v) => set("currentStatus", v)} options={["Studying", "Completed", "On Hold", "Dropped"].map((x) => ({ value: x, label: x }))} placeholder="Select status" />
-        <InputField label="Expected / Actual Passout Year" icon={FiCalendar} value={form.graduationYear} onChange={(v) => set("graduationYear", v.replace(/\D/g, "").slice(0, 4))} />
-        <InputField label="CGPA / Percentage" icon={FiAward} value={form.cgpa} onChange={(v) => set("cgpa", v)} type="number" step="0.01" />
-        <InputField label="Last Year SGPA / Percentage" icon={FiAward} value={form.lastYearSgpa} onChange={(v) => set("lastYearSgpa", v)} type="number" step="0.01" />
-        <InputField label="10th Percentage" icon={FiBookOpen} value={form.tenthPercentage} onChange={(v) => set("tenthPercentage", v)} type="number" step="0.01" />
-        <InputField label="12th Percentage" icon={FiBookOpen} value={form.twelfthPercentage} onChange={(v) => set("twelfthPercentage", v)} type="number" step="0.01" />
-        <SelectField label="Diploma Details" icon={FiFileText} value={form.diplomaDetails} onChange={(v) => set("diplomaDetails", v)} options={["None", "Diploma in Engineering", "Other Diploma"].map((x) => ({ value: x, label: x }))} placeholder="Select diploma" />
-        <label className="profile-edit-field full"><span><FiFileText />Additional Information <small>(Optional)</small></span><div className="profile-edit-textarea"><textarea maxLength={300} value={form.additionalInformation} onChange={(e) => set("additionalInformation", e.target.value)} placeholder="Add any additional academic information (e.g., achievements, scholarships, etc.)" /><small>{form.additionalInformation.length}/300</small></div></label>
+      <div className="profile-edit-grid academic-exact-grid">
+        <SelectField
+          label="University"
+          icon={FiBookOpen}
+          value={form.universityId}
+          onChange={(value) => setForm((current) => ({
+            ...current,
+            universityId: value,
+            collegeId: value === current.universityId ? current.collegeId : "",
+            branchId: value === current.universityId ? current.branchId : "",
+            academicYearId: value === current.universityId ? current.academicYearId : ""
+          }))}
+          options={universities}
+          placeholder="Select university"
+        />
+
+        <SelectField
+          label="College"
+          icon={FiBookOpen}
+          value={form.collegeId}
+          onChange={(value) => setForm((current) => ({
+            ...current,
+            collegeId: value,
+            branchId: value === current.collegeId ? current.branchId : ""
+          }))}
+          options={colleges}
+          placeholder="Select college"
+          disabled={!form.universityId}
+        />
+
+        <div className="profile-edit-field academic-full">
+          <SelectField
+            label="Branch"
+            icon={FiBookOpen}
+            value={form.branchId}
+            onChange={(value) => set("branchId", value)}
+            options={branches}
+            placeholder="Select branch"
+            disabled={!form.collegeId}
+          />
+        </div>
+
+        <div className="profile-edit-field academic-full">
+          <SelectField
+            label="Current Status"
+            icon={FiAward}
+            value={form.currentStatus}
+            onChange={(value) => set("currentStatus", value)}
+            options={[
+              { value: "Pursuing", label: "Pursuing" },
+              { value: "Completed", label: "Completed" }
+            ]}
+            placeholder="Select current status"
+          />
+        </div>
+
+        <div className="profile-edit-field academic-full">
+          <SelectField
+            label="Exam Pattern"
+            icon={FiBookOpen}
+            value={form.academicYearId}
+            onChange={(value) => set("academicYearId", value)}
+            options={years}
+            placeholder="Select exam pattern"
+            disabled={!form.universityId}
+          />
+        </div>
+
+        <InputField
+          label="CGPA"
+          icon={FiAward}
+          value={form.cgpa}
+          onChange={(value) => set("cgpa", value)}
+          type="number"
+          min="0"
+          max="10"
+          step="0.01"
+          placeholder="Enter CGPA"
+        />
+
+        <InputField
+          label="Expected Passout Year"
+          icon={FiCalendar}
+          value={form.graduationYear}
+          onChange={(value) => set("graduationYear", value.replace(/\D/g, "").slice(0, 4))}
+          type="number"
+          min="2020"
+          max="2100"
+          placeholder="YYYY"
+        />
       </div>
-      <div className="profile-edit-semester"><SelectField label="Current Semester" icon={FiCalendar} value={form.semesterId} onChange={(v) => set("semesterId", v)} options={semesters} placeholder="Select current semester" disabled={!form.academicYearId} /><InputField label="Current Year" icon={FiBookOpen} value={form.currentYear} onChange={(v) => set("currentYear", v)} type="number" min="1" max="10" /></div>
+
+      <div className="academic-edit-info">
+        <FiInfo />
+        <span>Please make sure the information you enter is correct and matches your official academic records.</span>
+      </div>
     </EditShell>
   );
 }
