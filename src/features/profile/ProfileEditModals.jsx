@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiAward, FiBookOpen, FiCalendar, FiCheck, FiChevronDown, FiFileText,
-  FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX, FiInfo
+  FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX, FiInfo, FiBold, FiItalic, FiUnderline, FiList, FiLink, FiZap
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import {
@@ -417,6 +417,141 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
         <FiInfo />
         <span>Please make sure the information you enter is correct and matches your official academic records.</span>
       </div>
+    </EditShell>
+  );
+}
+
+
+export function AboutMeEditModal({ onClose, onSaved }) {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [aboutMe, setAboutMe] = useState("");
+  const editorRef = useRef(null);
+  const initialValue = useRef("");
+
+  useEffect(() => {
+    getPersonalProfile()
+      .then((r) => {
+        const value = r.data?.data?.aboutMe || "";
+        initialValue.current = value;
+        setAboutMe(value);
+        if (editorRef.current) editorRef.current.textContent = value;
+      })
+      .catch((e) => toast.error(e?.response?.data?.message || "Unable to load About Me."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const syncEditor = () => {
+    const value = editorRef.current?.innerText || "";
+    setAboutMe(value.slice(0, 500));
+  };
+
+  const command = (name, value = null) => {
+    editorRef.current?.focus();
+    document.execCommand(name, false, value);
+    syncEditor();
+  };
+
+  const save = async () => {
+    const current = aboutMe.trim();
+    const previous = initialValue.current.trim();
+
+    if (current === previous) {
+      toast("No changes to save.");
+      onClose();
+      return;
+    }
+
+    if (!current) {
+      toast.error("Please enter something in About Me.");
+      return;
+    }
+
+    if (current.length > 500) {
+      toast.error("About Me cannot exceed 500 characters.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const r = await updatePersonalProfile({ aboutMe: current });
+      toast.success("About Me updated successfully.");
+      onSaved(r.data?.data);
+    } catch (e) {
+      const data = e?.response?.data;
+      const details = data?.data && typeof data.data === "object"
+        ? Object.values(data.data).filter(Boolean).join(" • ")
+        : "";
+      toast.error(details || data?.message || "Unable to update About Me.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <EditShell
+      eyebrow=""
+      title="About Me"
+      artTitle="Update Your About Me"
+      subtitle="Write a short introduction about yourself, your interests, goals, and what you’re passionate about."
+      image="/images/profile-edit/about-me-art.png"
+      onClose={onClose}
+      onSave={save}
+      saving={saving || loading}
+    >
+      {loading ? (
+        <div className="profile-edit-loading">Loading your About Me...</div>
+      ) : (
+        <>
+          <div className="about-me-editor-section">
+            <label className="profile-edit-field full">
+              <span><FiFileText />About Me<b>*</b></span>
+              <div className="about-me-editor">
+                <div className="about-me-toolbar" role="toolbar" aria-label="About Me formatting">
+                  <button type="button" onClick={() => command("formatBlock", "p")} aria-label="Normal">Normal <FiChevronDown /></button>
+                  <i />
+                  <button type="button" onClick={() => command("bold")} aria-label="Bold"><FiBold /></button>
+                  <button type="button" onClick={() => command("italic")} aria-label="Italic"><FiItalic /></button>
+                  <button type="button" onClick={() => command("underline")} aria-label="Underline"><FiUnderline /></button>
+                  <button type="button" onClick={() => command("insertUnorderedList")} aria-label="Bulleted list"><FiList /></button>
+                  <button type="button" onClick={() => command("insertOrderedList")} aria-label="Numbered list"><FiList /></button>
+                  <button type="button" onClick={() => {
+                    const url = window.prompt("Enter URL");
+                    if (url) command("createLink", url);
+                  }} aria-label="Insert link"><FiLink /></button>
+                  <button type="button" onClick={() => command("removeFormat")} aria-label="Clear formatting"><FiZap /></button>
+                  <small>{aboutMe.length}/500</small>
+                </div>
+                <div
+                  ref={editorRef}
+                  className="about-me-editor-body"
+                  contentEditable
+                  suppressContentEditableWarning
+                  role="textbox"
+                  aria-multiline="true"
+                  data-placeholder={"Tell us about yourself...\\n e.g. your background, interests, skills, goals, or anything you’d like others to know about you."}
+                  onInput={syncEditor}
+                  onKeyDown={(e) => {
+                    if ((editorRef.current?.innerText || "").length >= 500 &&
+                        e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </div>
+            </label>
+          </div>
+
+          <div className="about-me-tips">
+            <div className="about-me-tips-title"><FiInfo /> <strong>Tips for a great About Me</strong></div>
+            <ul>
+              <li>Keep it concise and genuine (2–4 short paragraphs).</li>
+              <li>Mention your interests, skills, and future goals.</li>
+              <li>You can also highlight your projects, achievements or what motivates you.</li>
+            </ul>
+          </div>
+        </>
+      )}
     </EditShell>
   );
 }
