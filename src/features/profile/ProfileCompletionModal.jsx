@@ -111,7 +111,6 @@ export default function ProfileCompletionModal({user,academic,onCompleted}){
            <label className="pc-field"><span><FiBookOpen/>Email Address</span><div className="pc-input muted"><input value={user?.email||""} readOnly/></div></label>
            <label className="pc-field"><span><FiPhone/>Phone Number<b>*</b></span><div className="pc-input phone"><b>🇮🇳 +91</b><input value={form.phoneNumber} onChange={e=>set("phoneNumber",e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="98765 43210"/></div></label>
            <div className="pc-field"><span><FiUsers/>Gender<b>*</b></span><div className="pc-genders">{["MALE","FEMALE","OTHER"].map(x=><button type="button" key={x} className={form.gender===x?"selected":""} onClick={()=>set("gender",x)}>{form.gender===x&&<FiCheck/>}{x[0]+x.slice(1).toLowerCase()}</button>)}</div></div>
-           <div className="pc-field full"><span><FiMapPin/>Location<b>*</b></span><div className="pc-location"><Field label="" icon={FiMapPin} value={form.state} onChange={v=>setForm(f=>({...f,state:v,city:""}))} options={INDIAN_STATES.map(x=>({value:x,label:x}))} placeholder="Select state"/><Field label="" icon={FiMapPin} value={form.city} onChange={v=>set("city",v)} options={(CITY_BY_STATE[form.state]||[]).map(x=>({value:x,label:x}))} placeholder="Select city" disabled={!form.state}/></div></div>
          </div>
        </section>}
        {step===3&&<section className="pc-screen">
