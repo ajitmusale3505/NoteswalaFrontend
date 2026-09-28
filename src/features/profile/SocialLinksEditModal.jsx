@@ -133,15 +133,12 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
   };
 
   const toggleField = (key) => {
-    setEnabledFields((current) => {
-      const nextEnabled = !current[key];
+    const nextEnabled = !enabledFields[key];
+    setEnabledFields((current) => ({ ...current, [key]: nextEnabled }));
 
-      if (!nextEnabled) {
-        setForm((currentForm) => ({ ...currentForm, [key]: "" }));
-      }
-
-      return { ...current, [key]: nextEnabled };
-    });
+    if (!nextEnabled) {
+      setForm((current) => ({ ...current, [key]: "" }));
+    }
   };
 
   const save = async () => {
