@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffaf1"/><stop offset="1" stop-color="#eef6ff"/></linearGradient><linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#257bd0"/><stop offset="1" stop-color="#0c4d99"/></linearGradient></defs>
+<rect width="720" height="720" rx="36" fill="url(#bg)"/><circle cx="560" cy="130" r="120" fill="#f4ead7"/><circle cx="125" cy="570" r="120" fill="#e6f1fb"/>
+<path d="M0 570c130-45 245-35 335 10 98 49 195 57 385 8v132H0z" fill="#fff1d9"/>
+<g opacity=".9"><path d="M83 585c20-72 58-108 98-135 4 61-25 113-98 135z" fill="#7db68d"/><path d="M108 583c44-55 87-73 130-81-27 55-71 78-130 81z" fill="#a8cfac"/><path d="M585 592c-14-63 2-105 43-147 18 61 5 107-43 147z" fill="#76ae88"/></g>
+<g transform="translate(150 310)"><ellipse cx="205" cy="270" rx="145" ry="28" fill="#d5dde6" opacity=".65"/>
+<path d="M126 76c-2-58 39-100 91-100 52 0 89 41 88 96-1 50-31 91-88 91-55 0-89-39-91-87z" fill="#f2b48c"/>
+<path d="M130 55c-5-58 35-91 88-92 49-1 83 28 91 72-41-24-83-21-123 5-20 13-35 29-56 47z" fill="#1e2937"/>
+<circle cx="177" cy="86" r="5" fill="#24384e"/><circle cx="234" cy="86" r="5" fill="#24384e"/><path d="M192 117c15 9 29 9 43 0" fill="none" stroke="#9a584a" stroke-width="4" stroke-linecap="round"/>
+<path d="M75 245c30-63 82-94 145-94 64 0 119 36 146 100l-12 138H63z" fill="url(#shirt)"/><path d="M149 159c16 28 39 43 70 43 29 0 52-15 69-43" fill="none" stroke="#7bb8ed" stroke-width="10" opacity=".65"/>
+<path d="M103 270c-45 10-77 36-101 79 46 15 86 2 116-38z" fill="#e9eef3"/><path d="M293 270c45 9 76 35 103 78-43 16-85 3-115-37z" fill="#e9eef3"/>
+<path d="M153 332h137l-20 32H174z" fill="#b7c3ce"/>
+</g>
+<g transform="translate(470 215) rotate(-5)"><rect width="190" height="62" rx="8" fill="#d7a65d"/><path d="M190 31l55-34v68z" fill="#d7a65d"/><text x="82" y="39" font-family="Arial" font-size="24" font-weight="700" fill="#233c58" text-anchor="middle">Developer</text><rect y="78" width="190" height="62" rx="8" fill="#e5bb7b"/><path d="M190 109l55-34v68z" fill="#e5bb7b"/><text x="88" y="117" font-family="Arial" font-size="24" font-weight="700" fill="#233c58" text-anchor="middle">Internship</text><rect y="156" width="190" height="62" rx="8" fill="#d7a65d"/><path d="M190 187l55-34v68z" fill="#d7a65d"/><text x="82" y="195" font-family="Arial" font-size="24" font-weight="700" fill="#233c58" text-anchor="middle">Remote</text><rect y="234" width="190" height="62" rx="8" fill="#e5bb7b"/><path d="M190 265l55-34v68z" fill="#e5bb7b"/><text x="82" y="273" font-family="Arial" font-size="24" font-weight="700" fill="#233c58" text-anchor="middle">On-site</text></g>
+<g fill="#fff" stroke="#d9e5ef" stroke-width="3"><circle cx="125" cy="270" r="40"/><circle cx="238" cy="230" r="40"/></g><text x="125" y="284" font-size="38" font-family="Arial" font-weight="700" fill="#2d79c5" text-anchor="middle">&lt;/&gt;</text><text x="238" y="244" font-size="34" fill="#e3a73b" text-anchor="middle">★</text>
+</svg>
