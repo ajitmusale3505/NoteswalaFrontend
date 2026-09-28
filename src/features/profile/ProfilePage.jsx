@@ -233,7 +233,7 @@ export default function ProfilePage() {
       <ProfileSidebar/>
       <main className="profile-main">
         {error && <div className="profile-api-error" role="alert">{error}</div>}
-        <ProfileHero onEdit={edit} user={user} academic={academic}/>
+        <ProfileHero onEdit={() => edit("personal")} user={user} academic={academic}/>
         <ProfileTabs/>
         <div className="profile-content">
           <div className="profile-primary">
