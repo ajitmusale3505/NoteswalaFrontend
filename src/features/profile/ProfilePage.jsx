@@ -20,8 +20,8 @@ const sidebarItems = [
   ["Settings", FiSettings, "#"],
 ];
 
-const skills = ["Java","Spring Boot","React.js","JavaScript","HTML","CSS","SQL","PostgreSQL","Git","REST API","Hibernate","Tailwind CSS","Node.js","Express.js","MongoDB"];
-const interests = ["Web Development","Cloud Technologies","Open Source","AI & ML","Problem Solving","Tech Blogging","Reading","Badminton"];
+const defaultSkills = ["Java","Spring Boot","React.js","JavaScript","HTML","CSS","SQL","PostgreSQL","Git","REST API","Hibernate","Tailwind CSS","Node.js","Express.js","MongoDB"];
+const defaultInterests = ["Web Development","Cloud Technologies","Open Source","AI & ML","Problem Solving","Tech Blogging","Reading","Badminton"];
 
 function EditButton({onClick}) {
   return <button className="profile-edit-btn" type="button" onClick={onClick}><FiEdit3/> Edit</button>;
@@ -145,13 +145,14 @@ function TagCard({title,icon:Icon,items,onEdit}) {
   </Card>;
 }
 
-function CareerPreferences({onEdit}) {
+function CareerPreferences({onEdit, personal}) {
+  const value = (field, fallback = "Not provided") => field || fallback;
   return <Card title="Career Preferences" icon={FiBriefcase} onEdit={onEdit}>
     <div className="preference-list">
-      <InfoRow icon={FiBriefcase} label="Preferred Role" value="Java Full Stack Developer"/>
-      <InfoRow icon={FiMapPin} label="Preferred Location" value="Pune, Bengaluru, Hyderabad (Open to Remote)"/>
-      <InfoRow icon={FiBriefcase} label="Employment Type" value="Full Time / Internship (PPO)"/>
-      <InfoRow icon={FiCalendar} label="Availability" value="Available to join from Oct 2026"/>
+      <InfoRow icon={FiBriefcase} label="Preferred Role" value={value(personal?.preferredRole)}/>
+      <InfoRow icon={FiMapPin} label="Preferred Location" value={value(personal?.preferredLocation)}/>
+      <InfoRow icon={FiBriefcase} label="Employment Type" value={value(personal?.employmentType)}/>
+      <InfoRow icon={FiCalendar} label="Availability" value={value(personal?.availability)}/>
     </div>
   </Card>;
 }
@@ -319,9 +320,9 @@ export default function ProfilePage() {
               <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
               <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
               <AboutMe onEdit={() => edit("about")} personal={personal}/>
-              <TagCard title="Skills" icon={FiCode} items={skills} onEdit={() => edit("personal")}/>
-              <CareerPreferences onEdit={() => edit("personal")}/>
-              <TagCard title="Interests" icon={FiHeart} items={interests} onEdit={() => edit("personal")}/>
+              <TagCard title="Skills" icon={FiCode} items={personal?.skills?.length ? personal.skills : defaultSkills} onEdit={() => edit("personal")}/>
+              <CareerPreferences onEdit={() => edit("personal")} personal={personal}/>
+              <TagCard title="Interests" icon={FiHeart} items={personal?.interests?.length ? personal.interests : defaultInterests} onEdit={() => edit("personal")}/>
             </div>
           </div>
           <aside className="profile-right">
