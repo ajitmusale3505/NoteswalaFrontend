@@ -80,6 +80,12 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [initialForm, setInitialForm] = useState(EMPTY_FORM);
+  const [enabledFields, setEnabledFields] = useState({
+    linkedinUrl: false,
+    githubUrl: false,
+    portfolioUrl: false,
+    leetcodeUrl: false
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -96,6 +102,12 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
         };
         setForm(loaded);
         setInitialForm(loaded);
+        setEnabledFields({
+          linkedinUrl: Boolean(loaded.linkedinUrl),
+          githubUrl: Boolean(loaded.githubUrl),
+          portfolioUrl: Boolean(loaded.portfolioUrl),
+          leetcodeUrl: Boolean(loaded.leetcodeUrl)
+        });
       })
       .catch((error) => {
         if (mounted) {
@@ -112,8 +124,8 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
   }, []);
 
   const enabledCount = useMemo(
-    () => SOCIAL_FIELDS.filter(({ key }) => Boolean(form[key])).length,
-    [form]
+    () => SOCIAL_FIELDS.filter(({ key }) => enabledFields[key]).length,
+    [enabledFields]
   );
 
   const setField = (key, value) => {
@@ -121,15 +133,23 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
   };
 
   const toggleField = (key) => {
-    setForm((current) => ({
-      ...current,
-      [key]: current[key] ? "" : initialForm[key] || ""
-    }));
+    setEnabledFields((current) => {
+      const nextEnabled = !current[key];
+
+      if (!nextEnabled) {
+        setForm((currentForm) => ({ ...currentForm, [key]: "" }));
+      }
+
+      return { ...current, [key]: nextEnabled };
+    });
   };
 
   const save = async () => {
     const normalized = Object.fromEntries(
-      Object.entries(form).map(([key, value]) => [key, normalize(value)])
+      Object.entries(form).map(([key, value]) => [
+        key,
+        enabledFields[key] ? normalize(value) : ""
+      ])
     );
 
     for (const field of SOCIAL_FIELDS) {
@@ -167,6 +187,12 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
 
       setForm(finalData);
       setInitialForm(finalData);
+      setEnabledFields({
+        linkedinUrl: Boolean(finalData.linkedinUrl),
+        githubUrl: Boolean(finalData.githubUrl),
+        portfolioUrl: Boolean(finalData.portfolioUrl),
+        leetcodeUrl: Boolean(finalData.leetcodeUrl)
+      });
       toast.success("Social links updated successfully.");
       onSaved(finalData);
     } catch (error) {
@@ -216,7 +242,7 @@ export function SocialLinksEditModal({ onClose, onSaved }) {
 
                 <div className="social-links-fields">
                   {SOCIAL_FIELDS.map(({ key, label, description, icon: Icon, placeholder, color }) => {
-                    const enabled = Boolean(form[key]);
+                    const enabled = Boolean(enabledFields[key]);
 
                     return (
                       <article className={`social-link-field ${enabled ? "enabled" : "disabled"}`} key={key}>
