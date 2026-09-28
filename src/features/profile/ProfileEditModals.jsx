@@ -474,9 +474,17 @@ export function AboutMeEditModal({ onClose, onSaved }) {
 
     try {
       setSaving(true);
-      const r = await updatePersonalProfile({ aboutMe: current });
+      await updatePersonalProfile({ aboutMe: current });
+
+      // Read the saved profile again so the parent receives the database value,
+      // not a possibly stale PATCH response.
+      const refreshed = await getPersonalProfile();
+      const refreshedProfile = refreshed.data?.data || {};
+      initialValue.current = refreshedProfile.aboutMe || "";
+      setAboutMe(refreshedProfile.aboutMe || "");
+
       toast.success("About Me updated successfully.");
-      onSaved(r.data?.data);
+      onSaved(refreshedProfile);
     } catch (e) {
       const data = e?.response?.data;
       const details = data?.data && typeof data.data === "object"
