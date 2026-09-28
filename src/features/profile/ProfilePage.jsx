@@ -20,8 +20,8 @@ const sidebarItems = [
   ["Settings", FiSettings, "#"],
 ];
 
-const defaultSkills = ["Java","Spring Boot","React.js","JavaScript","HTML","CSS","SQL","PostgreSQL","Git","REST API","Hibernate","Tailwind CSS","Node.js","Express.js","MongoDB"];
-const defaultInterests = ["Web Development","Cloud Technologies","Open Source","AI & ML","Problem Solving","Tech Blogging","Reading","Badminton"];
+const defaultSkills = [];
+const defaultInterests = [];
 
 function EditButton({onClick}) {
   return <button className="profile-edit-btn" type="button" onClick={onClick}><FiEdit3/> Edit</button>;
@@ -41,12 +41,12 @@ function ProfileSidebar() {
   );
 }
 
-function ProfileHero({onEdit, user, academic}) {
+function ProfileHero({onEdit, user, academic, personal}) {
   const displayName = user?.fullName || academic?.userName || "Student";
   const initial = displayName.trim().charAt(0).toUpperCase() || "S";
   const branch = academic?.branchName || "Academic profile not completed";
   const university = academic?.universityName || "University not provided";
-  const location = academic?.city || "Location not provided";
+  const location = personal?.city || academic?.city || "Location not provided";
   return (
     <section className="profile-hero">
       <div className="profile-hero-bg" />
@@ -312,7 +312,7 @@ export default function ProfilePage() {
       <ProfileSidebar/>
       <main className="profile-main">
         {error && <div className="profile-api-error" role="alert">{error}</div>}
-        <ProfileHero onEdit={() => edit("personal")} user={user} academic={academic}/>
+        <ProfileHero onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
         <ProfileTabs/>
         <div className="profile-content">
           <div className="profile-primary">
@@ -320,9 +320,9 @@ export default function ProfilePage() {
               <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
               <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
               <AboutMe onEdit={() => edit("about")} personal={personal}/>
-              <TagCard title="Skills" icon={FiCode} items={personal?.skills?.length ? personal.skills : defaultSkills} onEdit={() => edit("personal")}/>
+              <TagCard title="Skills" icon={FiCode} items={personal?.skills || defaultSkills} onEdit={() => edit("personal")}/>
               <CareerPreferences onEdit={() => edit("personal")} personal={personal}/>
-              <TagCard title="Interests" icon={FiHeart} items={personal?.interests?.length ? personal.interests : defaultInterests} onEdit={() => edit("personal")}/>
+              <TagCard title="Interests" icon={FiHeart} items={personal?.interests || defaultInterests} onEdit={() => edit("personal")}/>
             </div>
           </div>
           <aside className="profile-right">
