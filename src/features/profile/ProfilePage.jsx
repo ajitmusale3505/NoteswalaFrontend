@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiActivity, FiAward, FiBookOpen, FiBriefcase, FiCalendar, FiCamera, FiCheck,
   FiChevronRight, FiCode, FiEdit3, FiGithub, FiHeart, FiHome, FiLinkedin,
   FiMapPin, FiMessageSquare, FiPhone, FiSettings, FiUser, FiUsers
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
+import { getCurrentUser, getUserAcademicProfile } from "../../services/profileService";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -39,25 +40,30 @@ function ProfileSidebar() {
   );
 }
 
-function ProfileHero({onEdit}) {
+function ProfileHero({onEdit, user, academic}) {
+  const displayName = user?.fullName || academic?.userName || "Student";
+  const initial = displayName.trim().charAt(0).toUpperCase() || "S";
+  const branch = academic?.branchName || "Academic profile not completed";
+  const university = academic?.universityName || "University not provided";
+  const location = academic?.collegeName || "Location not provided";
   return (
     <section className="profile-hero">
       <div className="profile-hero-bg" />
       <div className="profile-hero-inner">
         <div className="profile-avatar-wrap">
-          <div className="profile-avatar">S</div>
+          <div className="profile-avatar">{initial}</div>
           <button type="button" className="avatar-camera" aria-label="Change profile photo"><FiCamera/></button>
         </div>
         <div className="profile-identity">
           <div className="profile-name-row">
-            <h1>Student</h1>
+            <h1>{displayName}</h1>
             <button type="button" className="hero-edit" onClick={onEdit}><FiEdit3/> Edit</button>
           </div>
-          <p className="profile-role">Final Year Student</p>
+          <p className="profile-role">{academic?.academicYearName || "Student"}</p>
           <div className="profile-meta">
-            <span><FiBookOpen/> Computer Engineering</span>
-            <span><FiHome/> SPPU, Pune</span>
-            <span><FiMapPin/> Pune, Maharashtra</span>
+            <span><FiBookOpen/> {branch}</span>
+            <span><FiHome/> {university}</span>
+            <span><FiMapPin/> {location}</span>
           </div>
           <p className="profile-bio-short">Passionate about software development, exploring new technologies and building projects that create real impact. Always eager to learn and grow.</p>
           <div className="profile-stats">
@@ -94,28 +100,29 @@ function Card({title,icon:Icon,children,onEdit,className=""}) {
   </section>;
 }
 
-function PersonalInformation({onEdit}) {
+function PersonalInformation({onEdit, user}) {
   return <Card title="Personal Information" icon={FiUser} onEdit={onEdit}>
     <div className="info-grid">
-      <InfoRow icon={FiUser} label="Full Name" value="Student"/>
-      <InfoRow icon={FiMessageSquare} label="Email" value="student@example.com"/>
-      <InfoRow icon={FiPhone} label="Phone" value="+91 98765 43210"/>
-      <InfoRow icon={FiMapPin} label="Location" value="Pune, Maharashtra"/>
-      <InfoRow icon={FiCalendar} label="Date of Birth" value="15 March 2004"/>
-      <InfoRow icon={FiUsers} label="Gender" value="Male"/>
+      <InfoRow icon={FiUser} label="Full Name" value={user?.fullName || "Not provided"}/>
+      <InfoRow icon={FiMessageSquare} label="Email" value={user?.email || "Not provided"}/>
+      <InfoRow icon={FiPhone} label="Phone" value="Not provided"/>
+      <InfoRow icon={FiMapPin} label="Location" value="Not provided"/>
+      <InfoRow icon={FiCalendar} label="Date of Birth" value="Not provided"/>
+      <InfoRow icon={FiUsers} label="Gender" value="Not provided"/>
     </div>
   </Card>;
 }
 
-function AcademicInformation({onEdit}) {
+function AcademicInformation({onEdit, academic}) {
+  const value = (field) => field || "Not provided";
   return <Card title="Academic Information" icon={FiBookOpen} onEdit={onEdit}>
     <div className="info-grid">
-      <InfoRow icon={FiHome} label="University" value="Savitribai Phule Pune University (SPPU)"/>
-      <InfoRow icon={FiHome} label="College" value="Sahyadri Valley College of Engineering and Technology, Rajuri, Pune"/>
-      <InfoRow icon={FiBookOpen} label="Branch" value="Computer Engineering"/>
-      <InfoRow icon={FiCalendar} label="Current Status" value="Final Year"/>
-      <InfoRow icon={FiAward} label="CGPA" value="8.38 / 10"/>
-      <InfoRow icon={FiCalendar} label="Expected Passout" value="2026"/>
+      <InfoRow icon={FiHome} label="University" value={value(academic?.universityName)}/>
+      <InfoRow icon={FiHome} label="College" value={value(academic?.collegeName)}/>
+      <InfoRow icon={FiBookOpen} label="Branch" value={value(academic?.branchName)}/>
+      <InfoRow icon={FiCalendar} label="Current Status" value={value(academic?.academicYearName)}/>
+      <InfoRow icon={FiAward} label="CGPA" value={academic?.cgpa != null ? `${academic.cgpa} / 10` : "Not provided"}/>
+      <InfoRow icon={FiCalendar} label="Expected Passout" value={academic?.graduationYear ?? "Not provided"}/>
     </div>
   </Card>;
 }
@@ -147,11 +154,13 @@ function CareerPreferences({onEdit}) {
   </Card>;
 }
 
-function ProfileCompletion() {
+function ProfileCompletion({academic}) {
+  const percentage = academic?.profileCompletionPercentage ?? 0;
+  const degrees = Math.max(0, Math.min(percentage, 100)) * 3.6;
   return <section className="profile-card completion-card">
     <h2>Profile Completion</h2>
-    <div className="completion-top"><div className="completion-ring"><strong>85%</strong></div><div><b>Profile completed</b><p>Complete your profile to get better recommendations.</p></div></div>
-    <ul>{["Personal Information","Academic Information","Add Skills","Add Projects","Add a Profile Photo","Add Bio / About"].map((item,i)=><li key={item} className={i<5?"done":""}>{i<5?<FiCheck/>:<span/>}{item}</li>)}</ul>
+    <div className="completion-top"><div className="completion-ring" style={{ background: `conic-gradient(#129b7e 0 ${degrees}deg,#e4e9eb ${degrees}deg)` }}><strong>{percentage}%</strong></div><div><b>{percentage === 100 ? "Profile completed" : "Complete your profile"}</b><p>Complete your profile to get better recommendations.</p></div></div>
+    <ul>{["Personal Information","Academic Information","Add Skills","Add Projects","Add a Profile Photo","Add Bio / About"].map((item,i)=><li key={item} className={i < Math.ceil(percentage / 20) ? "done" : ""}>{i < Math.ceil(percentage / 20) ? <FiCheck/> : <span/>}{item}</li>)}</ul>
   </section>;
 }
 
@@ -166,19 +175,70 @@ function SocialLinks({onEdit}) {
 
 export default function ProfilePage() {
   const [editing,setEditing]=useState(false);
+  const [user,setUser]=useState(null);
+  const [academic,setAcademic]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState("");
+
   const edit=()=>setEditing(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadProfile = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const userResponse = await getCurrentUser();
+        const currentUser = userResponse.data?.data;
+
+        if (!currentUser?.userId) {
+          throw new Error("Unable to identify the logged-in user.");
+        }
+
+        if (!mounted) return;
+        setUser(currentUser);
+
+        try {
+          const profileResponse = await getUserAcademicProfile(currentUser.userId);
+          if (mounted) setAcademic(profileResponse.data?.data || null);
+        } catch (profileError) {
+          if (mounted) {
+            setAcademic(null);
+            if (profileError?.response?.status !== 404) {
+              setError(profileError?.response?.data?.message || "Unable to load academic profile.");
+            }
+          }
+        }
+      } catch (loadError) {
+        if (mounted) {
+          setError(loadError?.response?.data?.message || loadError?.message || "Unable to load your profile.");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadProfile();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return <div className="profile-page">
-    <HomeNavbar/>
+    <HomeNavbar user={user} loading={loading}/>
     <div className="profile-layout">
       <ProfileSidebar/>
       <main className="profile-main">
-        <ProfileHero onEdit={edit}/>
+        {error && <div className="profile-api-error" role="alert">{error}</div>}
+        <ProfileHero onEdit={edit} user={user} academic={academic}/>
         <ProfileTabs/>
         <div className="profile-content">
           <div className="profile-primary">
             <div className="profile-grid-two">
-              <PersonalInformation onEdit={edit}/>
-              <AcademicInformation onEdit={edit}/>
+              <PersonalInformation onEdit={edit} user={user}/>
+              <AcademicInformation onEdit={edit} academic={academic}/>
               <AboutMe onEdit={edit}/>
               <TagCard title="Skills" icon={FiCode} items={skills} onEdit={edit}/>
               <CareerPreferences onEdit={edit}/>
@@ -186,7 +246,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <aside className="profile-right">
-            <ProfileCompletion/>
+            <ProfileCompletion academic={academic}/>
             <SocialLinks onEdit={edit}/>
           </aside>
         </div>
