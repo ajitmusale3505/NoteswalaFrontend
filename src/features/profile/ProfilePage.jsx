@@ -121,7 +121,7 @@ function AcademicInformation({onEdit, academic}) {
       <InfoRow icon={FiHome} label="University" value={value(academic?.universityName)}/>
       <InfoRow icon={FiHome} label="College" value={value(academic?.collegeName)}/>
       <InfoRow icon={FiBookOpen} label="Branch" value={value(academic?.branchName)}/>
-      <InfoRow icon={FiCalendar} label="Current Status" value={value(academic?.academicYearName)}/>
+      <InfoRow icon={FiCalendar} label="Current Status" value={value(academic?.currentStatus || academic?.academicYearName)}/>
       <InfoRow icon={FiAward} label="CGPA" value={academic?.cgpa != null ? `${academic.cgpa} / 10` : "Not provided"}/>
       <InfoRow icon={FiCalendar} label="Expected Passout" value={academic?.graduationYear ?? "Not provided"}/>
     </div>
