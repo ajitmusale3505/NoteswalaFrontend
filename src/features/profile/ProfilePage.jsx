@@ -6,6 +6,7 @@ import {
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
 import { getCurrentUser, getUserAcademicProfile } from "../../services/profileService";
+import { PersonalProfileEditModal, AcademicProfileEditModal } from "./ProfileEditModals";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -174,13 +175,13 @@ function SocialLinks({onEdit}) {
 }
 
 export default function ProfilePage() {
-  const [editing,setEditing]=useState(false);
+  const [editing,setEditing]=useState(null);
   const [user,setUser]=useState(null);
   const [academic,setAcademic]=useState(null);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
 
-  const edit=()=>setEditing(true);
+  const edit=(mode)=>setEditing(mode);
 
   useEffect(() => {
     let mounted = true;
@@ -237,21 +238,33 @@ export default function ProfilePage() {
         <div className="profile-content">
           <div className="profile-primary">
             <div className="profile-grid-two">
-              <PersonalInformation onEdit={edit} user={user} academic={academic}/>
-              <AcademicInformation onEdit={edit} academic={academic}/>
-              <AboutMe onEdit={edit}/>
-              <TagCard title="Skills" icon={FiCode} items={skills} onEdit={edit}/>
-              <CareerPreferences onEdit={edit}/>
-              <TagCard title="Interests" icon={FiHeart} items={interests} onEdit={edit}/>
+              <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic}/>
+              <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
+              <AboutMe onEdit={() => edit("personal")}/>
+              <TagCard title="Skills" icon={FiCode} items={skills} onEdit={() => edit("personal")}/>
+              <CareerPreferences onEdit={() => edit("personal")}/>
+              <TagCard title="Interests" icon={FiHeart} items={interests} onEdit={() => edit("personal")}/>
             </div>
           </div>
           <aside className="profile-right">
             <ProfileCompletion academic={academic}/>
-            <SocialLinks onEdit={edit}/>
+            <SocialLinks onEdit={() => edit("personal")}/>
           </aside>
         </div>
       </main>
     </div>
-    {editing&&<div className="profile-edit-toast" role="status">Profile editing is ready. Connect this form to your profile API when the backend profile endpoints are available.<button type="button" onClick={()=>setEditing(false)}>Close</button></div>}
+    {editing==="personal"&&<PersonalProfileEditModal
+      onClose={()=>setEditing(null)}
+      onSaved={(data)=>{
+        setUser((u)=>u?{...u,fullName:data?.fullName||u.fullName}:u);
+        setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
+        setEditing(null);
+      }}
+    />}
+    {editing==="academic"&&<AcademicProfileEditModal
+      academic={academic}
+      onClose={()=>setEditing(null)}
+      onSaved={(data)=>{setAcademic(data||academic);setEditing(null);}}
+    />}
   </div>;
 }
