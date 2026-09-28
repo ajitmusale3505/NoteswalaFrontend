@@ -100,7 +100,7 @@ function Card({title,icon:Icon,children,onEdit,className=""}) {
   </section>;
 }
 
-function PersonalInformation({onEdit, user}) {
+function PersonalInformation({onEdit, user, academic}) {
   return <Card title="Personal Information" icon={FiUser} onEdit={onEdit}>
     <div className="info-grid">
       <InfoRow icon={FiUser} label="Full Name" value={user?.fullName || "Not provided"}/>
@@ -237,7 +237,7 @@ export default function ProfilePage() {
         <div className="profile-content">
           <div className="profile-primary">
             <div className="profile-grid-two">
-              <PersonalInformation onEdit={edit} user={user}/>
+              <PersonalInformation onEdit={edit} user={user} academic={academic}/>
               <AcademicInformation onEdit={edit} academic={academic}/>
               <AboutMe onEdit={edit}/>
               <TagCard title="Skills" icon={FiCode} items={skills} onEdit={edit}/>
