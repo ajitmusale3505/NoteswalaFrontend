@@ -5,7 +5,7 @@ import {
   FiMapPin, FiMessageSquare, FiPhone, FiSettings, FiUser, FiUsers
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
-import { getCurrentUser, getUserAcademicProfile } from "../../services/profileService";
+import { getCurrentUser, getPersonalProfile, getUserAcademicProfile } from "../../services/profileService";
 import { PersonalProfileEditModal, AcademicProfileEditModal } from "./ProfileEditModals";
 
 const sidebarItems = [
@@ -101,15 +101,15 @@ function Card({title,icon:Icon,children,onEdit,className=""}) {
   </section>;
 }
 
-function PersonalInformation({onEdit, user, academic}) {
+function PersonalInformation({onEdit, user, academic, personal}) {
   return <Card title="Personal Information" icon={FiUser} onEdit={onEdit}>
     <div className="info-grid">
       <InfoRow icon={FiUser} label="Full Name" value={user?.fullName || "Not provided"}/>
       <InfoRow icon={FiMessageSquare} label="Email" value={user?.email || "Not provided"}/>
-      <InfoRow icon={FiPhone} label="Phone" value={academic?.phoneNumber || "Not provided"}/>
-      <InfoRow icon={FiMapPin} label="Location" value={academic?.city || "Not provided"}/>
-      <InfoRow icon={FiCalendar} label="Date of Birth" value="Not provided"/>
-      <InfoRow icon={FiUsers} label="Gender" value={academic?.gender ? academic.gender.charAt(0) + academic.gender.slice(1).toLowerCase() : "Not provided"}/>
+      <InfoRow icon={FiPhone} label="Phone" value={personal?.phoneNumber || academic?.phoneNumber || "Not provided"}/>
+      <InfoRow icon={FiMapPin} label="Location" value={personal?.city || academic?.city || "Not provided"}/>
+      <InfoRow icon={FiCalendar} label="Date of Birth" value={personal?.dateOfBirth || "Not provided"}/>
+      <InfoRow icon={FiUsers} label="Gender" value={personal?.gender ? personal.gender.charAt(0) + personal.gender.slice(1).toLowerCase() : (academic?.gender ? academic.gender.charAt(0) + academic.gender.slice(1).toLowerCase() : "Not provided")}/>
     </div>
   </Card>;
 }
@@ -178,6 +178,7 @@ export default function ProfilePage() {
   const [editing,setEditing]=useState(null);
   const [user,setUser]=useState(null);
   const [academic,setAcademic]=useState(null);
+  const [personal,setPersonal]=useState(null);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
 
@@ -202,13 +203,20 @@ export default function ProfilePage() {
         setUser(currentUser);
 
         try {
-          const profileResponse = await getUserAcademicProfile(currentUser.userId);
-          if (mounted) setAcademic(profileResponse.data?.data || null);
+          const [profileResponse, personalResponse] = await Promise.all([
+            getUserAcademicProfile(currentUser.userId),
+            getPersonalProfile()
+          ]);
+          if (mounted) {
+            setAcademic(profileResponse.data?.data || null);
+            setPersonal(personalResponse.data?.data || null);
+          }
         } catch (profileError) {
           if (mounted) {
             setAcademic(null);
+            setPersonal(null);
             if (profileError?.response?.status !== 404) {
-              setError(profileError?.response?.data?.message || "Unable to load academic profile.");
+              setError(profileError?.response?.data?.message || "Unable to load profile details.");
             }
           }
         }
@@ -238,7 +246,7 @@ export default function ProfilePage() {
         <div className="profile-content">
           <div className="profile-primary">
             <div className="profile-grid-two">
-              <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic}/>
+              <PersonalInformation onEdit={() => edit("personal")} user={user} academic={academic} personal={personal}/>
               <AcademicInformation onEdit={() => edit("academic")} academic={academic}/>
               <AboutMe onEdit={() => edit("personal")}/>
               <TagCard title="Skills" icon={FiCode} items={skills} onEdit={() => edit("personal")}/>
@@ -257,7 +265,7 @@ export default function ProfilePage() {
       onClose={()=>setEditing(null)}
       onSaved={(data)=>{
         setUser((u)=>u?{...u,fullName:data?.fullName||u.fullName}:u);
-        setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
+        setPersonal(data||null);\n        setAcademic((a)=>a?{...a,phoneNumber:data?.phoneNumber??a.phoneNumber,gender:data?.gender??a.gender,state:data?.state??a.state,city:data?.city??a.city}:a);
         setEditing(null);
       }}
     />}
