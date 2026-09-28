@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  FiAward, FiBookOpen, FiCalendar, FiCheck, FiChevronDown, FiFileText,
+  FiAward, FiBookOpen, FiCalendar, FiCheck, FiChevronDown, FiFileText, FiBriefcase, FiCode, FiTarget,
   FiMapPin, FiPhone, FiSave, FiUpload, FiUser, FiUsers, FiX, FiInfo, FiBold, FiItalic, FiUnderline, FiList, FiLink, FiZap
 } from "react-icons/fi";
 import toast from "react-hot-toast";
