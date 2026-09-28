@@ -1,16 +1,18 @@
 import { FiBell, FiBookOpen, FiChevronDown } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getCurrentUser } from "../../../services/profileService";
+import { getCurrentUser, getUserAcademicProfile } from "../../../services/profileService";
 import { homeNavItems } from "../homeData";
 
-export default function HomeNavbar({ user: userProp = null }) {
+export default function HomeNavbar({ user: userProp = null, academic: academicProp = null }) {
   const { pathname } = useLocation();
   const [user, setUser] = useState(userProp);
+  const [academic, setAcademic] = useState(academicProp);
 
   useEffect(() => {
     if (userProp) {
       setUser(userProp);
+      setAcademic(academicProp);
       return;
     }
 
@@ -18,8 +20,19 @@ export default function HomeNavbar({ user: userProp = null }) {
 
     let mounted = true;
     getCurrentUser()
-      .then((response) => {
-        if (mounted) setUser(response.data?.data || null);
+      .then(async (response) => {
+        if (!mounted) return;
+        const currentUser = response.data?.data || null;
+        setUser(currentUser);
+
+        if (currentUser?.userId) {
+          try {
+            const profileResponse = await getUserAcademicProfile(currentUser.userId);
+            if (mounted) setAcademic(profileResponse.data?.data || null);
+          } catch {
+            if (mounted) setAcademic(null);
+          }
+        }
       })
       .catch(() => {
         // Keep the navbar available even when the current-user request fails.
@@ -28,7 +41,7 @@ export default function HomeNavbar({ user: userProp = null }) {
     return () => {
       mounted = false;
     };
-  }, [userProp]);
+  }, [userProp, academicProp]);
   return (
     <header className="home-navbar">
       <a className="home-brand" href="/home" aria-label="EduHub home">
@@ -48,7 +61,7 @@ export default function HomeNavbar({ user: userProp = null }) {
           <span className="home-avatar">{(user?.fullName || "Student").trim().charAt(0).toUpperCase() || "S"}</span>
           <span className="home-profile-copy">
             <strong>{user?.fullName || "Student"}</strong>
-            <small>{user?.role ? user.role.charAt(0) + user.role.slice(1).toLowerCase() : "Student"}</small>
+            <small>{academic?.branchName || "Student"}</small>
           </span>
           <FiChevronDown />
         </a>
