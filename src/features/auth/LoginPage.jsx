@@ -3,6 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendOtp, verifyOtp, login } from "../../services/authService";
+import { getPersonalProfile } from "../../services/profileService";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
@@ -60,6 +61,19 @@ export default function LoginPage() {
       const data = response.data?.data;
       if (data?.accessToken) localStorage.setItem("noteswala_access_token", data.accessToken);
       if (data?.refreshToken) localStorage.setItem("noteswala_refresh_token", data.refreshToken);
+
+      // Load the authenticated user's personal profile immediately after login.
+      // This is the source of truth for About Me, skills, interests and career preferences.
+      try {
+        const profileResponse = await getPersonalProfile();
+        const personalProfile = profileResponse.data?.data || null;
+        if (personalProfile) {
+          localStorage.setItem("noteswala_personal_profile", JSON.stringify(personalProfile));
+        }
+      } catch {
+        // Login remains successful even if profile loading temporarily fails.
+      }
+
       toast.success("Login successful.");
       navigate("/home", { replace: true });
     } catch (error) {
