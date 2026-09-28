@@ -1,7 +1,7 @@
 import { FiBell, FiBookOpen, FiChevronDown, FiLogOut, FiUser } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getCurrentUser, getUserAcademicProfile } from "../../../services/profileService";
+import { getCurrentUser, getUserAcademicProfile, getPersonalProfile } from "../../../services/profileService";
 import { homeNavItems } from "../homeData";
 import { logout } from "../../../services/authService";
 
@@ -37,6 +37,17 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
             if (mounted) setAcademic(null);
           }
         }
+
+        // Keep the authenticated personal profile cache fresh after navigation/login.
+        try {
+          const personalResponse = await getPersonalProfile();
+          const personalProfile = personalResponse.data?.data || null;
+          if (personalProfile) {
+            localStorage.setItem("noteswala_personal_profile", JSON.stringify(personalProfile));
+          }
+        } catch {
+          // Navbar does not depend on personal profile loading.
+        }
       })
       .catch(() => {
         // Keep the navbar available even when the current-user request fails.
@@ -62,6 +73,7 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
       localStorage.removeItem("noteswala_access_token");
       localStorage.removeItem("noteswala_refresh_token");
       localStorage.removeItem("noteswala_user");
+      localStorage.removeItem("noteswala_personal_profile");
       sessionStorage.clear();
       navigate("/", { replace: true });
     }
