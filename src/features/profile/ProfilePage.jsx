@@ -202,23 +202,23 @@ export default function ProfilePage() {
         if (!mounted) return;
         setUser(currentUser);
 
-        try {
-          const [profileResponse, personalResponse] = await Promise.all([
-            getUserAcademicProfile(currentUser.userId),
-            getPersonalProfile()
-          ]);
-          if (mounted) {
-            setAcademic(profileResponse.data?.data || null);
-            setPersonal(personalResponse.data?.data || null);
-          }
-        } catch (profileError) {
-          if (mounted) {
-            setAcademic(null);
-            setPersonal(null);
-            if (profileError?.response?.status !== 404) {
-              setError(profileError?.response?.data?.message || "Unable to load profile details.");
-            }
-          }
+        const [academicResult, personalResult] = await Promise.allSettled([
+          getUserAcademicProfile(currentUser.userId),
+          getPersonalProfile()
+        ]);
+
+        if (!mounted) return;
+
+        if (academicResult.status === "fulfilled") {
+          setAcademic(academicResult.value.data?.data || null);
+        } else if (academicResult.reason?.response?.status !== 404) {
+          setError(academicResult.reason?.response?.data?.message || "Unable to load academic profile.");
+        }
+
+        if (personalResult.status === "fulfilled") {
+          setPersonal(personalResult.value.data?.data || null);
+        } else if (personalResult.reason?.response?.status !== 404) {
+          setError(personalResult.reason?.response?.data?.message || "Unable to load personal profile.");
         }
       } catch (loadError) {
         if (mounted) {
