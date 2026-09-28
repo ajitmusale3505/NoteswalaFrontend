@@ -209,7 +209,13 @@ export function SkillsEditModal({ onClose, onSaved }) {
             <div><FiCode /><strong>Suggested Skills</strong></div>
             <button
               type="button"
-              onClick={() => SUGGESTED_SKILLS.forEach(addSkill)}
+              onClick={() => setSkills((current) => {
+                const next = [...current];
+                SUGGESTED_SKILLS.forEach((skill) => {
+                  if (!next.some((selected) => selected.toLowerCase() === skill.toLowerCase())) next.push(skill);
+                });
+                return next;
+              })}
               disabled={SUGGESTED_SKILLS.every((skill) =>
                 skills.some((selected) => selected.toLowerCase() === skill.toLowerCase())
               )}
