@@ -1,9 +1,9 @@
 import HomeNavbar from "./components/HomeNavbar";
 import HomeHero from "./components/HomeHero";
-import QuickAccess from "./QuickAccess";
-import DashboardPanels from "./DashboardPanels";
-import HomeFooterStrip from "./HomeFooterStrip";
-import HomeFooter from "./HomeFooter";
+import QuickAccess from "./components/QuickAccess";
+import DashboardPanels from "./components/DashboardPanels";
+import HomeFooterStrip from "./components/HomeFooterStrip";
+import HomeFooter from "./components/HomeFooter";
 import ProfileCompletionGate from "../profile/ProfileCompletionGate";
 
 export default function HomePage() {
