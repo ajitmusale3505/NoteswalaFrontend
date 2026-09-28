@@ -1,13 +1,17 @@
-import { FiBell, FiBookOpen, FiChevronDown } from "react-icons/fi";
+import { FiBell, FiBookOpen, FiChevronDown, FiLogOut, FiUser } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentUser, getUserAcademicProfile } from "../../../services/profileService";
 import { homeNavItems } from "../homeData";
+import { logout } from "../../../services/authService";
 
 export default function HomeNavbar({ user: userProp = null, academic: academicProp = null, loading: userLoading = false }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState(userProp);
   const [academic, setAcademic] = useState(academicProp);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     if (userProp || userLoading) {
@@ -42,6 +46,27 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
       mounted = false;
     };
   }, [userProp, academicProp, userLoading]);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    const refreshToken = localStorage.getItem("noteswala_refresh_token");
+
+    try {
+      if (refreshToken) {
+        await logout({ refreshToken });
+      }
+    } catch {
+      // Even if the server token is already expired/invalid, clear the local session.
+    } finally {
+      localStorage.removeItem("noteswala_access_token");
+      localStorage.removeItem("noteswala_refresh_token");
+      localStorage.removeItem("noteswala_user");
+      sessionStorage.clear();
+      navigate("/", { replace: true });
+    }
+  };
+
   return (
     <header className="home-navbar">
       <a className="home-brand" href="/home" aria-label="EduHub home">
@@ -57,14 +82,41 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
       </nav>
       <div className="home-user">
         <button className="home-notification" type="button" aria-label="Notifications"><FiBell /><b>5</b></button>
-        <a className="home-profile" href="/profile" aria-label="Open profile">
-          <span className="home-avatar">{(user?.fullName || "Student").trim().charAt(0).toUpperCase() || "S"}</span>
-          <span className="home-profile-copy">
-            <strong>{user?.fullName || "Student"}</strong>
-            <small>{academic?.branchName || "Student"}</small>
-          </span>
-          <FiChevronDown />
-        </a>
+        <div className={"home-profile-menu " + (profileOpen ? "open" : "")}>
+          <button
+            className="home-profile"
+            type="button"
+            aria-label="Open profile menu"
+            aria-expanded={profileOpen}
+            onClick={() => setProfileOpen(open => !open)}
+          >
+            <span className="home-avatar">{(user?.fullName || "Student").trim().charAt(0).toUpperCase() || "S"}</span>
+            <span className="home-profile-copy">
+              <strong>{user?.fullName || "Student"}</strong>
+              <small>{academic?.branchName || "Student"}</small>
+            </span>
+            <FiChevronDown />
+          </button>
+
+          {profileOpen && (
+            <div className="home-profile-dropdown" role="menu">
+              <div className="home-profile-dropdown-head">
+                <span className="home-avatar large">{(user?.fullName || "Student").trim().charAt(0).toUpperCase() || "S"}</span>
+                <div>
+                  <strong>{user?.fullName || "Student"}</strong>
+                  <small>{user?.email || "Account"}</small>
+                </div>
+              </div>
+              <div className="home-profile-dropdown-divider" />
+              <button type="button" role="menuitem" onClick={() => { setProfileOpen(false); navigate("/profile"); }}>
+                <FiUser /> <span>My Profile</span>
+              </button>
+              <button className="logout" type="button" role="menuitem" onClick={handleLogout} disabled={loggingOut}>
+                <FiLogOut /> <span>{loggingOut ? "Logging out..." : "Logout"}</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
