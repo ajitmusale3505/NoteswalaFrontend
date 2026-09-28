@@ -5,11 +5,12 @@ import {
   FiMapPin, FiMessageSquare, FiPhone, FiSettings, FiUser, FiUsers
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
-import { getCurrentUser, getPersonalProfile, getUserAcademicProfile } from "../../services/profileService";
+import { getCurrentUser, getPersonalProfile, getUserAcademicProfile, getSocialLinks } from "../../services/profileService";
 import { PersonalProfileEditModal, AcademicProfileEditModal, AboutMeEditModal } from "./ProfileEditModals";
 import { SkillsEditModal } from "./SkillsEditModal";
 import { InterestsEditModal } from "./InterestsEditModal";
 import { CareerPreferencesEditModal } from "./CareerPreferencesEditModal";
+import { SocialLinksEditModal } from "./SocialLinksEditModal";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -239,12 +240,30 @@ function ProfileCompletion({academic}) {
     </section>
   );
 }
-function SocialLinks({onEdit}) {
+function SocialLinks({onEdit, socialLinks}) {
+  const links = [
+    ["LinkedIn", FiLinkedin, socialLinks?.linkedinUrl],
+    ["GitHub", FiGithub, socialLinks?.githubUrl],
+    ["Portfolio", FiCode, socialLinks?.portfolioUrl],
+    ["LeetCode", FiCode, socialLinks?.leetcodeUrl]
+  ];
+
   return <Card title="Social Links" icon={FiUsers} onEdit={onEdit} className="social-card">
-    <a href="#" onClick={e=>e.preventDefault()}><FiLinkedin/><span><b>LinkedIn</b><small>linkedin.com/in/yourprofile</small></span></a>
-    <a href="#" onClick={e=>e.preventDefault()}><FiGithub/><span><b>GitHub</b><small>github.com/yourusername</small></span></a>
-    <a href="#" onClick={e=>e.preventDefault()}><FiCode/><span><b>Portfolio</b><small>yourportfolio.com</small></span></a>
-    <a href="#" onClick={e=>e.preventDefault()}><FiCode/><span><b>LeetCode</b><small>leetcode.com/yourusername</small></span></a>
+    {links.map(([label, Icon, url]) => (
+      <a
+        key={label}
+        href={url || "#"}
+        target={url ? "_blank" : undefined}
+        rel={url ? "noreferrer" : undefined}
+        onClick={(event) => { if (!url) event.preventDefault(); }}
+      >
+        <Icon/>
+        <span>
+          <b>{label}</b>
+          <small>{url || "Not provided"}</small>
+        </span>
+      </a>
+    ))}
   </Card>;
 }
 
@@ -253,6 +272,7 @@ export default function ProfilePage() {
   const [user,setUser]=useState(null);
   const [academic,setAcademic]=useState(null);
   const [personal,setPersonal]=useState(null);
+  const [socialLinks,setSocialLinks]=useState(null);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
 
@@ -276,9 +296,10 @@ export default function ProfilePage() {
         if (!mounted) return;
         setUser(currentUser);
 
-        const [academicResult, personalResult] = await Promise.allSettled([
+        const [academicResult, personalResult, socialResult] = await Promise.allSettled([
           getUserAcademicProfile(currentUser.userId),
-          getPersonalProfile()
+          getPersonalProfile(),
+          getSocialLinks()
         ]);
 
         if (!mounted) return;
@@ -293,6 +314,12 @@ export default function ProfilePage() {
           setPersonal(personalResult.value.data?.data || null);
         } else if (personalResult.reason?.response?.status !== 404) {
           setError(personalResult.reason?.response?.data?.message || "Unable to load personal profile.");
+        }
+
+        if (socialResult.status === "fulfilled") {
+          setSocialLinks(socialResult.value.data?.data || null);
+        } else if (socialResult.reason?.response?.status !== 404) {
+          setError(socialResult.reason?.response?.data?.message || "Unable to load social links.");
         }
       } catch (loadError) {
         if (mounted) {
@@ -330,7 +357,7 @@ export default function ProfilePage() {
           </div>
           <aside className="profile-right">
             <ProfileCompletion academic={academic}/>
-            <SocialLinks onEdit={() => edit("personal")}/>
+            <SocialLinks onEdit={() => edit("social")} socialLinks={socialLinks}/>
           </aside>
         </div>
       </main>
@@ -359,6 +386,10 @@ export default function ProfilePage() {
     {editing==="about"&&<AboutMeEditModal
       onClose={()=>setEditing(null)}
       onSaved={(data)=>{setPersonal(data||personal);setEditing(null);}}
+    />}
+    {editing==="social"&&<SocialLinksEditModal
+      onClose={()=>setEditing(null)}
+      onSaved={(data)=>{setSocialLinks(data || null);setEditing(null);}}
     />}
     {editing==="academic"&&<AcademicProfileEditModal
       academic={academic}
