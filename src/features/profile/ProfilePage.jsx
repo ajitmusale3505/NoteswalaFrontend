@@ -156,15 +156,84 @@ function CareerPreferences({onEdit}) {
 }
 
 function ProfileCompletion({academic}) {
-  const percentage = academic?.profileCompletionPercentage ?? 0;
-  const degrees = Math.max(0, Math.min(percentage, 100)) * 3.6;
-  return <section className="profile-card completion-card">
-    <h2>Profile Completion</h2>
-    <div className="completion-top"><div className="completion-ring" style={{ background: `conic-gradient(#129b7e 0 ${degrees}deg,#e4e9eb ${degrees}deg)` }}><strong>{percentage}%</strong></div><div><b>{percentage === 100 ? "Profile completed" : "Complete your profile"}</b><p>Complete your profile to get better recommendations.</p></div></div>
-    <ul>{["Personal Information","Academic Information","Add Skills","Add Projects","Add a Profile Photo","Add Bio / About"].map((item,i)=><li key={item} className={i < Math.ceil(percentage / 20) ? "done" : ""}>{i < Math.ceil(percentage / 20) ? <FiCheck/> : <span/>}{item}</li>)}</ul>
-  </section>;
-}
+  const percentage = Math.max(0, Math.min(Number(academic?.profileCompletionPercentage ?? 0), 100));
+  const degrees = percentage * 3.6;
 
+  const completionTheme =
+    percentage >= 80 ? "complete" :
+    percentage >= 60 ? "good" :
+    percentage >= 30 ? "warning" :
+    "critical";
+
+  const checklist = [
+    "Personal Information",
+    "Academic Information",
+    "Add Skills",
+    "Add Projects",
+    "Add a Profile Photo",
+    "Add Bio / About"
+  ];
+
+  const completedCount = Math.min(
+    checklist.length,
+    Math.floor((percentage / 100) * checklist.length)
+  );
+
+  return (
+    <section className={`profile-card completion-card completion-${completionTheme}`}>
+      <div className="completion-heading">
+        <div>
+          <h2><span className="completion-spark">✦</span> Profile Completion</h2>
+          <p>
+            {percentage === 100
+              ? "Your profile is complete!"
+              : "Almost there! Complete your profile to get better recommendations."}
+          </p>
+        </div>
+        <span className="completion-decor completion-decor-one" />
+        <span className="completion-decor completion-decor-two" />
+      </div>
+
+      <div className="completion-progress-area">
+        <div
+          className="completion-ring"
+          style={{
+            "--completion-progress": `${degrees}deg`,
+            background: `conic-gradient(var(--completion-color) 0 ${degrees}deg, #e7edf2 ${degrees}deg 360deg)`
+          }}
+        >
+          <div className="completion-ring-inner">
+            <strong>{percentage}%</strong>
+            <span>{percentage === 100 ? "Completed" : "Completed"}</span>
+          </div>
+        </div>
+        <div className="completion-cap" aria-hidden="true">🎓</div>
+      </div>
+
+      <ul className="completion-checklist">
+        {checklist.map((item, index) => {
+          const done = index < completedCount;
+          return (
+            <li key={item} className={done ? "done" : "pending"}>
+              <span className="completion-status">
+                {done ? <FiCheck /> : null}
+              </span>
+              <span className="completion-item-name">{item}</span>
+              <small>{done ? "Completed" : "Pending"}</small>
+              <FiChevronRight className="completion-arrow" />
+            </li>
+          );
+        })}
+      </ul>
+
+      {percentage < 100 && (
+        <button type="button" className="completion-action">
+          <FiAward /> Complete Your Profile <FiChevronRight />
+        </button>
+      )}
+    </section>
+  );
+}
 function SocialLinks({onEdit}) {
   return <Card title="Social Links" icon={FiUsers} onEdit={onEdit} className="social-card">
     <a href="#" onClick={e=>e.preventDefault()}><FiLinkedin/><span><b>LinkedIn</b><small>linkedin.com/in/yourprofile</small></span></a>
