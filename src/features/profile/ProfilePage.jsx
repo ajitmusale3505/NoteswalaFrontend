@@ -177,7 +177,7 @@ export default function ProfilePage() {
   const [editing,setEditing]=useState(false);
   const [user,setUser]=useState(null);
   const [academic,setAcademic]=useState(null);
-  const [loading,setLoading]=useState(true);
+  const [,setLoading]=useState(true);
   const [error,setError]=useState("");
 
   const edit=()=>setEditing(true);
@@ -227,7 +227,7 @@ export default function ProfilePage() {
   }, []);
 
   return <div className="profile-page">
-    <HomeNavbar user={user} academic={academic}/>
+    <HomeNavbar user={user} academic={academic} loading={!user}/>
     <div className="profile-layout">
       <ProfileSidebar/>
       <main className="profile-main">
