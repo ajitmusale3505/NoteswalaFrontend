@@ -12,3 +12,6 @@ export const updateInterests = (interests) => apiClient.patch("/user-profile/per
 export const updateCareerPreferences = (payload) => apiClient.patch("/user-profile/personal", payload);
 
 export const updateAboutMe = (aboutMe) => apiClient.patch("/user-profile/personal/about-me", JSON.stringify(aboutMe));
+
+export const getSocialLinks = () => apiClient.get("/user-profile/social-links");
+export const updateSocialLinks = (payload) => apiClient.patch("/user-profile/social-links", payload);
