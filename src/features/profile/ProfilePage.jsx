@@ -161,8 +161,65 @@ function CareerPreferences({onEdit, personal}) {
   </Card>;
 }
 
-function ProfileCompletion({academic}) {
-  const percentage = Math.max(0, Math.min(Number(academic?.profileCompletionPercentage ?? 0), 100));
+function ProfileCompletion({user, academic, personal}) {
+  const hasValue = (value) =>
+    value !== null &&
+    value !== undefined &&
+    String(value).trim() !== "";
+
+  // A section is considered complete only when all fields required by that
+  // section are actually present. The percentage is calculated from these
+  // six real profile sections, not from backend placeholders or unrelated
+  // profile features.
+  const completionSections = [
+    {
+      label: "Personal Information",
+      complete: [
+        user?.fullName,
+        user?.email,
+        personal?.phoneNumber,
+        personal?.city,
+        personal?.dateOfBirth,
+        personal?.gender
+      ].every(hasValue)
+    },
+    {
+      label: "Academic Information",
+      complete: [
+        academic?.universityName,
+        academic?.collegeName,
+        academic?.branchName,
+        academic?.currentStatus,
+        academic?.academicYearName,
+        academic?.cgpa,
+        academic?.graduationYear
+      ].every(hasValue)
+    },
+    {
+      label: "About Me",
+      complete: hasValue(personal?.aboutMe)
+    },
+    {
+      label: "Skills",
+      complete: Array.isArray(personal?.skills) && personal.skills.length > 0
+    },
+    {
+      label: "Career Preferences",
+      complete: [
+        personal?.preferredRole,
+        personal?.preferredLocation,
+        personal?.employmentType,
+        personal?.availability
+      ].every(hasValue)
+    },
+    {
+      label: "Interests",
+      complete: Array.isArray(personal?.interests) && personal.interests.length > 0
+    }
+  ];
+
+  const completedCount = completionSections.filter((section) => section.complete).length;
+  const percentage = Math.round((completedCount / completionSections.length) * 100);
   const degrees = percentage * 3.6;
 
   const completionTheme =
@@ -170,20 +227,6 @@ function ProfileCompletion({academic}) {
     percentage >= 60 ? "good" :
     percentage >= 30 ? "warning" :
     "critical";
-
-  const checklist = [
-    "Personal Information",
-    "Academic Information",
-    "Add Skills",
-    "Add Projects",
-    "Add a Profile Photo",
-    "Add Bio / About"
-  ];
-
-  const completedCount = Math.min(
-    checklist.length,
-    Math.floor((percentage / 100) * checklist.length)
-  );
 
   return (
     <section className={`profile-card completion-card completion-${completionTheme}`}>
@@ -193,7 +236,7 @@ function ProfileCompletion({academic}) {
           <p>
             {percentage === 100
               ? "Your profile is complete!"
-              : "Almost there! Complete your profile to get better recommendations."}
+              : "Complete the remaining sections to finish your profile."}
           </p>
         </div>
         <span className="completion-decor completion-decor-one" />
@@ -210,26 +253,23 @@ function ProfileCompletion({academic}) {
         >
           <div className="completion-ring-inner">
             <strong>{percentage}%</strong>
-            <span>{percentage === 100 ? "Completed" : "Completed"}</span>
+            <span>Completed</span>
           </div>
         </div>
         <div className="completion-cap" aria-hidden="true">🎓</div>
       </div>
 
       <ul className="completion-checklist">
-        {checklist.map((item, index) => {
-          const done = index < completedCount;
-          return (
-            <li key={item} className={done ? "done" : "pending"}>
-              <span className="completion-status">
-                {done ? <FiCheck /> : null}
-              </span>
-              <span className="completion-item-name">{item}</span>
-              <small>{done ? "Completed" : "Pending"}</small>
-              <FiChevronRight className="completion-arrow" />
-            </li>
-          );
-        })}
+        {completionSections.map(({label, complete}) => (
+          <li key={label} className={complete ? "done" : "pending"}>
+            <span className="completion-status">
+              {complete ? <FiCheck /> : null}
+            </span>
+            <span className="completion-item-name">{label}</span>
+            <small>{complete ? "Completed" : "Pending"}</small>
+            <FiChevronRight className="completion-arrow" />
+          </li>
+        ))}
       </ul>
 
       {percentage < 100 && (
@@ -356,7 +396,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <aside className="profile-right">
-            <ProfileCompletion academic={academic}/>
+            <ProfileCompletion user={user} academic={academic} personal={personal}/>
             <SocialLinks onEdit={() => edit("social")} socialLinks={socialLinks}/>
           </aside>
         </div>
