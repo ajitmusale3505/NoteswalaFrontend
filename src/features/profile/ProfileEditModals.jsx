@@ -291,9 +291,13 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
       })
       .catch(() => {
         setSemesters([]);
-        toast.error("Unable to load semesters.");
+        toast.error("Unable to load semesters for the selected academic year.");
       });
   }, [form.academicYearId]);
+
+  // A branch is not an academic-year-specific option. It remains selectable
+  // when the user changes academic year; the backend validates university,
+  // college/branch ownership and semester/year consistency separately.
 
   const save = async () => {
     const initial = initialForm.current || {};
