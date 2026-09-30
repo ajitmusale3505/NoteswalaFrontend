@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  FiBookOpen, FiCheck, FiChevronDown, FiEdit3, FiFlag, FiFlaskConical,
+  FiActivity, FiBookOpen, FiCheck, FiEdit3, FiFlag,
   FiLayers, FiSave, FiX
 } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -159,7 +159,7 @@ function SubjectSelectionModal({ subjects, selectedIds, onClose, onSaved }) {
                 selectedIds={draft} onToggle={toggle} />
             )}
             {groups[CATEGORY.PRACTICAL].length > 0 && (
-              <CategoryCard title="Practical Subjects" icon={FiFlaskConical} tone="gold" selectable
+              <CategoryCard title="Practical Subjects" icon={FiActivity} tone="gold" selectable
                 subjects={groups[CATEGORY.PRACTICAL]} options={groups[CATEGORY.PRACTICAL]}
                 selectedIds={draft} onToggle={toggle} />
             )}
@@ -264,7 +264,7 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
             <CategoryCard title="Regular" icon={FiBookOpen} tone="blue" subjects={regular} />
             <CategoryCard title="Elective" icon={FiLayers} tone="purple" subjects={elective} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
             <CategoryCard title="Honor" icon={FiFlag} tone="green" subjects={honor} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
-            <CategoryCard title="Practical" icon={FiFlaskConical} tone="gold" subjects={practical} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
+            <CategoryCard title="Practical" icon={FiActivity} tone="gold" subjects={practical} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
           </div>
         )}
       </section>
