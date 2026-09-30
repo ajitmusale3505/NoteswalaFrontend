@@ -9,7 +9,7 @@ import SubjectResourceList from "./components/SubjectResourceList";
 import AboutSubject from "./components/AboutSubject";
 import ResourceDistribution from "./components/ResourceDistribution";
 import PopularTopics from "./components/PopularTopics";
-import {getCurrentAcademicSubjects} from "../../services/academicService";
+import {getCurrentAcademicSubjects,getUniversities} from "../../services/academicService";
 import {getResources} from "../../services/resourceService";
 import "../../styles/subject.css";
 
@@ -28,7 +28,7 @@ function classifyResource(resource){
  return "Others";
 }
 
-function buildSubject(rawSubject,resources){
+function buildSubject(rawSubject,resources,universityName){
  const subjectName=rawSubject.subjectName||"Subject";
  const subjectCode=rawSubject.subjectCode||rawSubject.code||"";
  const subjectResources=resources.filter(resource=>
@@ -83,7 +83,7 @@ function buildSubject(rawSubject,resources){
    description:`Explore notes, previous-year papers, practicals, books and other study material for ${subjectName}.`,
    semester:rawSubject.semesterNumber??rawSubject.semester??"—",
    branch:rawSubject.branchName||"—",
-   university:rawSubject.universityName||"Savitribai Phule Pune University (SPPU)",
+   university:universityName||"—",
    credits:rawSubject.credits??0,
    rating:stats.rating,
    stats,
@@ -120,7 +120,7 @@ export default function SubjectPage(){
            setLoadError(true);
            return;
          }
-         setSubject(buildSubject(rawSubject,Array.isArray(resources)?resources:[]));
+         const university=universities.find(item=>String(item.id)===String(rawSubject.universityId));\n         setSubject(buildSubject(rawSubject,Array.isArray(resources)?resources:[],university?.name));
          setLoadError(false);
        }
      }catch{
