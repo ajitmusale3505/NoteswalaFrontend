@@ -684,6 +684,42 @@
 .semester-subject-cancel{border:1px solid #b8c6d2;background:#fff;color:#46627e}
 .semester-subject-save{border:0;background:#b7741a;color:#fff;box-shadow:0 7px 17px rgba(183,116,26,.2)}
 .semester-subject-save:disabled{opacity:.6;cursor:not-allowed}
+/* Updated current-semester subject card UI */
+.semester-category-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.semester-category{border:1px solid #dfe7ee;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(25,50,75,.025)}
+.semester-category>header{padding:18px 20px 17px;border-bottom:1px solid rgba(20,50,80,.07)}
+.semester-category-title{gap:14px}
+.semester-category-icon{width:46px;height:46px;border-radius:12px;font-size:23px;flex-basis:46px}
+.semester-category-title h3{font-size:17px;font-weight:600}
+.semester-category-title p{font-size:11px;line-height:1.35;max-width:190px;margin-top:5px}
+.semester-category>header>b{min-width:36px;height:30px;padding:0 10px;border-radius:16px;display:grid;place-items:center;font-size:12px}
+.semester-category-blue>header{background:#f5faff}.semester-category-purple>header{background:#fbf8ff}
+.semester-category-green>header{background:#f4fbf7}.semester-category-gold>header{background:#fffaf4}
+.semester-category-blue>header>b{background:#e7f3ff;color:#1475c5}
+.semester-category-purple>header>b{background:#f0e7ff;color:#7137c8}
+.semester-category-green>header>b{background:#e4f7ed;color:#14966b}
+.semester-category-gold>header>b{background:#fff0dc;color:#c76b0b}
+.semester-subject-list{display:grid;gap:7px;padding:10px 10px 12px}
+.semester-subject-item{min-height:58px;display:flex;align-items:center;gap:11px;padding:8px 10px;border:1px solid #e3eaf0;border-radius:12px;background:linear-gradient(90deg,#fbfcfd,#f7f9fb);box-shadow:0 1px 4px rgba(30,50,70,.025)}
+.semester-subject-item-icon{width:38px;height:38px;flex:0 0 38px;border-radius:10px;display:grid;place-items:center;font-size:19px}
+.semester-subject-item-blue .semester-subject-item-icon{background:#e9f5ff;color:#1478ce}
+.semester-subject-item-purple .semester-subject-item-icon{background:#f1e7ff;color:#7035c9}
+.semester-subject-item-green .semester-subject-item-icon{background:#e8f8ef;color:#149a6e}
+.semester-subject-item-gold .semester-subject-item-icon{background:#fff0dc;color:#e0710a}
+.semester-subject-item-copy{min-width:0;flex:1}
+.semester-subject-item-copy strong{display:block;color:#173a5c;font-size:12px;line-height:1.35;font-weight:600}
+.semester-subject-item-copy small{display:block;margin-top:4px;color:#73869b;font-size:11px;font-weight:500}
+.semester-subject-item-menu{width:26px;height:30px;flex:0 0 26px;display:grid;place-items:center;border:0;background:transparent;color:#284a68;font-size:17px;border-radius:6px}
+button.semester-subject-item-menu{cursor:pointer}
+button.semester-subject-item-menu:hover{background:#eaf1f7}
+.semester-add-subject{min-height:91px;margin:8px 0 0;border:1px dashed #d3b17c;border-radius:13px;background:rgba(255,251,244,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#c36b0b;cursor:pointer}
+.semester-add-subject:hover{background:#fff8ec;border-color:#c78a3d}
+.semester-add-subject>span{width:28px;height:28px;display:grid;place-items:center;font-size:22px}
+.semester-add-subject strong{font-size:12px;font-weight:700}
+.semester-add-subject small{font-size:10px;color:#718197}
+.semester-category-green .semester-add-subject{border-color:#8fd4b5;background:#fbfffd;color:#129a6a}
+.semester-category-green .semester-add-subject:hover{background:#f0fbf6}
+.semester-category-gold .semester-add-subject{border-color:#efc27f}
 @media(max-width:1100px){.semester-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.semester-subject-overlay{padding:10px}.semester-subject-modal{height:96vh;width:96vw;grid-template-columns:1fr}.semester-subject-art{display:none}.semester-subject-main{padding:24px 18px 15px}}
 @media(max-width:560px){.semester-subject-overlay{padding:0}.semester-subject-modal{width:100vw;height:100vh;border-radius:0}.semester-subject-main{padding:22px 13px 12px}.semester-category-grid,.semester-select-area{grid-template-columns:1fr}.semester-subject-heading h1{font-size:23px}.semester-subject-actions{position:sticky;bottom:0}}
