@@ -1,22 +1,45 @@
+import { useEffect, useState } from "react";
 import {
   FiArrowRight, FiBookOpen, FiBox, FiCalendar, FiChevronDown, FiClock, FiCloud,
   FiCode, FiDatabase, FiDownload, FiFileText, FiGitBranch, FiGrid,
-  FiMonitor, FiSearch, FiSettings, FiShield, FiStar, FiTarget, FiTool,
+  FiMonitor, FiSearch, FiSettings, FiShield, FiStar, FiTarget,
   FiUploadCloud
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
 import { Link } from "react-router-dom";
+import { getCurrentAcademicSubjects } from "../../services/academicService";
 
-const subjects = [
-  ["DBMS", "Database Management Systems", 42, FiDatabase, "blue", [12, 9, 7]],
-  ["OS", "Operating Systems", 36, FiMonitor, "green", [10, 8, 6]],
-  ["CN", "Computer Networks", 51, FiGitBranch, "orange", [15, 12, 8]],
-  ["WT", "Web Technologies", 28, FiCode, "purple", [8, 7, 5]],
-  ["OOMD", "Object Oriented Modeling & Design", 24, FiBox, "violet", [6, 8, 4]],
-  ["STQA", "Software Testing & QA", 20, FiShield, "red", [7, 5, 3]],
-  ["CC", "Cloud Computing", 26, FiCloud, "sky", [8, 6, 3]],
-  ["AI", "Artificial Intelligence", 18, FiTarget, "green", [5, 5, 4]],
+const subjectPresentation = [
+  { Icon: FiDatabase, tone: "blue" },
+  { Icon: FiMonitor, tone: "green" },
+  { Icon: FiGitBranch, tone: "orange" },
+  { Icon: FiCode, tone: "purple" },
+  { Icon: FiBox, tone: "violet" },
+  { Icon: FiShield, tone: "red" },
+  { Icon: FiCloud, tone: "sky" },
+  { Icon: FiTarget, tone: "green" },
 ];
+
+function mapAcademicSubjects(response) {
+  const data = response?.data?.data || response?.data || [];
+
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  return data.map((subject, index) => {
+    const presentation = subjectPresentation[index % subjectPresentation.length];
+
+    return [
+      subject.subjectCode || subject.code || "—",
+      subject.subjectName || subject.name || "Subject",
+      0,
+      presentation.Icon,
+      presentation.tone,
+      [0, 0, 0],
+    ];
+  });
+}
 
 const viewed = [
   ["DBMS - Normalization Notes", "DBMS · Unit II · Notes", "68%", "blue"],
@@ -64,6 +87,32 @@ function ResourceListCard({ title, icon: Icon, action, children, className = "" 
 }
 
 export default function ResourcesPage() {
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSubjects = async () => {
+      try {
+        const response = await getCurrentAcademicSubjects();
+
+        if (!cancelled) {
+          setSubjects(mapAcademicSubjects(response));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setSubjects([]);
+        }
+      }
+    };
+
+    loadSubjects();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="resources-page">
       <HomeNavbar />
