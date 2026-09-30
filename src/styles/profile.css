@@ -723,3 +723,149 @@ button.semester-subject-item-menu:hover{background:#eaf1f7}
 @media(max-width:1100px){.semester-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.semester-subject-overlay{padding:10px}.semester-subject-modal{height:96vh;width:96vw;grid-template-columns:1fr}.semester-subject-art{display:none}.semester-subject-main{padding:24px 18px 15px}}
 @media(max-width:560px){.semester-subject-overlay{padding:0}.semester-subject-modal{width:100vw;height:100vh;border-radius:0}.semester-subject-main{padding:22px 13px 12px}.semester-category-grid,.semester-select-area{grid-template-columns:1fr}.semester-subject-heading h1{font-size:23px}.semester-subject-actions{position:sticky;bottom:0}}
+
+
+/* Noteswala UI refinement: compact current-semester subject cards */
+/* Scoped to Current Semester Subjects only. No layout/data/interaction rules are changed. */
+.semester-subject-card .semester-category-grid{
+  align-items:start;
+  gap:14px;
+}
+
+.semester-subject-card .semester-category{
+  align-self:start;
+  overflow:hidden;
+  border-color:#dfe7ee;
+  border-radius:13px;
+  box-shadow:0 5px 18px rgba(25,50,75,.035);
+  transition:box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+}
+
+.semester-subject-card .semester-category:hover{
+  border-color:#d5e0e8;
+  box-shadow:0 9px 24px rgba(25,50,75,.065);
+  transform:translateY(-1px);
+}
+
+.semester-subject-card .semester-category>header{
+  min-height:82px;
+  padding:13px 14px 12px;
+  gap:8px;
+}
+
+.semester-subject-card .semester-category-title{
+  gap:10px;
+  align-items:flex-start;
+}
+
+.semester-subject-card .semester-category-icon{
+  width:38px;
+  height:38px;
+  flex-basis:38px;
+  border-radius:10px;
+  font-size:19px;
+}
+
+.semester-subject-card .semester-category-title h3{
+  font-size:15px;
+  line-height:1.16;
+  letter-spacing:-.08px;
+}
+
+.semester-subject-card .semester-category-title p{
+  max-width:150px;
+  margin-top:4px;
+  font-size:9.5px;
+  line-height:1.3;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+}
+
+.semester-subject-card .semester-category>header>b{
+  min-width:28px;
+  height:24px;
+  padding:0 8px;
+  border-radius:13px;
+  font-size:10px;
+  flex:0 0 auto;
+}
+
+.semester-subject-card .semester-subject-list{
+  gap:6px;
+  padding:8px;
+}
+
+.semester-subject-card .semester-subject-item{
+  min-height:49px;
+  gap:9px;
+  padding:6px 8px;
+  border-radius:10px;
+  box-shadow:0 1px 3px rgba(30,50,70,.025);
+}
+
+.semester-subject-card .semester-subject-item-icon{
+  width:32px;
+  height:32px;
+  flex-basis:32px;
+  border-radius:9px;
+  font-size:16px;
+}
+
+.semester-subject-card .semester-subject-item-copy strong{
+  font-size:11px;
+  line-height:1.28;
+  font-weight:600;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+}
+
+.semester-subject-card .semester-subject-item-copy small{
+  margin-top:2px;
+  font-size:9.5px;
+  line-height:1.2;
+}
+
+.semester-subject-card .semester-subject-item-menu{
+  width:24px;
+  height:28px;
+  flex-basis:24px;
+  font-size:15px;
+}
+
+.semester-subject-card .semester-add-subject{
+  min-height:72px;
+  margin:2px 0 0;
+  padding:8px 6px;
+  border-radius:11px;
+  gap:2px;
+}
+
+.semester-subject-card .semester-add-subject>span{
+  width:24px;
+  height:24px;
+  font-size:19px;
+}
+
+.semester-subject-card .semester-add-subject strong{
+  font-size:11px;
+}
+
+.semester-subject-card .semester-add-subject small{
+  font-size:9px;
+  line-height:1.25;
+  text-align:center;
+}
+
+@media(max-width:1100px){
+  .semester-subject-card .semester-category-grid{gap:12px}
+}
+
+@media(max-width:560px){
+  .semester-subject-card .semester-category>header{min-height:76px;padding:12px}
+  .semester-subject-card .semester-category-title h3{font-size:14px}
+  .semester-subject-card .semester-category-title p{font-size:9px}
+}
