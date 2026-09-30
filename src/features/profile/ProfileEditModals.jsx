@@ -384,7 +384,9 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
             universityId: value,
             collegeId: value === current.universityId ? current.collegeId : "",
             branchId: value === current.universityId ? current.branchId : "",
-            academicYearId: value === current.universityId ? current.academicYearId : ""
+            academicYearId: value === current.universityId ? current.academicYearId : "",
+            examPatternId: value === current.universityId ? current.examPatternId : "",
+            semesterId: value === current.universityId ? current.semesterId : ""
           }))}
           options={universities}
           placeholder="Select university"
