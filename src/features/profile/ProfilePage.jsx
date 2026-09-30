@@ -11,6 +11,7 @@ import { SkillsEditModal } from "./SkillsEditModal";
 import { InterestsEditModal } from "./InterestsEditModal";
 import { CareerPreferencesEditModal } from "./CareerPreferencesEditModal";
 import { SocialLinksEditModal } from "./SocialLinksEditModal";
+import CurrentSemesterSubjectsCard from "./CurrentSemesterSubjectsCard";
 
 const sidebarItems = [
   ["Dashboard", FiHome, "/home"],
@@ -125,7 +126,9 @@ function AcademicInformation({onEdit, academic}) {
       <InfoRow icon={FiHome} label="University" value={value(academic?.universityName)}/>
       <InfoRow icon={FiHome} label="College" value={value(academic?.collegeName)}/>
       <InfoRow icon={FiBookOpen} label="Branch" value={value(academic?.branchName)}/>
-      <InfoRow icon={FiCalendar} label="Current Status" value={value(academic?.currentStatus === "Studying" ? "Pursuing" : academic?.currentStatus)}/><InfoRow icon={FiBookOpen} label="Exam Pattern" value={value(academic?.academicYearName)}/>
+      <InfoRow icon={FiCalendar} label="Semester" value={value(academic?.semesterName)}/>
+      <InfoRow icon={FiCalendar} label="Current Status" value={value(academic?.currentStatus === "Studying" ? "Pursuing" : academic?.currentStatus)}/>
+      <InfoRow icon={FiBookOpen} label="Exam Pattern" value={value(academic?.examPatternName || academic?.academicYearName)}/>
       <InfoRow icon={FiAward} label="CGPA" value={academic?.cgpa != null ? `${academic.cgpa} / 10` : "Not provided"}/>
       <InfoRow icon={FiCalendar} label="Expected Passout" value={academic?.graduationYear ?? "Not provided"}/>
     </div>
@@ -394,6 +397,7 @@ export default function ProfilePage() {
               <CareerPreferences onEdit={() => edit("career")} personal={personal}/>
               <TagCard title="Interests" icon={FiHeart} items={personal?.interests || defaultInterests} onEdit={() => edit("interests")}/>
             </div>
+            <CurrentSemesterSubjectsCard academic={academic}/>
           </div>
           <aside className="profile-right">
             <ProfileCompletion user={user} academic={academic} personal={personal}/>
