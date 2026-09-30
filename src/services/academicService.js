@@ -9,3 +9,7 @@ export const createAcademicProfile=(payload)=>apiClient.post("/user-profile",pay
 export const updateAcademicProfile=(id,payload)=>apiClient.put(`/user-profile/${id}`,payload);
 
 export const patchAcademicProfile=(id,payload)=>apiClient.patch(`/user-profile/${id}`,payload);
+
+export const getCurrentAcademicSubjects=()=>apiClient.get("/academic-context/subjects");
+export const getCurrentSubjectSelections=()=>apiClient.get("/academic-context/subject-selections");
+export const updateCurrentSubjectSelections=(subjectOfferingIds)=>apiClient.put("/academic-context/subject-selections",{subjectOfferingIds});
