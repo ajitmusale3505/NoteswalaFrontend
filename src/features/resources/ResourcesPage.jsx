@@ -99,7 +99,7 @@ export default function ResourcesPage() {
         if (!cancelled) {
           setSubjects(mapAcademicSubjects(response));
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
           setSubjects([]);
         }
