@@ -177,7 +177,7 @@ function SubjectSelectionModal({ subjects, selectedIds, onClose, onSaved }) {
               title="Regular Subjects"
               icon={FiBookOpen}
               tone="blue"
-              subjects={subjects.filter((subject) => categoryOf(subject) === CATEGORY.REGULAR && subject.mandatory)}
+              subjects={subjects.filter((subject) => categoryOf(subject) === CATEGORY.REGULAR)}
             />
 
             {groups[CATEGORY.ELECTIVE].length > 0 && (
@@ -275,7 +275,7 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
   ]);
 
   const regular = useMemo(
-    () => subjects.filter((s) => categoryOf(s) === CATEGORY.REGULAR && s.mandatory),
+    () => subjects.filter((s) => categoryOf(s) === CATEGORY.REGULAR),
     [subjects]
   );
 
