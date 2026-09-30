@@ -283,8 +283,23 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
 
     getSemestersByAcademicYear(form.academicYearId)
       .then((r) => {
+        const selectedYear = years.find((year) => String(id(year)) === String(form.academicYearId));
+        const yearCode = String(selectedYear?.code || "").toUpperCase();
+        const yearName = String(selectedYear?.name || "").toLowerCase();
+
+        const range = yearCode.includes("SPPU-FE") || yearName.startsWith("1st year")
+          ? [1, 2]
+          : yearCode.includes("SPPU-SE") || yearName.startsWith("2nd year")
+            ? [3, 4]
+            : yearCode.includes("SPPU-TE") || yearName.startsWith("3rd year")
+              ? [5, 6]
+              : yearCode.includes("SPPU-BE") || yearName.startsWith("last year")
+                ? [7, 8]
+                : null;
+
         const available = list(r)
           .filter((semester) => semester?.active !== false)
+          .filter((semester) => !range || (Number(semester?.number) >= range[0] && Number(semester?.number) <= range[1]))
           .sort((a, b) => Number(a?.number ?? 0) - Number(b?.number ?? 0));
         setSemesters(available);
         if (form.semesterId && !available.some((semester) => String(id(semester)) === String(form.semesterId))) {
