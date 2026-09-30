@@ -283,7 +283,9 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
 
     getSemestersByAcademicYear(form.academicYearId)
       .then((r) => {
-        const available = list(r);
+        const available = list(r)
+          .filter((semester) => semester?.active !== false)
+          .sort((a, b) => Number(a?.number ?? 0) - Number(b?.number ?? 0));
         setSemesters(available);
         if (form.semesterId && !available.some((semester) => String(id(semester)) === String(form.semesterId))) {
           set("semesterId", "");
