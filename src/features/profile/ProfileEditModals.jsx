@@ -6,7 +6,7 @@ import {
 import toast from "react-hot-toast";
 import {
   getAcademicYearsByUniversity, getBranchesByCollege, getCollegesByUniversity,
-  getSemestersByAcademicYear, getUniversities, patchAcademicProfile
+  getExamPatternsByUniversity, getSemestersByAcademicYear, getUniversities, patchAcademicProfile
 } from "../../services/academicService";
 import { getPersonalProfile, updatePersonalProfile, updateAboutMe } from "../../services/profileService";
 import { CITY_BY_STATE, INDIAN_STATES } from "./locationData";
@@ -220,11 +220,15 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
   const [colleges, setColleges] = useState([]);
   const [branches, setBranches] = useState([]);
   const [years, setYears] = useState([]);
+  const [examPatterns, setExamPatterns] = useState([]);
+  const [semesters, setSemesters] = useState([]);
   const [form, setForm] = useState({
     universityId: academic?.universityId || "",
     collegeId: academic?.collegeId || "",
     branchId: academic?.branchId || "",
     academicYearId: academic?.academicYearId || "",
+    examPatternId: academic?.examPatternId || "",
+    semesterId: academic?.semesterId || "",
     currentStatus: academic?.currentStatus === "Studying" ? "Pursuing" : (academic?.currentStatus || ""),
     graduationYear: academic?.graduationYear ? String(academic.graduationYear) : "",
     cgpa: academic?.cgpa ?? ""
@@ -242,16 +246,20 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
     if (!form.universityId) {
       setColleges([]);
       setYears([]);
+      setExamPatterns([]);
+      setSemesters([]);
       return;
     }
 
     Promise.all([
       getCollegesByUniversity(form.universityId),
-      getAcademicYearsByUniversity(form.universityId)
+      getAcademicYearsByUniversity(form.universityId),
+      getExamPatternsByUniversity(form.universityId)
     ])
-      .then(([collegeResponse, yearResponse]) => {
+      .then(([collegeResponse, yearResponse, examPatternResponse]) => {
         setColleges(list(collegeResponse));
         setYears(list(yearResponse));
+        setExamPatterns(list(examPatternResponse));
       })
       .catch(() => toast.error("Unable to load academic options."));
   }, [form.universityId]);
@@ -267,11 +275,31 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
       .catch(() => toast.error("Unable to load branches."));
   }, [form.collegeId]);
 
+  useEffect(() => {
+    if (!form.academicYearId) {
+      setSemesters([]);
+      return;
+    }
+
+    getSemestersByAcademicYear(form.academicYearId)
+      .then((r) => {
+        const available = list(r);
+        setSemesters(available);
+        if (form.semesterId && !available.some((semester) => String(id(semester)) === String(form.semesterId))) {
+          set("semesterId", "");
+        }
+      })
+      .catch(() => {
+        setSemesters([]);
+        toast.error("Unable to load semesters.");
+      });
+  }, [form.academicYearId]);
+
   const save = async () => {
     const initial = initialForm.current || {};
     const payload = {};
 
-    ["universityId", "collegeId", "branchId", "academicYearId"].forEach((key) => {
+    ["universityId", "collegeId", "branchId", "academicYearId", "examPatternId", "semesterId"].forEach((key) => {
       if (form[key] && form[key] !== initial[key]) {
         payload[key] = form[key];
       }
@@ -296,21 +324,22 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
       payload.cgpa = Number(form.cgpa);
     }
 
-    const hierarchyChanged = ["universityId", "collegeId", "branchId", "academicYearId"]
+    const hierarchyChanged = ["universityId", "collegeId", "branchId", "academicYearId", "examPatternId", "semesterId"]
       .some((key) => Object.prototype.hasOwnProperty.call(payload, key));
 
     if (hierarchyChanged) {
-      // The backend keeps the existing semester. A changed exam pattern must still
-      // belong to the same university/branch hierarchy.
-      if (!form.universityId || !form.collegeId || !form.branchId || !form.academicYearId) {
-        toast.error("Please keep University, College, Branch and Exam Pattern selected.");
+      if (!form.universityId || !form.collegeId || !form.branchId || !form.academicYearId || !form.examPatternId || !form.semesterId) {
+        toast.error("Please select University, College, Branch, Academic Year, Exam Pattern and Semester.");
         return;
       }
-      // PATCH the complete hierarchy only when one of its values changes.
+      // PATCH the complete academic context so backend hierarchy validation
+      // always evaluates one consistent university/branch/pattern/semester set.
       payload.universityId = form.universityId;
       payload.collegeId = form.collegeId;
       payload.branchId = form.branchId;
       payload.academicYearId = form.academicYearId;
+      payload.examPatternId = form.examPatternId;
+      payload.semesterId = form.semesterId;
     }
 
     if (!Object.keys(payload).length) {
@@ -401,17 +430,42 @@ export function AcademicProfileEditModal({ academic, onClose, onSaved }) {
           />
         </div>
 
-        <div className="profile-edit-field academic-full">
-          <SelectField
-            label="Exam Pattern"
-            icon={FiBookOpen}
-            value={form.academicYearId}
-            onChange={(value) => set("academicYearId", value)}
-            options={years}
-            placeholder="Select exam pattern"
-            disabled={!form.universityId}
-          />
-        </div>
+        <SelectField
+          label="Academic Year"
+          icon={FiCalendar}
+          value={form.academicYearId}
+          onChange={(value) => setForm((current) => ({
+            ...current,
+            academicYearId: value,
+            semesterId: ""
+          }))}
+          options={years}
+          placeholder="Select academic year"
+          disabled={!form.universityId}
+        />
+
+        <SelectField
+          label="Exam Pattern"
+          icon={FiBookOpen}
+          value={form.examPatternId}
+          onChange={(value) => set("examPatternId", value)}
+          options={examPatterns.map((pattern) => ({
+            value: pattern.id,
+            label: pattern.name
+          }))}
+          placeholder="Select exam pattern"
+          disabled={!form.universityId}
+        />
+
+        <SelectField
+          label="Semester"
+          icon={FiCalendar}
+          value={form.semesterId}
+          onChange={(value) => set("semesterId", value)}
+          options={semesters}
+          placeholder={form.academicYearId ? "Select semester" : "Select academic year first"}
+          disabled={!form.academicYearId}
+        />
 
         <InputField
           label="CGPA"
