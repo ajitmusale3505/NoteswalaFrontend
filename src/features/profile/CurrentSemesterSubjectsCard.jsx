@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   FiActivity, FiBookOpen, FiCheck, FiEdit3, FiFlag,
-  FiLayers, FiSave, FiX
+  FiLayers, FiSave, FiX, FiMoreVertical, FiPlus,
+  FiCloud, FiCpu, FiDatabase, FiMonitor, FiUsers, FiBox
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import {
@@ -48,20 +49,38 @@ function subjectLabel(subject) {
   return subject?.subjectName || subject?.subjectCode || "Unnamed subject";
 }
 
-function SubjectChip({ subject, removable = false, onRemove }) {
+function subjectIcon(subject, fallback) {
+  const text = `${subject?.subjectCode || ""} ${subject?.subjectName || ""}`.toLowerCase();
+  if (text.includes("cloud")) return FiCloud;
+  if (text.includes("artificial") || text.includes("ai")) return FiCpu;
+  if (text.includes("data structure") || text.includes("database") || text.includes("dbms")) return FiDatabase;
+  if (text.includes("operating system") || text.includes("web")) return FiMonitor;
+  if (text.includes("human") || text.includes("professional")) return FiUsers;
+  if (text.includes("computer graphic") || text.includes("object oriented")) return FiBox;
+  return fallback;
+}
+
+function SubjectItem({ subject, tone, removable = false, onRemove }) {
+  const Icon = subjectIcon(subject, tone === "purple" ? FiLayers : tone === "gold" ? FiActivity : tone === "green" ? FiFlag : FiBookOpen);
   return (
-    <span className="semester-subject-chip">
-      <span>{subjectLabel(subject)}</span>
-      {removable && (
-        <button type="button" onClick={() => onRemove(subject.subjectOfferingId)} aria-label={"Remove " + subjectLabel(subject)}>
+    <div className={"semester-subject-item semester-subject-item-" + tone}>
+      <span className="semester-subject-item-icon"><Icon /></span>
+      <span className="semester-subject-item-copy">
+        <strong>{subject?.subjectName || subject?.subjectCode || "Unnamed subject"}</strong>
+        <small>{subject?.subjectCode || "—"}</small>
+      </span>
+      {removable ? (
+        <button type="button" className="semester-subject-item-menu" onClick={() => onRemove(subject.subjectOfferingId)} aria-label={"Remove " + (subject?.subjectName || subject?.subjectCode || "subject")}>
           <FiX />
         </button>
+      ) : (
+        <span className="semester-subject-item-menu" aria-hidden="true"><FiMoreVertical /></span>
       )}
-    </span>
+    </div>
   );
 }
 
-function CategoryCard({ title, icon: Icon, subjects, tone, selectable = false, selectedIds, onToggle, options }) {
+function CategoryCard({ title, icon: Icon, subjects, tone, selectable = false, selectedIds, onToggle, options, onAdd }) {
   return (
     <section className={"semester-category semester-category-" + tone}>
       <header>
@@ -69,16 +88,32 @@ function CategoryCard({ title, icon: Icon, subjects, tone, selectable = false, s
           <span className="semester-category-icon"><Icon /></span>
           <div>
             <h3>{title}</h3>
-            <p>{selectable ? "Select from the available options." : "Loaded automatically from your current semester."}</p>
+            <p>{selectable ? "Select your " + title.toLowerCase() + " subjects" : "Loaded automatically from your current semester."}</p>
           </div>
         </div>
-        <b>{selectable ? "Selected " + subjects.filter((s) => selectedIds.has(s.subjectOfferingId)).length : subjects.length}</b>
+        <b>{selectable ? subjects.filter((s) => selectedIds.has(s.subjectOfferingId)).length : subjects.length}</b>
       </header>
 
       {!selectable ? (
         <div className="semester-subject-list">
-          {subjects.length ? subjects.map((subject) => <SubjectChip key={subject.subjectOfferingId} subject={subject} />) :
-            <span className="semester-empty-inline">No subjects configured for this semester.</span>}
+          {subjects.length ? subjects.map((subject) => (
+            <SubjectItem key={subject.subjectOfferingId} subject={subject} tone={tone} />
+          )) : (
+            onAdd ? (
+              <button type="button" className="semester-add-subject" onClick={onAdd}>
+                <span><FiPlus /></span>
+                <strong>Add {title.replace(/ Subjects?$/i, "")} Subject</strong>
+                <small>Select from available {title.toLowerCase()}</small>
+              </button>
+            ) : <span className="semester-empty-inline">No subjects configured for this semester.</span>
+          )}
+          {subjects.length > 0 && onAdd && (
+            <button type="button" className="semester-add-subject" onClick={onAdd}>
+              <span><FiPlus /></span>
+              <strong>Add {title.replace(/ Subjects?$/i, "")} Subject</strong>
+              <small>Select from available {title.toLowerCase()}</small>
+            </button>
+          )}
         </div>
       ) : (
         <div className="semester-select-area">
@@ -93,8 +128,8 @@ function CategoryCard({ title, icon: Icon, subjects, tone, selectable = false, s
               >
                 <span className="semester-option-check">{selected ? <FiCheck /> : null}</span>
                 <span>
-                  <strong>{subjectLabel(subject)}</strong>
-                  <small>{subject.subjectCode}{subject.credits != null ? " • " + subject.credits + " credits" : ""}</small>
+                  <strong>{subject?.subjectName || subject?.subjectCode}</strong>
+                  <small>{subject?.subjectCode}{subject?.credits != null ? " • " + subject.credits + " credits" : ""}</small>
                 </span>
               </button>
             );
@@ -106,7 +141,6 @@ function CategoryCard({ title, icon: Icon, subjects, tone, selectable = false, s
     </section>
   );
 }
-
 function SubjectSelectionModal({ subjects, selectedIds, onClose, onSaved }) {
   const [draft, setDraft] = useState(() => new Set(selectedIds));
   const [saving, setSaving] = useState(false);
@@ -316,9 +350,9 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
         ) : (
           <div className="semester-category-grid">
             <CategoryCard title="Regular" icon={FiBookOpen} tone="blue" subjects={regular} />
-            <CategoryCard title="Elective" icon={FiLayers} tone="purple" subjects={elective} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
-            <CategoryCard title="Honor" icon={FiFlag} tone="green" subjects={honor} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
-            <CategoryCard title="Practical" icon={FiActivity} tone="gold" subjects={practical} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} />
+            <CategoryCard title="Elective Subjects" icon={FiLayers} tone="purple" subjects={elective} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} onAdd={() => setEditing(true)} />
+            <CategoryCard title="Honor Subjects" icon={FiFlag} tone="green" subjects={honor} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} onAdd={() => setEditing(true)} />
+            <CategoryCard title="Practical Subjects" icon={FiActivity} tone="gold" subjects={practical} selectable={false} selectedIds={new Set()} onToggle={() => {}} options={[]} onAdd={() => setEditing(true)} />
           </div>
         )}
       </section>
