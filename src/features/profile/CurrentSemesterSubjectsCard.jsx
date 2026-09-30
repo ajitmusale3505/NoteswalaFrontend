@@ -20,14 +20,15 @@ const CATEGORY = {
 const categoryOf = (subject) => {
   const code = String(subject?.categoryCode || "").trim().toUpperCase();
   const id = String(subject?.categoryId || "").trim().toUpperCase();
+  const name = String(subject?.categoryName || "").trim().toUpperCase();
 
   // Subject offerings use normalized category codes (REGULAR/ELECTIVE/
   // PRACTICAL). Keep compatibility with legacy/core/lab values and the
   // seeded CAT identifiers so the UI never hides valid offerings.
-  if (code === "REGULAR" || code === "CORE" || id === "CAT10001") return CATEGORY.REGULAR;
-  if (code === "ELECTIVE" || code === "OPEN_ELECTIVE" || id === "CAT10002") return CATEGORY.ELECTIVE;
-  if (code === "HONOR" || code === "HONOURS" || id === "CAT10004") return CATEGORY.HONOR;
-  if (code === "PRACTICAL" || code === "LAB" || code === "PRACTICAL_ONLY" || id === "CAT10003") return CATEGORY.PRACTICAL;
+  if (code === "REGULAR" || code === "CORE" || id === "CAT10001" || name.includes("REGULAR") || name.includes("CORE")) return CATEGORY.REGULAR;
+  if (code === "ELECTIVE" || code === "OPEN_ELECTIVE" || id === "CAT10002" || name.includes("ELECTIVE")) return CATEGORY.ELECTIVE;
+  if (code === "HONOR" || code === "HONOURS" || id === "CAT10004" || name.includes("HONOR")) return CATEGORY.HONOR;
+  if (code === "PRACTICAL" || code === "LAB" || code === "PRACTICAL_ONLY" || id === "CAT10003" || name.includes("PRACTICAL") || name.includes("LAB")) return CATEGORY.PRACTICAL;
 
   return code;
 };
@@ -232,17 +233,26 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
 
     try {
       setLoading(true);
-      const [subjectsResponse, selectionsResponse] = await Promise.all([
-        getCurrentAcademicSubjects(),
-        getCurrentSubjectSelections()
-      ]);
-      setSubjects(responseList(subjectsResponse, "subjects"));
-      const selectionPayload = selectionsResponse?.data?.data ?? selectionsResponse?.data ?? {};
-      setSelectedIds(
-        Array.isArray(selectionPayload)
-          ? selectionPayload
-          : (selectionPayload.selectedSubjectOfferingIds || [])
-      );
+      // Load the authoritative academic subjects independently from optional
+      // user selections. A missing/empty selection record must never hide the
+      // regular subjects returned by /academic-context/subjects.
+      const subjectsResponse = await getCurrentAcademicSubjects();
+      const resolvedSubjects = responseList(subjectsResponse, "subjects");
+      setSubjects(resolvedSubjects);
+
+      try {
+        const selectionsResponse = await getCurrentSubjectSelections();
+        const selectionPayload = selectionsResponse?.data?.data ?? selectionsResponse?.data ?? {};
+        setSelectedIds(
+          Array.isArray(selectionPayload)
+            ? selectionPayload
+            : (selectionPayload.selectedSubjectOfferingIds || [])
+        );
+      } catch (selectionError) {
+        // No optional selections is a valid first-time state.
+        // Keep the already-loaded regular/available subjects visible.
+        setSelectedIds([]);
+      }
     } catch (error) {
       setSubjects([]);
       setSelectedIds([]);
