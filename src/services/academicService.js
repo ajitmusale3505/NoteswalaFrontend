@@ -3,6 +3,7 @@ import { apiClient } from "./api";
 export const getUniversities=()=>apiClient.get("/universities");
 export const getCollegesByUniversity=(id)=>apiClient.get(`/colleges/university/${id}`);
 export const getBranchesByCollege=(id)=>apiClient.get(`/branches/college/${id}`);
+export const getAllBranches=()=>apiClient.get("/branches");
 export const getAcademicYearsByUniversity=(id)=>apiClient.get(`/academic-years/university/${id}`);
 export const getExamPatterns=()=>apiClient.get("/exam-patterns");
 export const getExamPatternsByUniversity=(universityId)=>apiClient.get("/exam-patterns").then((response)=>({
