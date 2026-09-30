@@ -192,8 +192,9 @@ function ProfileCompletion({user, academic, personal}) {
         academic?.universityName,
         academic?.collegeName,
         academic?.branchName,
+        academic?.semesterName,
         academic?.currentStatus,
-        academic?.academicYearName,
+        academic?.examPatternName || academic?.academicYearName,
         academic?.cgpa,
         academic?.graduationYear
       ].every(hasValue)
