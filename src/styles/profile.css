@@ -603,3 +603,87 @@
   .social-link-input{margin-left:0}
   .social-links-save{min-width:150px}
 }
+
+/* Current semester subjects */
+.semester-subject-card{grid-column:1/-1;padding:15px 17px}
+.semester-subject-card>header{align-items:flex-start;margin-bottom:14px}
+.semester-subject-card>header>div:first-child{min-width:0}
+.semester-subject-card>header h2{margin-bottom:4px}
+.semester-subject-card>header p{margin:0;color:#667b92;font-size:11px;line-height:1.4}
+.semester-subject-header-actions{display:flex;align-items:center;gap:8px}
+.semester-badge{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border:1px solid #eadcc9;border-radius:16px;background:#fffaf3;color:#966426;font-size:11px;white-space:nowrap}
+.semester-badge svg{font-size:13px}
+.semester-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.semester-category{min-width:0;border:1px solid #e1e8ee;border-radius:10px;overflow:hidden;background:#fff}
+.semester-category>header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:9px 10px;margin:0;border-bottom:1px solid rgba(20,50,80,.06)}
+.semester-category-title{display:flex;gap:8px;min-width:0}
+.semester-category-icon{width:25px;height:25px;display:grid;place-items:center;border-radius:7px;flex:0 0 25px}
+.semester-category-title h3{margin:0;font:600 12px "Libre Baskerville",serif;color:#173a5c}
+.semester-category-title p{margin:3px 0 0;font-size:9px;line-height:1.35;color:#718197}
+.semester-category>header>b{font-size:9px;white-space:nowrap;color:#61758d}
+.semester-category-blue .semester-category-icon{background:#edf6ff;color:#2775b9}
+.semester-category-purple .semester-category-icon{background:#f4edff;color:#7438c7}
+.semester-category-green .semester-category-icon{background:#eaf8f1;color:#15966e}
+.semester-category-gold .semester-category-icon{background:#fff1e2;color:#c36c12}
+.semester-category-blue>header{background:#f5faff}
+.semester-category-purple>header{background:#fbf8ff}
+.semester-category-green>header{background:#f5fbf8}
+.semester-category-gold>header{background:#fffaf4}
+.semester-subject-list{display:flex;flex-wrap:wrap;gap:6px;padding:9px}
+.semester-subject-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 8px;border-radius:14px;background:#f4f7fa;border:1px solid #e7edf2;color:#34536f;font-size:9.5px;line-height:1.2}
+.semester-subject-chip>span{overflow:hidden;text-overflow:ellipsis}
+.semester-empty-inline{display:block;padding:5px 2px;color:#8392a2;font-size:9.5px}
+.semester-subject-state{min-height:88px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed #d9e2e9;border-radius:9px;background:#fbfcfd;color:#65798f;font-size:11px}
+.semester-loading-dot{width:9px;height:9px;border-radius:50%;border:2px solid #dbe4eb;border-top-color:#9b6b32;animation:semester-spin .8s linear infinite}
+@keyframes semester-spin{to{transform:rotate(360deg)}}
+.semester-subject-overlay{position:fixed;inset:0;z-index:10020;background:rgba(16,31,46,.56);backdrop-filter:blur(7px);display:grid;place-items:center;padding:28px}
+.semester-subject-modal{width:min(1100px,96vw);height:min(790px,92vh);display:grid;grid-template-columns:34% 66%;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 30px 90px rgba(15,36,57,.3);color:#102b45}
+.semester-subject-art{position:relative;overflow:hidden;padding:31px 36px;background:linear-gradient(150deg,#fff 0%,#fffaf2 65%,#f5ecdd 100%);border-right:1px solid #edf0f2}
+.semester-subject-art:after{content:"";position:absolute;right:-110px;top:120px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(183,130,61,.09),transparent 67%)}
+.semester-subject-brand{position:relative;z-index:2;display:flex;align-items:center;gap:9px;font:700 25px "Libre Baskerville",serif;color:#12385e}
+.semester-subject-brand svg{font-size:31px}
+.semester-subject-art-copy{position:relative;z-index:2;margin-top:70px;max-width:285px}
+.semester-subject-art-copy small{color:#b06f21;font-size:10px;text-transform:uppercase;letter-spacing:1.7px}
+.semester-subject-art-copy h2{font:400 32px/1.13 "Libre Baskerville",serif;margin:11px 0;color:#102b45}
+.semester-subject-art-copy h2 em{font-style:normal;color:#a66d22}
+.semester-subject-art-copy p{font-size:13px;line-height:1.55;color:#506884}
+.semester-subject-art-books{position:absolute;left:38px;bottom:45px;z-index:2;display:grid;gap:6px;width:245px;transform:rotate(-4deg)}
+.semester-subject-art-books span{display:block;padding:8px 15px;border-radius:4px;color:#fff;font:600 9px "DM Sans",sans-serif;letter-spacing:1px;box-shadow:0 4px 9px rgba(20,38,60,.13)}
+.semester-subject-art-books span:nth-child(1){width:175px;background:#d6b07c}
+.semester-subject-art-books span:nth-child(2){width:215px;background:#2d6285}
+.semester-subject-art-books span:nth-child(3){width:190px;background:#b77b36}
+.semester-subject-art-books span:nth-child(4){width:225px;background:#8a6640}
+.semester-subject-main{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;padding:26px 28px 18px;background:#fff}
+.semester-subject-close{position:absolute;right:17px;top:16px;width:34px;height:34px;border:0;border-radius:50%;background:#f6f7f8;color:#20364b;display:grid;place-items:center}
+.semester-subject-heading{padding-right:45px;flex:0 0 auto}
+.semester-subject-heading h1{display:flex;align-items:center;gap:10px;font:400 27px "Libre Baskerville",serif;margin:0;color:#102b45}
+.semester-subject-heading h1 svg{color:#a66d22}
+.semester-subject-heading p{font-size:12px;color:#506884;margin:6px 0 15px}
+.semester-subject-scroll{flex:1 1 auto;min-height:0;overflow:auto;padding:2px 3px 6px 0;scrollbar-width:thin}
+.semester-subject-info{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid #dceaff;border-radius:8px;background:#eef5ff;color:#174a88;font-size:10px;line-height:1.45;margin-bottom:11px}
+.semester-subject-info svg{font-size:17px;flex:0 0 auto;margin-top:1px}
+.semester-subject-info strong{font-weight:700}
+.semester-category+.semester-category{margin-top:9px}
+.semester-select-area{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:9px}
+.semester-option{display:flex;align-items:center;gap:8px;min-width:0;padding:9px;border:1px solid #dfe6ec;border-radius:8px;background:#fff;text-align:left;color:#234462;cursor:pointer}
+.semester-option:hover{border-color:#c9d8e5;background:#fbfdff}
+.semester-option.selected{border-color:#c98a3d;background:#fff8ef;color:#925d1d}
+.semester-option-check{width:18px;height:18px;border:2px solid #d6dfe7;border-radius:5px;display:grid;place-items:center;flex:0 0 18px;color:#fff}
+.semester-option.selected .semester-option-check{border-color:#b97720;background:#b97720}
+.semester-option-check svg{font-size:11px;stroke-width:3}
+.semester-option span:last-child{min-width:0}
+.semester-option strong,.semester-option small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.semester-option strong{font-size:10px;font-weight:600}
+.semester-option small{margin-top:3px;color:#718197;font-size:8.5px}
+.semester-no-options{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px dashed #d9e2e9;border-radius:10px;color:#708299;text-align:center}
+.semester-no-options svg{font-size:24px;color:#a8783d}
+.semester-no-options strong{font-size:11px}
+.semester-no-options span{font-size:9px}
+.semester-subject-actions{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:8px;border-top:1px solid #edf0f2;background:#fff;flex:0 0 auto}
+.semester-subject-cancel,.semester-subject-save{height:44px;border-radius:8px;padding:0 19px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600}
+.semester-subject-cancel{border:1px solid #b8c6d2;background:#fff;color:#46627e}
+.semester-subject-save{border:0;background:#b7741a;color:#fff;box-shadow:0 7px 17px rgba(183,116,26,.2)}
+.semester-subject-save:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:1100px){.semester-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.semester-subject-overlay{padding:10px}.semester-subject-modal{height:96vh;width:96vw;grid-template-columns:1fr}.semester-subject-art{display:none}.semester-subject-main{padding:24px 18px 15px}}
+@media(max-width:560px){.semester-subject-overlay{padding:0}.semester-subject-modal{width:100vw;height:100vh;border-radius:0}.semester-subject-main{padding:22px 13px 12px}.semester-category-grid,.semester-select-area{grid-template-columns:1fr}.semester-subject-heading h1{font-size:23px}.semester-subject-actions{position:sticky;bottom:0}}
