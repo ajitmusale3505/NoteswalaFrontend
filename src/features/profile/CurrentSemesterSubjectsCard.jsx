@@ -17,7 +17,31 @@ const CATEGORY = {
   PRACTICAL: "PRACTICAL"
 };
 
-const categoryOf = (subject) => String(subject?.categoryCode || "").toUpperCase();
+const categoryOf = (subject) => {
+  const code = String(subject?.categoryCode || "").trim().toUpperCase();
+  const id = String(subject?.categoryId || "").trim().toUpperCase();
+
+  // Subject offerings use normalized category codes (REGULAR/ELECTIVE/
+  // PRACTICAL). Keep compatibility with legacy/core/lab values and the
+  // seeded CAT identifiers so the UI never hides valid offerings.
+  if (code === "REGULAR" || code === "CORE" || id === "CAT10001") return CATEGORY.REGULAR;
+  if (code === "ELECTIVE" || code === "OPEN_ELECTIVE" || id === "CAT10002") return CATEGORY.ELECTIVE;
+  if (code === "HONOR" || code === "HONOURS" || id === "CAT10004") return CATEGORY.HONOR;
+  if (code === "PRACTICAL" || code === "LAB" || code === "PRACTICAL_ONLY" || id === "CAT10003") return CATEGORY.PRACTICAL;
+
+  return code;
+};
+
+function responseList(response, ...keys) {
+  const payload = response?.data;
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  for (const key of keys) {
+    if (Array.isArray(payload?.data?.[key])) return payload.data[key];
+    if (Array.isArray(payload?.[key])) return payload[key];
+  }
+  return [];
+}
 
 function subjectLabel(subject) {
   return subject?.subjectName || subject?.subjectCode || "Unnamed subject";
@@ -212,8 +236,13 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
         getCurrentAcademicSubjects(),
         getCurrentSubjectSelections()
       ]);
-      setSubjects(subjectsResponse.data?.data || []);
-      setSelectedIds(selectionsResponse.data?.data?.selectedSubjectOfferingIds || []);
+      setSubjects(responseList(subjectsResponse, "subjects"));
+      const selectionPayload = selectionsResponse?.data?.data ?? selectionsResponse?.data ?? {};
+      setSelectedIds(
+        Array.isArray(selectionPayload)
+          ? selectionPayload
+          : (selectionPayload.selectedSubjectOfferingIds || [])
+      );
     } catch (error) {
       setSubjects([]);
       setSelectedIds([]);
@@ -225,7 +254,15 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
 
   useEffect(() => {
     load();
-  }, [academic?.semesterId, academic?.currentYear, academic?.programId, academic?.examPatternId]);
+  }, [
+    academic?.universityId,
+    academic?.branchId,
+    academic?.programId,
+    academic?.examPatternId,
+    academic?.academicYearId,
+    academic?.semesterId,
+    academic?.currentYear
+  ]);
 
   const regular = useMemo(
     () => subjects.filter((s) => categoryOf(s) === CATEGORY.REGULAR && s.mandatory),
