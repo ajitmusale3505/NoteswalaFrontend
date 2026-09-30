@@ -32,7 +32,9 @@ function buildSubject(rawSubject,resources,universityName){
  const subjectName=rawSubject.subjectName||"Subject";
  const subjectCode=rawSubject.subjectCode||rawSubject.code||"";
  const subjectResources=resources.filter(resource=>
-   text(resource?.subjectName)===text(subjectName)
+   text(resource?.subjectName)===text(subjectName) &&
+   (!rawSubject.branchName || !resource?.branchName || text(resource.branchName)===text(rawSubject.branchName)) &&
+   (!rawSubject.semesterNumber || resource?.semesterNumber==null || Number(resource.semesterNumber)===Number(rawSubject.semesterNumber))
  );
 
  const counts={Notes:0,PYQs:0,Practicals:0,Books:0,Others:0};
@@ -105,12 +107,14 @@ export default function SubjectPage(){
    let cancelled=false;
    const load=async()=>{
      try{
-       const [academicResponse,resourceResponse]=await Promise.all([
+       const [academicResponse,resourceResponse,universitiesResponse]=await Promise.all([
          getCurrentAcademicSubjects(),
-         getResources()
+         getResources(),
+         getUniversities()
        ]);
        const academicSubjects=unwrap(academicResponse);
        const resources=unwrap(resourceResponse);
+       const universities=unwrap(universitiesResponse);
        const rawSubject=academicSubjects.find(item=>
          String(item.subjectCode||item.code||"").toUpperCase()===code
        );
@@ -120,7 +124,8 @@ export default function SubjectPage(){
            setLoadError(true);
            return;
          }
-         const university=universities.find(item=>String(item.id)===String(rawSubject.universityId));\n         setSubject(buildSubject(rawSubject,Array.isArray(resources)?resources:[],university?.name));
+         const university=universities.find(item=>String(item.id)===String(rawSubject.universityId));
+         setSubject(buildSubject(rawSubject,Array.isArray(resources)?resources:[],university?.name));
          setLoadError(false);
        }
      }catch{
