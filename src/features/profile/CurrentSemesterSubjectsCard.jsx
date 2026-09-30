@@ -148,6 +148,13 @@ function SubjectSelectionModal({ subjects, selectedIds, onClose, onSaved }) {
               <span><strong>Regular subjects are automatic.</strong> They come directly from your current academic context. Only optional categories can be selected below.</span>
             </div>
 
+            <CategoryCard
+              title="Regular Subjects"
+              icon={FiBookOpen}
+              tone="blue"
+              subjects={subjects.filter((subject) => categoryOf(subject) === CATEGORY.REGULAR && subject.mandatory)}
+            />
+
             {groups[CATEGORY.ELECTIVE].length > 0 && (
               <CategoryCard title="Elective Subjects" icon={FiLayers} tone="purple" selectable
                 subjects={groups[CATEGORY.ELECTIVE]} options={groups[CATEGORY.ELECTIVE]}
