@@ -1,7 +1,6 @@
 import {
-  FiArrowDownToLine, FiBookOpen, FiCalendar, FiCheckCircle, FiChevronRight,
-  FiCloudUpload, FiEye, FiFileText, FiImage, FiInfo, FiLandmark, FiLayers,
-  FiMapPin, FiTag, FiTrash2, FiUploadCloud, FiX,
+  FiDownload, FiBookOpen, FiCalendar, FiCheckCircle, FiChevronRight,
+  FiUploadCloud, FiEye, FiFileText, FiImage, FiInfo, FiLandmark,   FiMapPin, FiTag, FiTrash2, FiUploadCloud, FiX,
 } from "react-icons/fi";
 
 const uploadSteps = [
@@ -56,7 +55,7 @@ export function UploadFilePanel({ pdfFile, onPdfSelect, onPdfRemove, thumbnail, 
         <input type="file" accept="application/pdf,.pdf" onChange={(event) => { const file = event.target.files?.[0]; if (file) onPdfSelect(file); event.target.value = ""; }} />
         <FiFileText className="admin-pdf-drop-icon" />
         <strong>Drop PDF file here</strong><span>or click to browse</span><small>Only PDF files are allowed (Max 50 MB)</small>
-        <span className="admin-choose-file"><FiCloudUpload /> Choose PDF File</span>
+        <span className="admin-choose-file"><FiUploadCloud /> Choose PDF File</span>
       </label>
 
       {pdfFile && <div className="admin-selected-file">
@@ -236,12 +235,12 @@ export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranc
           <p><FiMapPin /> <span>Branch: {selectedBranch?.name || "Select branch"}</span></p>
           <p><FiCalendar /> <span>Semester: {selectedSemester?.name || "Select semester"}</span></p>
           <p><FiFileText /> <span>Type: {documentLabel}</span></p>
-          <p><FiCloudUpload /> <span>Access: {accessLabel}</span></p>
+          <p><FiUploadCloud /> <span>Access: {accessLabel}</span></p>
           {pdfFile && <p><FiFileText /> <span>{pdfFile.name}</span></p>}
         </div>
         <div className="admin-resource-preview-actions">
           <button type="button" disabled={!pdfFile} onClick={() => { if (pdfFile) window.open(URL.createObjectURL(pdfFile), "_blank", "noopener,noreferrer"); }}><FiFileText /> View PDF</button>
-          <button type="button" disabled={!pdfFile} onClick={() => { if (!pdfFile) return; const url = URL.createObjectURL(pdfFile); const link = document.createElement("a"); link.href = url; link.download = pdfFile.name; link.click(); URL.revokeObjectURL(url); }}><FiArrowDownToLine /> Download</button>
+          <button type="button" disabled={!pdfFile} onClick={() => { if (!pdfFile) return; const url = URL.createObjectURL(pdfFile); const link = document.createElement("a"); link.href = url; link.download = pdfFile.name; link.click(); URL.revokeObjectURL(url); }}><FiDownload /> Download</button>
         </div>
       </div>
     </aside>
