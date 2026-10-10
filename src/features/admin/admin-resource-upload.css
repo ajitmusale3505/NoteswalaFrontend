@@ -1,0 +1,197 @@
+/* Admin-only resource uploader */
+.admin-upload-app-shell .admin-upload-page-content{gap:11px;padding-top:0;padding-bottom:18px}
+.admin-upload-page-heading{position:relative;min-height:125px;overflow:hidden;margin:0 -1px;padding:13px 12px 17px;background:linear-gradient(100deg,#fff 0%,#fff 48%,#fffbf6 74%,#fdf3e8 100%);border-bottom:1px solid #edf1f5}
+.admin-upload-breadcrumbs{position:relative;z-index:2;display:flex;align-items:center;gap:8px;color:#536f97;font-size:10px}
+.admin-upload-breadcrumbs button{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:#56739c;font-size:10px}
+.admin-upload-breadcrumbs button:hover{color:#10366a}
+.admin-upload-breadcrumbs>svg{color:#9aabc0;font-size:12px}
+.admin-upload-breadcrumbs>span{color:#173760;font-weight:600}
+.admin-upload-title-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;min-height:76px}
+.admin-upload-title-row h1{margin:4px 0 3px;color:#102d58;font:400 clamp(30px,2.8vw,39px)/1.15 "Libre Baskerville",serif;letter-spacing:-.055em}
+.admin-upload-title-row p{margin:0;color:#59759e;font-size:13px}
+.admin-upload-banner-art{position:absolute;right:-3px;top:-17px;width:32%;height:130px;overflow:hidden}
+.admin-upload-banner-art:before{position:absolute;inset:0;background:linear-gradient(90deg,transparent,#fff6ec9e);content:""}
+.admin-upload-banner-art>p{position:absolute;left:9%;top:9px;z-index:1;margin:0;color:#a84905;font:italic 16px/1.15 "Libre Baskerville",serif;transform:rotate(-8deg)}
+.admin-upload-banner-art>p em{font-weight:700}
+.admin-upload-art-stack{position:absolute;right:38px;top:3px;z-index:2;display:flex;flex-direction:column;gap:2px;width:135px;transform:perspective(180px) rotateY(-4deg)}
+.admin-upload-art-stack span{display:grid;place-items:center;height:20px;border-radius:3px 7px 7px 3px;box-shadow:0 3px 5px #23405a19,inset 0 2px 0 #ffffff36;font:700 10px "DM Sans",sans-serif;letter-spacing:.04em}
+.admin-upload-art-stack span:nth-child(1){background:linear-gradient(#e8c894,#ceab78);color:#634424}
+.admin-upload-art-stack span:nth-child(2){background:linear-gradient(#254663,#102f50);color:#fff}
+.admin-upload-art-stack span:nth-child(3){background:linear-gradient(#f2e4cd,#d9c3a4);color:#263e59}
+.admin-upload-art-stack span:nth-child(4){background:linear-gradient(#677a80,#3d5660);color:#fff}
+.admin-upload-art-stack span:nth-child(5){background:linear-gradient(#e5d5bc,#b89a76);color:#4e3827}
+.admin-upload-art-plant{position:absolute;right:-2px;top:0;width:45px;height:95px}
+.admin-upload-art-plant:before{position:absolute;left:21px;top:18px;width:3px;height:66px;background:#98824d;transform:rotate(15deg);content:""}
+.admin-upload-art-plant i{position:absolute;width:25px;height:13px;border-radius:100% 0 100% 0;background:linear-gradient(120deg,#d0d9b6,#64794a)}
+.admin-upload-art-plant i:nth-child(1){top:12px;right:8px}
+.admin-upload-art-plant i:nth-child(2){top:27px;right:20px;transform:rotate(35deg)}
+.admin-upload-art-plant i:nth-child(3){top:39px;right:0;transform:rotate(-15deg)}
+.admin-upload-art-plant b{position:absolute;right:1px;bottom:0;width:29px;height:15px;border-radius:3px 3px 8px 8px;background:linear-gradient(90deg,#e7dfd2,#fbf8f0,#d4cbbb)}
+.admin-upload-stepper{display:flex;align-items:center;gap:0;min-height:70px;padding:11px 15px;border:1px solid #e5eaf1;border-radius:10px;background:linear-gradient(100deg,#fff,#fcfdff);box-shadow:0 2px 6px #1e42680a}
+.admin-upload-step{position:relative;display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:0 7px;border:0;background:transparent;text-align:left}
+.admin-upload-step-number{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border:1px solid #d9e2ef;border-radius:50%;background:#fff;color:#17375f;font:400 15px "Libre Baskerville",serif;box-shadow:0 2px 4px #29476508}
+.admin-upload-step.is-active .admin-upload-step-number{border-color:#143868;background:#123363;color:#fff;box-shadow:0 5px 12px #15375c20}
+.admin-upload-step.is-complete .admin-upload-step-number{border-color:#168653;background:#e7f7ee;color:#168653}
+.admin-upload-step-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.admin-upload-step-copy strong{color:#18365e;font:400 11px "Libre Baskerville",serif;white-space:nowrap}
+.admin-upload-step-copy small{overflow:hidden;color:#6680a3;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.admin-upload-step-connector{height:1px;flex:1;min-width:12px;margin:0 5px;background:#d7e0ed}
+.admin-upload-step.is-active .admin-upload-step-connector{height:2px;background:#183b70}
+.admin-upload-first-row,.admin-upload-second-row{display:grid;align-items:stretch;gap:11px;min-width:0}
+.admin-upload-first-row{grid-template-columns:minmax(0,1.04fr) minmax(0,1.12fr) minmax(270px,.86fr)}
+.admin-upload-second-row{grid-template-columns:minmax(0,1.12fr) minmax(0,1.08fr) minmax(0,.92fr)}
+.admin-upload-card{position:relative;min-width:0;padding:13px 14px 12px;border:1px solid #e3eaf2;border-radius:10px;background:#fff;box-shadow:0 2px 6px #1f41690b;scroll-margin-top:81px}
+.admin-upload-panel-heading{display:flex;align-items:center;gap:10px;min-width:0;margin-bottom:11px}
+.admin-upload-number{display:grid;place-items:center;width:33px;height:33px;flex:0 0 33px;border-radius:50%;background:linear-gradient(145deg,#bf8c4a,#9e672d);color:#fff;font:400 14px "Libre Baskerville",serif;box-shadow:0 2px 4px #85511a22}
+.admin-upload-heading-icon{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:#fff0dd;color:#9f500e;font-size:18px}
+.admin-upload-panel-heading>div{min-width:0}
+.admin-upload-panel-heading h2{margin:0;color:#17345c;font:400 14px/1.28 "Libre Baskerville",serif;letter-spacing:-.025em}
+.admin-upload-panel-heading p{margin:3px 0 0;color:#6680a2;font-size:9px;line-height:1.35}
+.admin-pdf-dropzone{display:flex;position:relative;align-items:center;flex-direction:column;justify-content:center;min-height:183px;padding:14px 12px;border:1px dashed #b9cce5;border-radius:7px;background:linear-gradient(130deg,#fcfdff,#f8fbff);color:#14345e;text-align:center;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.admin-pdf-dropzone:hover{border-color:#789fda;background:#f4f8ff}
+.admin-pdf-dropzone input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.admin-pdf-dropzone:focus-within{outline:3px solid #2d71c51a}
+.admin-pdf-drop-icon{margin-bottom:7px;color:#153967;font-size:32px;stroke-width:1.6}
+.admin-pdf-dropzone>strong{font:400 13px "Libre Baskerville",serif}
+.admin-pdf-dropzone>span:not(.admin-choose-file){margin-top:4px;color:#607ba2;font-size:10px}
+.admin-pdf-dropzone>small{margin-top:7px;color:#6c83a5;font-size:9px}
+.admin-choose-file{display:inline-flex;align-items:center;gap:8px;margin-top:13px;padding:9px 19px;border-radius:6px;background:#fff0d9;color:#523b24;font:400 10px "Libre Baskerville",serif}
+.admin-choose-file svg{font-size:14px}
+.admin-selected-file{display:flex;align-items:center;gap:9px;min-width:0;min-height:53px;padding:8px 11px;border:1px solid #d8e5f6;border-top:0;border-radius:0 0 7px 7px;background:#fff}
+.admin-selected-file-icon{display:grid;place-items:center;width:28px;height:30px;flex:0 0 28px;border-radius:5px;background:#fff0ef;color:#e23232;font-size:17px}
+.admin-selected-file-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.admin-selected-file-copy strong{overflow:hidden;color:#153663;font-size:10px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.admin-selected-file-copy small{color:#6c83a3;font-size:9px}
+.admin-file-valid-icon{flex:0 0 auto;color:#09a05d;font-size:17px}
+.admin-selected-file>button{display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;border:1px solid #dce6f2;border-radius:6px;background:#fff;color:#294d7b;font-size:14px}
+.admin-upload-image-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
+.admin-image-upload-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:83px;padding:7px 5px;border:1px dashed #d2deed;border-radius:7px;background:#fcfdff;text-align:center}
+.admin-image-upload-option>strong{color:#244773;font-size:9px;font-weight:600}
+.admin-image-upload-option>small{margin-top:-3px;color:#7187a5;font-size:8px}
+.admin-image-upload-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:29px;margin-top:5px;padding:0 10px;border:1px solid #dbe6f3;border-radius:6px;background:#fff;color:#193c68;font-size:9px;cursor:pointer}
+.admin-image-upload-button svg{font-size:13px}
+.admin-image-upload-button input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.admin-image-upload-button:focus-within{outline:2px solid #2d71c51a}
+.admin-image-file-pill{display:flex;align-items:center;gap:3px;max-width:100%;margin-top:5px;color:#436389;font-size:9px}
+.admin-image-file-pill>svg{flex:0 0 auto}
+.admin-image-file-pill span{overflow:hidden;max-width:78px;text-overflow:ellipsis;white-space:nowrap}
+.admin-image-file-pill button{display:grid;place-items:center;width:20px;height:20px;padding:0;border:0;background:transparent;color:#a33b3b}
+.admin-upload-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.admin-upload-field{display:flex;flex-direction:column;position:relative;min-width:0;gap:5px}
+.admin-upload-field.span-2{grid-column:span 2}
+.admin-upload-field-label{display:block;color:#183860;font-size:10px;font-weight:500;line-height:1.25}
+.admin-upload-field-label>b{color:#df2d2d;font-weight:600}
+.admin-upload-field-label>small{color:#7489a5;font-size:9px;font-weight:400}
+.admin-upload-field>input,.admin-upload-field>select,.admin-upload-field>textarea,.admin-upload-input-with-icon{width:100%;min-width:0;height:33px;padding:0 10px;border:1px solid #dce6f2;border-radius:6px;outline:0;background:#fff;color:#254875;font-size:10px;transition:border-color .15s ease,box-shadow .15s ease}
+.admin-upload-field>input::placeholder,.admin-upload-field>textarea::placeholder,.admin-upload-input-with-icon input::placeholder{color:#7790b6;opacity:1}
+.admin-upload-field>select{padding-right:26px;color:#5f7da7}
+.admin-upload-field>select:disabled{background:#f7f9fc;color:#9baac0;cursor:not-allowed}
+.admin-upload-field>textarea{height:66px;min-height:66px;padding:9px 10px;resize:vertical;line-height:1.45}
+.admin-upload-field>input:focus,.admin-upload-field>select:focus,.admin-upload-field>textarea:focus,.admin-upload-input-with-icon:focus-within{border-color:#8db0dd;box-shadow:0 0 0 3px #2e73cf12}
+.admin-upload-field .admin-character-count{position:absolute;right:7px;bottom:-13px;color:#7990ad;font-size:8px}
+.admin-upload-field:has(.admin-character-count){margin-bottom:6px}
+.admin-upload-input-with-icon{display:flex;align-items:center;gap:7px;padding:0 9px;color:#6380a5}
+.admin-upload-input-with-icon svg{flex:0 0 auto;font-size:13px}
+.admin-upload-input-with-icon input{width:100%;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;color:#254875;font-size:10px}
+.admin-upload-basic-panel .admin-upload-field-grid{gap:10px 11px}
+.admin-upload-basic-panel .admin-upload-field:has(textarea){margin-bottom:0}
+.admin-upload-inline-loading{display:flex;align-items:center;gap:7px;margin:-2px 0 10px;color:#5e7ba1;font-size:9px}
+.admin-upload-inline-loading span,.admin-upload-loading>span{width:12px;height:12px;border:2px solid #d9e5f4;border-top-color:#2a5d9d;border-radius:50%;animation:admin-spin .8s linear infinite}
+.admin-upload-academic-note{display:flex;align-items:flex-start;gap:7px;margin:11px 0 0;padding:9px;border-radius:6px;background:#f3f7fd;color:#617ca1;font-size:9px;line-height:1.45}
+.admin-upload-academic-note svg{flex:0 0 auto;color:#1a579a;font-size:13px}
+.admin-access-type-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.admin-access-type-options button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:35px;min-width:0;padding:4px 5px;border:1px solid #dce5f2;border-radius:6px;background:#fff;color:#24466f;font-size:9px;white-space:nowrap}
+.admin-access-type-options button>span{font-size:12px}
+.admin-access-type-options button.selected{border-color:#e8a14d;background:#fff9f0;color:#a75300;box-shadow:inset 0 0 0 1px #e8a14d18}
+.admin-upload-info-box{display:flex;align-items:flex-start;gap:9px;margin-top:11px;padding:10px 11px;border-radius:7px;background:#eef5ff;color:#184577;font-size:9px;line-height:1.45}
+.admin-upload-info-box svg{flex:0 0 auto;margin-top:1px;color:#14519a;font-size:16px}
+.admin-upload-toggle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;margin-top:17px}
+.admin-upload-toggle-grid label{display:flex;align-items:center;gap:7px;min-width:0;color:#21466f;font-size:10px;cursor:pointer}
+.admin-upload-toggle-grid input{width:17px;height:17px;flex:0 0 17px;margin:0;accent-color:#153b71}
+.admin-resource-preview-panel{padding:13px}
+.admin-resource-preview-panel .admin-upload-panel-heading{margin-bottom:13px}
+.admin-resource-preview{padding:13px 12px 11px;border:1px solid #e7ecf2;border-radius:8px;background:linear-gradient(#fff,#fffdfb);box-shadow:0 6px 17px #243e5c0a}
+.admin-resource-preview:after{display:block;clear:both;content:""}
+.admin-resource-preview-cover{float:left;display:grid;place-items:center;width:78px;height:103px;margin:3px 13px 12px 3px;overflow:hidden;border:1px solid #e7d5bf;border-radius:5px;background:#f4e3c8;box-shadow:inset 5px 0 0 #ffffff5c,0 3px 7px #7b51241a}
+.admin-resource-preview-cover img{width:100%;height:100%;object-fit:cover}
+.admin-book-cover-art{position:relative;display:flex;align-items:center;flex-direction:column;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg,#e8c9a2,#b88452);color:#68472c;text-align:center}
+.admin-book-cover-art:before{position:absolute;inset:0 0 0 5px;border-left:2px solid #ffffff50;border-right:1px solid #93673d33;content:""}
+.admin-book-cover-art svg{font-size:24px}
+.admin-book-cover-art>span{margin-top:7px;font-size:6px;letter-spacing:.18em}
+.admin-book-cover-art>strong{margin-top:6px;font:700 10px/1.25 "Libre Baskerville",serif}
+.admin-book-cover-art>i{position:absolute;right:4px;bottom:5px;padding:3px 5px;border-radius:4px;background:#e5392e;color:white;font-size:7px;font-style:normal;font-weight:700}
+.admin-resource-preview-main{min-height:103px;padding-top:6px}
+.admin-resource-preview-main h3{margin:0;color:#16355e;font:400 13px/1.45 "Libre Baskerville",serif;letter-spacing:-.025em}
+.admin-preview-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.admin-preview-chips span{max-width:100%;overflow:hidden;padding:5px 9px;border-radius:20px;background:#fff0d9;color:#7d4a13;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.admin-preview-chips span+span{background:#f0e8df;color:#5c4b3b}
+.admin-resource-preview-meta{clear:both;display:flex;flex-direction:column;gap:12px;padding:8px 2px 14px}
+.admin-resource-preview-meta p{display:flex;align-items:center;gap:9px;margin:0;color:#5a7599;font-size:10px;line-height:1.35}
+.admin-resource-preview-meta p svg{flex:0 0 15px;color:#173d70;font-size:15px}
+.admin-resource-preview-meta p span{min-width:0;overflow-wrap:anywhere}
+.admin-resource-preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.admin-resource-preview-actions button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:37px;padding:0 6px;border:1px solid #e0e7f0;border-radius:6px;background:#fff;color:#173a68;font:400 10px "Libre Baskerville",serif}
+.admin-resource-preview-actions button:first-child{border-color:#163a6a;background:#123765;color:#fff}
+.admin-resource-preview-actions button:disabled{opacity:.45;cursor:not-allowed}
+.admin-upload-loading{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dfeaf7;border-radius:7px;background:#f7faff;color:#527198;font-size:10px}
+.admin-upload-footer{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;margin:0 -1px;padding:8px 2px 2px;background:linear-gradient(180deg,#fbfcfe00,#fbfcfe 22%);border-top:1px solid #e3eaf2}
+.admin-upload-review-note{display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:47px;padding:7px 12px;border-radius:7px;background:#edf5ff;color:#143f75}
+.admin-upload-review-note>svg{flex:0 0 auto;font-size:21px}
+.admin-upload-review-note>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.admin-upload-review-note strong{font:400 11px "Libre Baskerville",serif}
+.admin-upload-review-note small{color:#5475a0;font-size:9px;line-height:1.3}
+.admin-upload-footer-actions{display:flex;align-items:center;gap:8px}
+.admin-upload-footer-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:0 15px;border:1px solid #dce6f2;border-radius:6px;background:#fff;color:#153861;font:400 10px "Libre Baskerville",serif;white-space:nowrap;transition:transform .15s ease,background .15s ease}
+.admin-upload-footer-actions button:hover:not(:disabled){transform:translateY(-1px);background:#f8fbff}
+.admin-upload-footer-actions button:disabled{opacity:.65;cursor:wait}
+.admin-upload-footer-actions .admin-upload-submit{border-color:#123a6f;background:#103767;color:#fff;box-shadow:0 3px 7px #153c6d1c}
+.admin-upload-footer-actions .admin-upload-submit:hover:not(:disabled){background:#19487f}
+.admin-upload-button-spinner{width:13px;height:13px;border:2px solid #ffffff70;border-top-color:#fff;border-radius:50%;animation:admin-spin .7s linear infinite}
+.admin-upload-app-shell .admin-topbar-brand{display:none}
+@media (max-width:1400px){
+ .admin-upload-first-row{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+ .admin-resource-preview-panel{grid-column:1/-1}
+ .admin-resource-preview{display:grid;grid-template-columns:95px minmax(0,1fr);gap:0 12px}
+ .admin-resource-preview-cover{float:none;grid-row:1/3;width:90px;height:116px;margin:0}
+ .admin-resource-preview-main{min-height:0}
+ .admin-resource-preview-meta{grid-column:1/-1}
+ .admin-resource-preview-actions{grid-column:1/-1}
+}
+@media (max-width:1100px){
+ .admin-upload-second-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .admin-upload-second-row .admin-upload-card:last-child{grid-column:1/-1}
+ .admin-upload-stepper{padding-inline:6px}
+ .admin-upload-step{gap:7px;padding-inline:5px}
+ .admin-upload-step-number{width:32px;height:32px;flex-basis:32px;font-size:12px}
+ .admin-upload-step-copy strong{font-size:10px}
+ .admin-upload-step-copy small{font-size:8px}
+ .admin-upload-step-connector{margin-inline:2px}
+ .admin-upload-banner-art{width:32%;opacity:.8}
+}
+@media (max-width:760px){
+ .admin-upload-app-shell .admin-dashboard-content{padding-inline:9px}
+ .admin-upload-page-heading{min-height:127px;padding:11px 4px 13px}
+ .admin-upload-title-row h1{font-size:29px}
+ .admin-upload-title-row p{max-width:75%;font-size:11px;line-height:1.4}
+ .admin-upload-banner-art{right:-40px;width:45%;opacity:.5}
+ .admin-upload-breadcrumbs{gap:5px;font-size:9px}
+ .admin-upload-breadcrumbs button{font-size:9px}
+ .admin-upload-stepper{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:13px}
+ .admin-upload-step{min-height:34px}
+ .admin-upload-step-connector{display:none}
+ .admin-upload-first-row,.admin-upload-second-row{grid-template-columns:minmax(0,1fr);gap:9px}
+ .admin-resource-preview-panel,.admin-upload-second-row .admin-upload-card:last-child{grid-column:auto}
+ .admin-upload-card{padding:12px}
+ .admin-upload-step-copy strong{font-size:10px}
+ .admin-upload-step-number{width:31px;height:31px;flex-basis:31px}
+ .admin-upload-field-grid{gap:11px 9px}
+ .admin-access-type-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .admin-upload-footer{position:static;flex-direction:column;align-items:stretch;background:#fbfcfe}
+ .admin-upload-review-note{flex:none}
+ .admin-upload-footer-actions{display:grid;grid-template-columns:1fr 1fr}
+ .admin-upload-footer-actions .admin-upload-submit{grid-column:1/-1;grid-row:1}
+ .admin-upload-footer-actions button{min-height:40px}
+ .admin-resource-preview{display:block}
+ .admin-resource-preview-cover{float:left;width:78px;height:103px;margin:3px 13px 12px 3px}
+ .admin-resource-preview-meta{clear:both;display:flex}
+}
