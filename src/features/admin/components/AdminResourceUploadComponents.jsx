@@ -140,6 +140,29 @@ export function AcademicMappingPanel({ values, onChange, options, loading, disab
     ["semesterId", "Semester", options.semesters, true],
     ["subjectOfferingId", "Subject", options.subjects, true],
   ];
+
+  const emptyOptionLabel = (key, items) => {
+    if (items.length > 0) return `Select ${key === "subjectOfferingId" ? "subject" : key.replace(/Id$/, "").replace(/([A-Z])/g, " $1").toLowerCase().trim()}`;
+    if (key === "universityId") return "No universities available";
+    if (!values.universityId && ["collegeId", "branchId", "academicYearId", "semesterId", "subjectOfferingId"].includes(key)) {
+      return "Select university first";
+    }
+    if (key === "collegeId") return "No colleges available";
+    if (key === "branchId") return loading ? "Loading branches…" : "No branches available";
+    if (key === "academicYearId") return "No academic years available";
+    if (key === "semesterId") {
+      if (!values.academicYearId) return "Select academic year first";
+      return loading ? "Loading semesters…" : "No semesters available";
+    }
+    if (key === "subjectOfferingId") {
+      if (!values.branchId || !values.academicYearId || !values.semesterId) {
+        return "Select branch, year and semester first";
+      }
+      return loading ? "Loading subjects…" : "No subjects found for selection";
+    }
+    return "No options available";
+  };
+
   return (
     <section className="admin-upload-card" id="upload-step-3">
       <UploadPanelHeading number="3" title="Academic Mapping" description="Select university, branch, academic year, semester and subject" />
@@ -149,7 +172,7 @@ export function AcademicMappingPanel({ values, onChange, options, loading, disab
           <Field key={key} label={label} required={required}>
             <select value={values[key]} onChange={(event) => onChange(key, event.target.value)}
               required={required} disabled={disabled || (key !== "universityId" && !items.length)}>
-              <option value="">{items.length ? `Select ${label.toLowerCase()}` : key === "universityId" ? "No options available" : "Select previous fields first"}</option>
+              <option value="">{emptyOptionLabel(key, items)}</option>
               {items.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
             </select>
           </Field>
