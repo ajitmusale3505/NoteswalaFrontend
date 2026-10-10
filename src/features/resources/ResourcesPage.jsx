@@ -24,35 +24,79 @@ function unwrapResponse(response) {
   return response?.data?.data ?? response?.data ?? response ?? [];
 }
 
+function normalizeCategory(value) {
+  return String(value ?? "").trim().toUpperCase().replace(/[\\s-]+/g, "_");
+}
+
 function collectSelectionEntries(payload) {
   if (Array.isArray(payload)) return payload;
   if (!payload || typeof payload !== "object") return [];
 
   const groups = [
-    "subjects", "regular", "regularSubjects", "elective", "electiveSubjects",
-    "honor", "honorSubjects", "practical", "practicalSubjects",
+    "subjects", "regular", "regularSubjects", "regularSubjectOfferings",
+    "elective", "electiveSubjects", "electiveSubjectOfferings",
+    "honor", "honour", "honorSubjects", "honourSubjects", "honorSubjectOfferings",
+    "practical", "practicalSubjects", "practicalSubjectOfferings",
     "selections", "subjectSelections", "selectedSubjects", "items",
   ];
   const entries = [];
   groups.forEach((key) => {
-    if (Array.isArray(payload[key])) entries.push(...payload[key]);
+    if (Array.isArray(payload[key])) {
+      const category = normalizeCategory(key.replace(/Subjects?$|SubjectOfferings$/i, ""));
+      payload[key].forEach((entry) => entries.push(
+        entry && typeof entry === "object" && !entry.category && !entry.subjectCategory && !entry.selectionType
+          ? { ...entry, __selectionCategory: category }
+          : entry
+      ));
+    }
   });
   return entries;
+}
+
+function collectSelectedIds(payload) {
+  const ids = new Set();
+  if (!payload || typeof payload !== "object") return ids;
+  const idKeys = [
+    "subjectOfferingIds", "selectedSubjectOfferingIds", "selectedIds", "ids",
+    "regularSubjectOfferingIds", "regularSubjectIds",
+    "electiveSubjectOfferingIds", "electiveSubjectIds",
+    "honorSubjectOfferingIds", "honourSubjectOfferingIds", "honorSubjectIds", "honourSubjectIds",
+    "practicalSubjectOfferingIds", "practicalSubjectIds",
+  ];
+  idKeys.forEach((key) => {
+    if (Array.isArray(payload[key])) payload[key].forEach((item) => {
+      const id = getOfferingId(item);
+      if (id) ids.add(id);
+    });
+  });
+  return ids;
 }
 
 function getOfferingId(value) {
   if (typeof value === "string" || typeof value === "number") return String(value);
   const id = value?.subjectOfferingId ?? value?.subject_offering_id ??
     value?.offeringId ?? value?.offering?.id ??
-    value?.subjectOffering?.id ?? value?.subjectOffering?.subjectOfferingId;
+    value?.subjectOffering?.id ?? value?.subjectOffering?.subjectOfferingId ??
+    value?.id;
   return id == null ? null : String(id);
 }
 
 function getSubjectDetails(entry) {
+  if (!entry || typeof entry !== "object") return null;
   const subject = entry?.subjectOffering || entry?.subject || entry?.offering || entry;
-  const code = subject?.subjectCode || subject?.code || subject?.offering?.subjectCode;
-  const name = subject?.subjectName || subject?.name || subject?.offering?.subjectName;
-  return code && name ? { code: String(code), name: String(name), id: getOfferingId(entry) || getOfferingId(subject) } : null;
+  const details = subject?.subjectDetails || subject?.academicSubject || subject?.subject;
+  const code = subject?.subjectCode || subject?.code || subject?.offering?.subjectCode ||
+    details?.subjectCode || details?.code;
+  const name = subject?.subjectName || subject?.name || subject?.offering?.subjectName ||
+    details?.subjectName || details?.name;
+  const category = normalizeCategory(
+    entry?.__selectionCategory || entry?.subjectCategory || entry?.category ||
+    entry?.subjectType || entry?.selectionType || subject?.subjectCategory ||
+    subject?.category || subject?.subjectType || subject?.offeringType
+  );
+  return code && name
+    ? { code: String(code), name: String(name), id: getOfferingId(entry) || getOfferingId(subject), category }
+    : null;
 }
 
 function mapSelectedSubjects(selectionResponse, academicResponse) {
@@ -63,32 +107,26 @@ function mapSelectedSubjects(selectionResponse, academicResponse) {
     ? catalogPayload
     : collectSelectionEntries(catalogPayload);
 
-  // Some API versions return full subject objects; others return only selected offering IDs.
-  const selectedDetails = selectionEntries.map(getSubjectDetails).filter(Boolean);
-  const selectedIds = new Set();
-
-  const idContainers = [
-    selectionPayload?.subjectOfferingIds,
-    selectionPayload?.selectedSubjectOfferingIds,
-    selectionPayload?.selectedIds,
-    selectionPayload?.ids,
-  ];
-  idContainers.forEach((ids) => {
-    if (Array.isArray(ids)) ids.forEach((id) => {
-      const normalized = getOfferingId(id);
-      if (normalized) selectedIds.add(normalized);
-    });
-  });
+  const selectedIds = collectSelectedIds(selectionPayload);
   selectionEntries.forEach((entry) => {
     const id = getOfferingId(entry);
     if (id) selectedIds.add(id);
   });
 
-  // If selections contain IDs, resolve them against the current academic-context catalogue.
+  const selectedDetails = selectionEntries.map(getSubjectDetails).filter(Boolean);
+
+  // Regular subjects are mandatory for the user's academic context and are often returned
+  // by /academic-context/subjects rather than by the custom subject-selection endpoint.
   catalogEntries.forEach((entry) => {
-    const id = getOfferingId(entry);
     const details = getSubjectDetails(entry);
-    if (id && selectedIds.has(id) && details) selectedDetails.push({ ...details, id });
+    if (!details) return;
+    const id = details.id;
+    const isRegular = details.category === "REGULAR" ||
+      details.category === "REGULAR_SUBJECT" ||
+      details.category === "REGULAR_SUBJECT_OFFERING";
+    if (isRegular || (id && selectedIds.has(id))) {
+      selectedDetails.push(details);
+    }
   });
 
   const uniqueSubjects = new Map();
