@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminTopbar from "./components/AdminTopbar";
@@ -16,6 +17,7 @@ function formatToday() {
 }
 
 export default function AdminDashboardPage() {
+  const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return localStorage.getItem("noteswala_admin_sidebar_collapsed") === "true"; }
     catch { return false; }
@@ -35,12 +37,20 @@ export default function AdminDashboardPage() {
 
   const selectNavigation = (label) => {
     setActiveItem(label);
+    if (label === "Upload Resources") {
+      navigate("/admin/resources/upload");
+      return;
+    }
     if (label !== "Dashboard") {
       toast(label === "Settings & Audit Logs" ? "System settings are selected." : `${label} selected.`, { icon: "↗" });
     }
   };
 
   const showModuleNotice = (label) => {
+    if (label === "Upload Resource") {
+      navigate("/admin/resources/upload");
+      return;
+    }
     toast(`${label} is part of the admin workspace. Its management screen can be connected next.`, { icon: "ℹ️", duration: 3000 });
   };
 
