@@ -7,7 +7,7 @@ import {
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
 import { Link } from "react-router-dom";
-import { getCurrentAcademicSubjects } from "../../services/academicService";
+import { getCurrentSubjectSelections } from "../../services/academicService";
 
 const subjectPresentation = [
   { Icon: FiDatabase, tone: "blue" },
@@ -20,19 +20,43 @@ const subjectPresentation = [
   { Icon: FiTarget, tone: "green" },
 ];
 
-function mapAcademicSubjects(response) {
-  const data = response?.data?.data || response?.data || [];
+function extractSelectedSubjects(response) {
+  const payload = response?.data?.data ?? response?.data ?? response ?? [];
+  if (Array.isArray(payload)) return payload;
 
-  if (!Array.isArray(data)) {
-    return [];
-  }
+  // The API may return selected subjects grouped by profile category.
+  const groups = ["subjects", "regular", "regularSubjects", "elective", "electiveSubjects",
+    "honor", "honorSubjects", "practical", "practicalSubjects", "selections", "subjectSelections"];
+  const collected = [];
+  groups.forEach((key) => {
+    if (Array.isArray(payload?.[key])) collected.push(...payload[key]);
+  });
 
-  return data.map((subject, index) => {
+  // Support a single selection wrapper without ever substituting the full catalogue.
+  if (collected.length) return collected;
+  if (payload?.subjectOffering || payload?.subject) return [payload.subjectOffering || payload.subject];
+  return [];
+}
+
+function mapSelectedSubjects(response) {
+  const data = extractSelectedSubjects(response);
+  const uniqueSubjects = new Map();
+
+  data.forEach((entry) => {
+    const subject = entry?.subjectOffering || entry?.subject || entry;
+    const code = subject?.subjectCode || subject?.code || subject?.offering?.subjectCode;
+    const name = subject?.subjectName || subject?.name || subject?.offering?.subjectName;
+    if (!code || !name) return;
+    const key = String(subject.subjectOfferingId ?? subject.id ?? code);
+    if (!uniqueSubjects.has(key)) uniqueSubjects.set(key, { code, name });
+  });
+
+  return Array.from(uniqueSubjects.values()).map((subject, index) => {
     const presentation = subjectPresentation[index % subjectPresentation.length];
 
     return [
-      subject.subjectCode || subject.code || "—",
-      subject.subjectName || subject.name || "Subject",
+      subject.code,
+      subject.name,
       0,
       presentation.Icon,
       presentation.tone,
@@ -88,20 +112,23 @@ function ResourceListCard({ title, icon: Icon, action, children, className = "" 
 
 export default function ResourcesPage() {
   const [subjects, setSubjects] = useState([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadSubjects = async () => {
       try {
-        const response = await getCurrentAcademicSubjects();
+        const response = await getCurrentSubjectSelections();
 
         if (!cancelled) {
-          setSubjects(mapAcademicSubjects(response));
+          setSubjects(mapSelectedSubjects(response));
+          setSubjectsLoading(false);
         }
       } catch {
         if (!cancelled) {
           setSubjects([]);
+          setSubjectsLoading(false);
         }
       }
     };
@@ -140,7 +167,15 @@ export default function ResourcesPage() {
             <div><FiBookOpen /><h2>My Subjects</h2><span>Select a subject to explore study materials, PYQs, notes, practicals and more.</span></div>
             <button><FiSettings /> Manage Subjects</button>
           </header>
-          <div className="resource-subject-grid">{subjects.map((item) => <SubjectCard item={item} key={item[0]} />)}</div>
+          <div className="resource-subject-grid">
+            {subjectsLoading ? (
+              <p role="status">Loading your current semester subjects…</p>
+            ) : subjects.length ? (
+              subjects.map((item) => <SubjectCard item={item} key={item[0]} />)
+            ) : (
+              <p role="status">No subjects are selected for your current semester yet. Update your Current Semester Subjects in your profile.</p>
+            )}
+          </div>
         </section>
 
         <section className="resource-content-grid">
