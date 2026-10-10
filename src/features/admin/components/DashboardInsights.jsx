@@ -1,6 +1,6 @@
 import {
   FiArrowRight, FiBookOpen, FiCalendar, FiCode, FiFileText, FiGitBranch,
-  FiLandmark, FiLayers, FiList, FiMegaphone, FiUploadCloud, FiUsers,
+  FiLandmark, FiLayers, FiList, FiMegaphone, FiUploadCloud,
 } from "react-icons/fi";
 
 const categoryLegend = [
