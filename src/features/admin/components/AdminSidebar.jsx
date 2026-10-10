@@ -1,6 +1,6 @@
 import {
   FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
-  FiFlag, FiGitBranch, FiHome, FiHome, FiLayers, FiList, FiSettings,
+  FiFlag, FiGitBranch, FiHome, FiLayers, FiList, FiSettings,
   FiUploadCloud, FiUsers, FiBell, FiChevronLeft, FiMenu,
 } from "react-icons/fi";
 
