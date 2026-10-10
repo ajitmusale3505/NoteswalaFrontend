@@ -1,7 +1,7 @@
 import {
-  FiActivity, FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
+  FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
   FiFlag, FiGitBranch, FiHome, FiLandmark, FiLayers, FiList, FiSettings,
-  FiUploadCloud, FiUsers, FiMegaphone, FiChevronLeft, FiChevronRight,
+  FiUploadCloud, FiUsers, FiMegaphone, FiChevronLeft, FiChevronRight, FiMenu,
 } from "react-icons/fi";
 
 const navigationGroups = [
@@ -37,7 +37,7 @@ export default function AdminSidebar({ collapsed, onToggle, activeItem, onSelect
         <button className="admin-sidebar-toggle" type="button" onClick={onToggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-          {collapsed ? <FiChevronRight /> : <FiChevronLeft />}
+          {collapsed ? <FiMenu /> : <FiChevronLeft />}
         </button>
       </div>
 
