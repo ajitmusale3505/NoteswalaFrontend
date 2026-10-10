@@ -55,7 +55,6 @@ export default function AdminDashboardPage() {
       <div className="admin-workspace">
         <AdminTopbar
           collapsed={sidebarCollapsed}
-          onToggle={toggleSidebar}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
         />
