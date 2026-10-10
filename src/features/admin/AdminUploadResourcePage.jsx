@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FiChevronRight, FiHome } from "react-icons/fi";
@@ -179,6 +179,7 @@ export default function AdminUploadResourcePage() {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingAcademic, setLoadingAcademic] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const academicRequestRef = useRef(0);
 
   const pdfPreviewUrl = useObjectUrl(pdfFile);
   const coverPreviewUrl = useObjectUrl(imageFiles.coverImage);
@@ -261,43 +262,63 @@ export default function AdminUploadResourcePage() {
       setLoadingAcademic(true);
       try {
         const academicYear = options.academicYears.find((item) => getPublicId(item.id) === form.academicYearId);
-        const curriculum = selectBestCurriculum(curriculums, academicYear);
-        if (!curriculum?.id) {
-          setOptions((current) => ({ ...current, subjects: [] }));
-          return;
-        }
+        const activeCurriculums = curriculums.filter((item) => item.active !== false);
+        const yearStart = Number(academicYear?.startYear || String(academicYear?.name || "").match(/20\\d{2}/)?.[0]);
+        const yearEnd = Number(academicYear?.endYear || (yearStart ? yearStart + 1 : 0));
+        const yearMatchedCurriculums = activeCurriculums.filter((item) => {
+          const start = Number(item.startYear || 0);
+          const end = Number(item.endYear || 0);
+          return yearStart && (!start || yearStart >= start) && (!end || yearEnd <= end);
+        });
+        const candidates = yearMatchedCurriculums.length ? yearMatchedCurriculums : activeCurriculums;
+        const selectedSemester = options.semesters.find((item) => getPublicId(item.id) === form.semesterId);
 
-        const curriculumSemesterResponse = await getUploadCurriculumSemesters(curriculum.id);
-        const curriculumSemesters = getResponseList(curriculumSemesterResponse);
-        const matchedSemester = curriculumSemesters.find((item) =>
-          getPublicId(item.semesterId) === form.semesterId ||
-          (Number(item.semesterNumber) && Number(item.semesterNumber) === Number(options.semesters.find((semester) => getPublicId(semester.id) === form.semesterId)?.number))
+        // More than one curriculum can be active for a branch. Resolve the selected
+        // semester against each applicable curriculum instead of guessing one curriculum.
+        const curriculumResults = await Promise.allSettled(candidates.map(async (curriculum) => {
+          const semesterResponse = await getUploadCurriculumSemesters(curriculum.id);
+          const curriculumSemesters = getResponseList(semesterResponse);
+          const matchingSemester = curriculumSemesters.find((item) =>
+            sameAcademicId(item.semesterId, form.semesterId, "S", 10000) ||
+            (Number(item.semesterNumber) > 0 && Number(item.semesterNumber) === Number(selectedSemester?.number))
+          );
+          if (!matchingSemester) return { curriculum, offerings: [] };
+
+          const offeringResponse = await getUploadSubjectOfferings(matchingSemester.id);
+          const offerings = getResponseList(offeringResponse)
+            .filter((item) => item.active !== false && item.id && item.subjectId)
+            .map((item) => ({
+              id: getPublicId(item.id),
+              subjectId: item.subjectId,
+              code: item.subjectCode || item.code || "",
+              subjectName: item.subjectName || item.name || "Untitled subject",
+              name: [item.subjectCode || item.code, item.subjectName || item.name].filter(Boolean).join(" — "),
+            }));
+          return { curriculum, offerings };
+        }));
+
+        if (!active) return;
+        const populatedResult = curriculumResults.find(
+          (result) => result.status === "fulfilled" && result.value.offerings.length > 0
         );
+        const failedResults = curriculumResults.filter((result) => result.status === "rejected");
 
-        if (!matchedSemester?.id) {
-          if (active) setOptions((current) => ({ ...current, subjects: [] }));
-          return;
-        }
-
-        const offeringsResponse = await getUploadSubjectOfferings(matchedSemester.id);
-        const offerings = getResponseList(offeringsResponse)
-          .filter((item) => item.active !== false)
-          .map((item) => ({
-            id: getPublicId(item.id),
-            subjectId: item.subjectId,
-            code: item.subjectCode || item.code || "",
-            subjectName: item.subjectName || item.name || "Untitled subject",
-            name: [item.subjectCode || item.code, item.subjectName || item.name].filter(Boolean).join(" — "),
-          }));
-
-        if (active) {
-          setOptions((current) => ({ ...current, subjects: offerings }));
+        if (populatedResult) {
+          setOptions((current) => ({ ...current, subjects: populatedResult.value.offerings }));
           setForm((current) => ({
             ...current,
-            subjectOfferingId: offerings.some((item) => item.id === current.subjectOfferingId)
+            subjectOfferingId: populatedResult.value.offerings.some((item) => item.id === current.subjectOfferingId)
               ? current.subjectOfferingId
               : "",
           }));
+        } else {
+          setOptions((current) => ({ ...current, subjects: [] }));
+          if (failedResults.length === curriculumResults.length && failedResults.length > 0) {
+            const firstError = failedResults[0].reason;
+            toast.error(firstError?.response?.data?.message || "Could not load subject offerings for the selected semester.");
+          } else {
+            toast.error("No active subject offerings were found for this branch, academic year and semester.");
+          }
         }
       } catch (error) {
         if (active) {
@@ -340,6 +361,7 @@ export default function AdminUploadResourcePage() {
   };
 
   const handleUniversityChange = async (universityId) => {
+    const requestId = ++academicRequestRef.current;
     setForm((current) => ({
       ...current,
       universityId,
@@ -358,7 +380,10 @@ export default function AdminUploadResourcePage() {
       semesters: [],
       subjects: [],
     }));
-    if (!universityId) return;
+    if (!universityId) {
+      setLoadingAcademic(false);
+      return;
+    }
 
     setLoadingAcademic(true);
     const [collegesResult, branchesResult, yearsResult] = await Promise.allSettled([
@@ -366,25 +391,42 @@ export default function AdminUploadResourcePage() {
       getUploadBranchesByUniversity(universityId),
       getUploadAcademicYears(universityId),
     ]);
+    if (requestId !== academicRequestRef.current) return;
+
+    const colleges = collegesResult.status === "fulfilled" ? getResponseList(collegesResult.value) : [];
+    const branches = branchesResult.status === "fulfilled"
+      ? getResponseList(branchesResult.value).filter((branch) =>
+          branch.active !== false &&
+          (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
+        )
+      : [];
+    const academicYears = yearsResult.status === "fulfilled" ? getResponseList(yearsResult.value) : [];
+
     setOptions((current) => ({
       ...current,
-      colleges: collegesResult.status === "fulfilled" ? getResponseList(collegesResult.value) : [],
-      branches: branchesResult.status === "fulfilled" ? getResponseList(branchesResult.value) : [],
-      academicYears: yearsResult.status === "fulfilled" ? getResponseList(yearsResult.value) : [],
+      colleges,
+      branches,
+      academicYears,
     }));
     setLoadingAcademic(false);
-    if ([collegesResult, branchesResult, yearsResult].every((result) => result.status === "rejected")) {
-      toast.error("Could not load academic options for this university.");
+
+    if (branchesResult.status === "rejected") {
+      toast.error(branchesResult.reason?.response?.data?.message || "Could not load branches for this university.");
+    }
+    if (collegesResult.status === "rejected") {
+      toast.error(collegesResult.reason?.response?.data?.message || "Could not load colleges for this university.");
+    }
+    if (yearsResult.status === "rejected") {
+      toast.error(yearsResult.reason?.response?.data?.message || "Could not load academic years for this university.");
     }
   };
 
   const handleBranchChange = async (branchId) => {
+    const requestId = ++academicRequestRef.current;
     const branch = options.branches.find((item) => getPublicId(item.id) === branchId);
     const requiredYear = branch?.academicYearId
       ? options.academicYears.find((item) => sameAcademicId(item.id, branch.academicYearId, "AY", 10000))
       : null;
-    // Most branch catalog records are not tied to a fixed academic year. Keep the
-    // currently selected year in that case and reload its semesters for this branch.
     const academicYearId = branch?.academicYearId
       ? (requiredYear ? getPublicId(requiredYear.id) : "")
       : form.academicYearId;
@@ -398,15 +440,25 @@ export default function AdminUploadResourcePage() {
     }));
     setCurriculums([]);
     setOptions((current) => ({ ...current, semesters: [], subjects: [] }));
-    if (!branchId) return;
+    if (!branchId) {
+      setLoadingAcademic(false);
+      return;
+    }
 
     setLoadingAcademic(true);
-    const [curriculumResult, semesterResult] = await Promise.allSettled([
+    const requests = await Promise.allSettled([
       getUploadCurriculumsByBranch(branchId),
       academicYearId ? getUploadSemesters(academicYearId) : Promise.resolve(null),
     ]);
+    if (requestId !== academicRequestRef.current) return;
+
+    const [curriculumResult, semesterResult] = requests;
     if (curriculumResult.status === "fulfilled") {
-      setCurriculums(getResponseList(curriculumResult.value));
+      const activeCurriculums = getResponseList(curriculumResult.value).filter((item) => item.active !== false);
+      setCurriculums(activeCurriculums);
+      if (activeCurriculums.length === 0) {
+        toast.error("No active curriculum is configured for this branch.");
+      }
     } else {
       setCurriculums([]);
       toast.error(curriculumResult.reason?.response?.data?.message || "Could not load curriculum for this branch.");
@@ -416,49 +468,111 @@ export default function AdminUploadResourcePage() {
       setOptions((current) => ({ ...current, semesters: semesterResult.value ? getResponseList(semesterResult.value) : [] }));
     } else {
       setOptions((current) => ({ ...current, semesters: [] }));
-      toast.error(semesterResult.reason?.response?.data?.message || "Could not load semesters for this branch's academic year.");
+      toast.error(semesterResult.reason?.response?.data?.message || "Could not load semesters for this academic year.");
     }
     if (branch?.academicYearId && !academicYearId) {
-      toast.error("No active academic year matches the selected branch.");
+      toast.error("The selected branch's academic year is not available for this university.");
     }
     setLoadingAcademic(false);
   };
 
   const handleCollegeChange = async (collegeId) => {
+    const requestId = ++academicRequestRef.current;
+    const universityId = form.universityId;
     setForm((current) => ({
-      ...current, collegeId, branchId: "", academicYearId: "", semesterId: "", subjectOfferingId: "",
+      ...current,
+      collegeId,
+      branchId: "",
+      academicYearId: "",
+      semesterId: "",
+      subjectOfferingId: "",
     }));
     setCurriculums([]);
-    setOptions((current) => ({ ...current, branches: [], semesters: [], subjects: [] }));
-    const universityId = form.universityId;
-    if (!universityId) return;
+    setOptions((current) => ({ ...current, branches: [], academicYears: collegeId ? current.academicYears : current.academicYears, semesters: [], subjects: [] }));
+
+    if (!universityId) {
+      setLoadingAcademic(false);
+      return;
+    }
 
     setLoadingAcademic(true);
-    try {
-      const response = collegeId
-        ? await getUploadBranchesByCollege(collegeId)
-        : await getUploadBranchesByUniversity(universityId);
-      setOptions((current) => ({ ...current, branches: getResponseList(response) }));
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Could not load branches for the selected college.");
-    } finally {
-      setLoadingAcademic(false);
+    let collegeBranches = [];
+    let collegeLookupError = null;
+
+    if (collegeId) {
+      try {
+        const response = await getUploadBranchesByCollege(collegeId);
+        collegeBranches = getResponseList(response).filter((branch) =>
+          branch.active !== false &&
+          (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
+        );
+      } catch (error) {
+        collegeLookupError = error;
+      }
     }
+
+    if (requestId !== academicRequestRef.current) return;
+
+    // College-branch mappings are optional in the master catalog. When none are
+    // configured (or the endpoint fails), allow the admin to select from active
+    // branches belonging to this university rather than locking the form.
+    if (!collegeId || collegeBranches.length === 0) {
+      try {
+        const response = await getUploadBranchesByUniversity(universityId);
+        const universityBranches = getResponseList(response).filter((branch) =>
+          branch.active !== false &&
+          (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
+        );
+        if (requestId !== academicRequestRef.current) return;
+        setOptions((current) => ({ ...current, branches: universityBranches }));
+        if (collegeId && universityBranches.length > 0) {
+          toast("No college-specific branch mapping was found. Showing branches for the selected university.", { icon: "ℹ️", duration: 4500 });
+        } else if (universityBranches.length === 0) {
+          toast.error("No active branches are configured for this university.");
+        }
+        if (collegeLookupError && universityBranches.length === 0) {
+          toast.error(collegeLookupError?.response?.data?.message || "Could not load college branches.");
+        }
+      } catch (fallbackError) {
+        if (requestId !== academicRequestRef.current) return;
+        setOptions((current) => ({ ...current, branches: [] }));
+        toast.error(fallbackError?.response?.data?.message ||
+          collegeLookupError?.response?.data?.message ||
+          "Could not load branches. Check the backend branch endpoints.");
+      } finally {
+        if (requestId === academicRequestRef.current) setLoadingAcademic(false);
+      }
+      return;
+    }
+
+    setOptions((current) => ({ ...current, branches: collegeBranches }));
+    setLoadingAcademic(false);
   };
 
   const handleAcademicYearChange = async (academicYearId) => {
+    const requestId = ++academicRequestRef.current;
     setForm((current) => ({ ...current, academicYearId, semesterId: "", subjectOfferingId: "" }));
     setOptions((current) => ({ ...current, semesters: [], subjects: [] }));
-    if (!academicYearId) return;
+    if (!academicYearId) {
+      setLoadingAcademic(false);
+      return;
+    }
 
     setLoadingAcademic(true);
     try {
       const response = await getUploadSemesters(academicYearId);
-      setOptions((current) => ({ ...current, semesters: getResponseList(response) }));
+      if (requestId !== academicRequestRef.current) return;
+      const semesters = getResponseList(response).filter((semester) => semester.active !== false);
+      setOptions((current) => ({ ...current, semesters }));
+      if (!semesters.length) {
+        toast.error("No active semesters are configured for this academic year.");
+      }
     } catch (error) {
+      if (requestId !== academicRequestRef.current) return;
+      setOptions((current) => ({ ...current, semesters: [] }));
       toast.error(error?.response?.data?.message || "Could not load semesters for this academic year.");
     } finally {
-      setLoadingAcademic(false);
+      if (requestId === academicRequestRef.current) setLoadingAcademic(false);
     }
   };
 
