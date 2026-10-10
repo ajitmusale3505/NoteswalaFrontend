@@ -1,6 +1,6 @@
 import {
   FiArrowRight, FiBookOpen, FiCalendar, FiCode, FiFileText, FiGitBranch,
-  FiLandmark, FiLayers, FiList, FiMegaphone, FiUploadCloud,
+  FiHome, FiLayers, FiList, FiBell, FiUploadCloud,
 } from "react-icons/fi";
 
 const categoryLegend = [
@@ -20,8 +20,8 @@ const monthlyData = [
   { month: "Sep", values: [0, 0, 39, 24, 20, 40] },
 ];
 const structureItems = [
-  ["Universities", "4", FiLandmark, "green"],
-  ["Colleges", "12", FiLandmark, "purple"],
+  ["Universities", "4", FiHome, "green"],
+  ["Colleges", "12", FiHome, "purple"],
   ["Branches", "28", FiGitBranch, "amber"],
   ["Exam Patterns", "42", FiFileText, "purple"],
   ["Academic Years", "8", FiCalendar, "green"],
@@ -32,7 +32,7 @@ const structureItems = [
 const quickActions = [
   ["Upload Resource", "Add notes, PYQs, books and more", FiUploadCloud, "blue"],
   ["Add Subject", "Create and configure a new subject", FiBookOpen, "amber"],
-  ["Post University Update", "Share notices, timetables and results", FiMegaphone, "green"],
+  ["Post University Update", "Share notices, timetables and results", FiBell, "green"],
   ["Manage Curriculum", "Units, topics and subtopics", FiList, "purple"],
 ];
 
@@ -70,7 +70,7 @@ export function AcademicStructure({ onViewAll }) {
   return (
     <section className="admin-card admin-academic-structure">
       <div className="admin-section-heading">
-        <div className="admin-section-icon amber"><FiLandmark /></div>
+        <div className="admin-section-icon amber"><FiHome /></div>
         <div><h2>Academic Structure</h2><p>Current academic data overview.</p></div>
         <button className="admin-outline-button" type="button" onClick={onViewAll}>View All</button>
       </div>
