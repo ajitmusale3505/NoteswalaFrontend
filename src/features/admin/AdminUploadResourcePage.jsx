@@ -550,7 +550,7 @@ export default function AdminUploadResourcePage() {
 
   return (
     <div className={`admin-app-shell admin-upload-app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      <AdminSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} activeItem={activeItem} onSelect={selectNavigation} />
+      <AdminSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} activeItem={activeItem} onSelect={selectNavigation} variant="upload" />
       <div className="admin-workspace">
         <AdminTopbar collapsed={sidebarCollapsed} searchValue={searchValue} onSearchChange={setSearchValue} />
         <main className="admin-dashboard-content admin-upload-page-content">
