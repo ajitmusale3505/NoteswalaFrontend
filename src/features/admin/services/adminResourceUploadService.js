@@ -5,6 +5,7 @@ export const getUploadUniversities = () => apiClient.get("/universities");
 export const getUploadColleges = (universityId) => apiClient.get(`/colleges/university/${universityId}`);
 export const getUploadBranchesByUniversity = (universityId) => apiClient.get(`/branches/university/${universityId}`);
 export const getUploadBranchesByCollege = (collegeId) => apiClient.get(`/branches/college/${collegeId}`);
+export const getUploadCollegeBranchMappings = (collegeId) => apiClient.get(`/college-branches/college/${collegeId}`);
 export const getUploadAcademicYears = (universityId) => apiClient.get(`/academic-years/university/${universityId}`);
 export const getUploadSemesters = (academicYearId) => apiClient.get(`/semesters/academic-year/${academicYearId}`);
 export const getUploadCurriculumsByBranch = (branchId) => apiClient.get(`/curriculums/branch/${branchId}`);
