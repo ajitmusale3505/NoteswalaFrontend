@@ -1,5 +1,5 @@
 import {
-  FiDownload, FiBookOpen, FiCalendar, FiCheckCircle, FiChevronRight,
+  FiDownload, FiBookOpen, FiCalendar, FiCheckCircle,
   FiUploadCloud, FiEye, FiFileText, FiImage, FiInfo, FiHome, FiMapPin, FiTag, FiX,
 } from "react-icons/fi";
 
