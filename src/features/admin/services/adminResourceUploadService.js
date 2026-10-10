@@ -12,9 +12,23 @@ export const getUploadCurriculumsByBranch = (branchId) => apiClient.get(`/curric
 export const getUploadCurriculumSemesters = (curriculumId) => apiClient.get(`/curriculums/${curriculumId}/semesters`);
 export const getUploadSubjectOfferings = (curriculumSemesterId) => apiClient.get(`/subject-offerings/curriculum-semester/${curriculumSemesterId}`);
 
-export const uploadAdminResource = (formData, metadata) =>
-  apiClient.post("/admin/resources/upload", formData, {
-    params: metadata,
-    headers: { "Content-Type": "multipart/form-data" },
-    timeout: 120000,
+/**
+ * Send files and metadata as one multipart request.
+ *
+ * Do not set Content-Type manually: Axios/browser must generate the boundary
+ * that Spring uses to split file parts from form fields. The shared API client
+ * defaults to JSON, so explicitly clear that header for this request.
+ */
+export const uploadAdminResource = (formData, metadata, onUploadProgress) => {
+  Object.entries(metadata).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      formData.append(key, String(value));
+    }
   });
+
+  return apiClient.post("/admin/resources/upload", formData, {
+    headers: { "Content-Type": undefined },
+    timeout: 120000,
+    onUploadProgress,
+  });
+};
