@@ -7,7 +7,7 @@ import {
 } from "react-icons/fi";
 import HomeNavbar from "../home/components/HomeNavbar";
 import { Link } from "react-router-dom";
-import { getCurrentSubjectSelections } from "../../services/academicService";
+import { getCurrentAcademicSubjects, getCurrentSubjectSelections } from "../../services/academicService";
 
 const subjectPresentation = [
   { Icon: FiDatabase, tone: "blue" },
@@ -20,40 +20,85 @@ const subjectPresentation = [
   { Icon: FiTarget, tone: "green" },
 ];
 
-function extractSelectedSubjects(response) {
-  const payload = response?.data?.data ?? response?.data ?? response ?? [];
-  if (Array.isArray(payload)) return payload;
-
-  // The API may return selected subjects grouped by profile category.
-  const groups = ["subjects", "regular", "regularSubjects", "elective", "electiveSubjects",
-    "honor", "honorSubjects", "practical", "practicalSubjects", "selections", "subjectSelections"];
-  const collected = [];
-  groups.forEach((key) => {
-    if (Array.isArray(payload?.[key])) collected.push(...payload[key]);
-  });
-
-  // Support a single selection wrapper without ever substituting the full catalogue.
-  if (collected.length) return collected;
-  if (payload?.subjectOffering || payload?.subject) return [payload.subjectOffering || payload.subject];
-  return [];
+function unwrapResponse(response) {
+  return response?.data?.data ?? response?.data ?? response ?? [];
 }
 
-function mapSelectedSubjects(response) {
-  const data = extractSelectedSubjects(response);
-  const uniqueSubjects = new Map();
+function collectSelectionEntries(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
 
-  data.forEach((entry) => {
-    const subject = entry?.subjectOffering || entry?.subject || entry;
-    const code = subject?.subjectCode || subject?.code || subject?.offering?.subjectCode;
-    const name = subject?.subjectName || subject?.name || subject?.offering?.subjectName;
-    if (!code || !name) return;
-    const key = String(subject.subjectOfferingId ?? subject.id ?? code);
-    if (!uniqueSubjects.has(key)) uniqueSubjects.set(key, { code, name });
+  const groups = [
+    "subjects", "regular", "regularSubjects", "elective", "electiveSubjects",
+    "honor", "honorSubjects", "practical", "practicalSubjects",
+    "selections", "subjectSelections", "selectedSubjects", "items",
+  ];
+  const entries = [];
+  groups.forEach((key) => {
+    if (Array.isArray(payload[key])) entries.push(...payload[key]);
+  });
+  return entries;
+}
+
+function getOfferingId(value) {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  const id = value?.subjectOfferingId ?? value?.subject_offering_id ??
+    value?.offeringId ?? value?.offering?.id ??
+    value?.subjectOffering?.id ?? value?.subjectOffering?.subjectOfferingId;
+  return id == null ? null : String(id);
+}
+
+function getSubjectDetails(entry) {
+  const subject = entry?.subjectOffering || entry?.subject || entry?.offering || entry;
+  const code = subject?.subjectCode || subject?.code || subject?.offering?.subjectCode;
+  const name = subject?.subjectName || subject?.name || subject?.offering?.subjectName;
+  return code && name ? { code: String(code), name: String(name), id: getOfferingId(entry) || getOfferingId(subject) } : null;
+}
+
+function mapSelectedSubjects(selectionResponse, academicResponse) {
+  const selectionPayload = unwrapResponse(selectionResponse);
+  const catalogPayload = unwrapResponse(academicResponse);
+  const selectionEntries = collectSelectionEntries(selectionPayload);
+  const catalogEntries = Array.isArray(catalogPayload)
+    ? catalogPayload
+    : collectSelectionEntries(catalogPayload);
+
+  // Some API versions return full subject objects; others return only selected offering IDs.
+  const selectedDetails = selectionEntries.map(getSubjectDetails).filter(Boolean);
+  const selectedIds = new Set();
+
+  const idContainers = [
+    selectionPayload?.subjectOfferingIds,
+    selectionPayload?.selectedSubjectOfferingIds,
+    selectionPayload?.selectedIds,
+    selectionPayload?.ids,
+  ];
+  idContainers.forEach((ids) => {
+    if (Array.isArray(ids)) ids.forEach((id) => {
+      const normalized = getOfferingId(id);
+      if (normalized) selectedIds.add(normalized);
+    });
+  });
+  selectionEntries.forEach((entry) => {
+    const id = getOfferingId(entry);
+    if (id) selectedIds.add(id);
+  });
+
+  // If selections contain IDs, resolve them against the current academic-context catalogue.
+  catalogEntries.forEach((entry) => {
+    const id = getOfferingId(entry);
+    const details = getSubjectDetails(entry);
+    if (id && selectedIds.has(id) && details) selectedDetails.push({ ...details, id });
+  });
+
+  const uniqueSubjects = new Map();
+  selectedDetails.forEach((subject) => {
+    const key = subject.id || subject.code;
+    if (!uniqueSubjects.has(key)) uniqueSubjects.set(key, subject);
   });
 
   return Array.from(uniqueSubjects.values()).map((subject, index) => {
     const presentation = subjectPresentation[index % subjectPresentation.length];
-
     return [
       subject.code,
       subject.name,
@@ -119,10 +164,13 @@ export default function ResourcesPage() {
 
     const loadSubjects = async () => {
       try {
-        const response = await getCurrentSubjectSelections();
+        const [selectionResponse, academicResponse] = await Promise.all([
+          getCurrentSubjectSelections(),
+          getCurrentAcademicSubjects(),
+        ]);
 
         if (!cancelled) {
-          setSubjects(mapSelectedSubjects(response));
+          setSubjects(mapSelectedSubjects(selectionResponse, academicResponse));
           setSubjectsLoading(false);
         }
       } catch {
