@@ -291,3 +291,15 @@
   }
   .admin-sidebar:not(.is-collapsed) .admin-nav-group-heading{font-size:8px}
 }
+
+
+/* Compact vertical rhythm for expanded sidebar navigation. */
+.admin-sidebar:not(.is-collapsed) .admin-sidebar-nav{gap:0}
+.admin-sidebar:not(.is-collapsed) .admin-nav-group{gap:0}
+.admin-sidebar:not(.is-collapsed) .admin-nav-item{min-height:36px}
+@media (max-width:1050px){
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item{min-height:36px}
+}
+@media (max-width:760px){
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item{min-height:34px}
+}
