@@ -1,6 +1,6 @@
 import {
   FiDownload, FiBookOpen, FiCalendar, FiCheckCircle, FiChevronRight,
-  FiUploadCloud, FiEye, FiFileText, FiImage, FiInfo, FiLandmark,   FiMapPin, FiTag, FiTrash2, FiUploadCloud, FiX,
+  FiUploadCloud, FiEye, FiFileText, FiImage, FiInfo, FiHome, FiMapPin, FiTag, FiX,
 } from "react-icons/fi";
 
 const uploadSteps = [
@@ -231,9 +231,10 @@ export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranc
           </div>
         </div>
         <div className="admin-resource-preview-meta">
-          <p><FiLandmark /> <span>University: {selectedUniversity?.name || "Select university"}</span></p>
+          <p><FiHome /> <span>University: {selectedUniversity?.name || "Select university"}</span></p>
           <p><FiMapPin /> <span>Branch: {selectedBranch?.name || "Select branch"}</span></p>
           <p><FiCalendar /> <span>Semester: {selectedSemester?.name || "Select semester"}</span></p>
+          {selectedSubject && <p><FiBookOpen /> <span>Subject: {selectedSubject.subjectName}</span></p>}
           <p><FiFileText /> <span>Type: {documentLabel}</span></p>
           <p><FiUploadCloud /> <span>Access: {accessLabel}</span></p>
           {pdfFile && <p><FiFileText /> <span>{pdfFile.name}</span></p>}
