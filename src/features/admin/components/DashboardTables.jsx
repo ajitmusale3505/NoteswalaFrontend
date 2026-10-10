@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FiChevronDown, FiClock, FiFileText, FiMoreVertical, FiUsers, FiLayers, FiMegaphone, FiBookOpen } from "react-icons/fi";
+import { FiClock, FiFileText, FiMoreVertical, FiUsers, FiLayers, FiMegaphone, FiBookOpen } from "react-icons/fi";
 
 const initialResources = [
   { id: 1, title: "DBMS Handwritten Notes", category: "Handwritten Notes", subject: "DBMS", date: "30 Sep 2026", status: "Published", tone: "blue" },
