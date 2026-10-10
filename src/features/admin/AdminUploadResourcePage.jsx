@@ -20,6 +20,7 @@ import {
   getUploadBranchesByUniversity,
   getUploadCategories,
   getUploadColleges,
+  getUploadCollegeBranchMappings,
   getUploadCurriculumSemesters,
   getUploadCurriculumsByBranch,
   getUploadSemesters,
@@ -479,6 +480,7 @@ export default function AdminUploadResourcePage() {
   const handleCollegeChange = async (collegeId) => {
     const requestId = ++academicRequestRef.current;
     const universityId = form.universityId;
+
     setForm((current) => ({
       ...current,
       collegeId,
@@ -488,7 +490,7 @@ export default function AdminUploadResourcePage() {
       subjectOfferingId: "",
     }));
     setCurriculums([]);
-    setOptions((current) => ({ ...current, branches: [], academicYears: collegeId ? current.academicYears : current.academicYears, semesters: [], subjects: [] }));
+    setOptions((current) => ({ ...current, branches: [], semesters: [], subjects: [] }));
 
     if (!universityId) {
       setLoadingAcademic(false);
@@ -496,57 +498,98 @@ export default function AdminUploadResourcePage() {
     }
 
     setLoadingAcademic(true);
-    let collegeBranches = [];
-    let collegeLookupError = null;
+    try {
+      const universityBranchesPromise = getUploadBranchesByUniversity(universityId);
+      const collegeMappingsPromise = collegeId
+        ? getUploadCollegeBranchMappings(collegeId)
+        : Promise.resolve(null);
 
-    if (collegeId) {
-      try {
-        const response = await getUploadBranchesByCollege(collegeId);
-        collegeBranches = getResponseList(response).filter((branch) =>
-          branch.active !== false &&
-          (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
-        );
-      } catch (error) {
-        collegeLookupError = error;
+      const [universityBranchesResult, mappingResult] = await Promise.allSettled([
+        universityBranchesPromise,
+        collegeMappingsPromise,
+      ]);
+      if (requestId !== academicRequestRef.current) return;
+
+      const universityBranches = universityBranchesResult.status === "fulfilled"
+        ? getResponseList(universityBranchesResult.value).filter((branch) =>
+            branch.active !== false &&
+            (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
+          )
+        : [];
+      let branchOptions = [];
+
+      if (!collegeId) {
+        branchOptions = universityBranches;
+      } else {
+        const mappings = mappingResult.status === "fulfilled"
+          ? getResponseList(mappingResult.value)
+          : [];
+
+        if (mappings.length > 0) {
+          const mappedIds = new Set(mappings.map((mapping) => getPublicId(mapping.branchId || mapping.id)));
+          branchOptions = universityBranches.filter((branch) =>
+            Array.from(mappedIds).some((id) => sameAcademicId(id, branch.id, "B", 10000))
+          );
+
+          // The mapping endpoint has branch names/codes itself. Keep those mappings
+          // selectable if the broader branch catalog is temporarily unavailable.
+          if (branchOptions.length === 0) {
+            branchOptions = mappings
+              .filter((mapping) => mapping.active !== false && (mapping.branchId || mapping.id))
+              .map((mapping) => ({
+                id: getPublicId(mapping.branchId || mapping.id),
+                name: mapping.branchName || mapping.branchCode || "Unnamed branch",
+                code: mapping.branchCode || "",
+                universityId,
+                active: mapping.active !== false,
+              }));
+          }
+        } else {
+          // Compatibility fallback for older backend deployments that do not yet
+          // expose college-branch mappings. This endpoint is also null-safe now.
+          try {
+            const legacyResponse = await getUploadBranchesByCollege(collegeId);
+            branchOptions = getResponseList(legacyResponse).filter((branch) =>
+              branch.active !== false &&
+              (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
+            );
+          } catch {
+            branchOptions = [];
+          }
+        }
+
+        // Some colleges have no explicit branch mapping records. In that case,
+        // use only active branches from the selected university rather than
+        // leaving the required Branch dropdown permanently disabled.
+        if (branchOptions.length === 0) {
+          branchOptions = universityBranches;
+          if (branchOptions.length > 0) {
+            toast("No college-specific branches were configured. Showing active branches for the selected university.", {
+              icon: "ℹ️",
+              duration: 4500,
+            });
+          }
+        }
       }
-    }
 
-    if (requestId !== academicRequestRef.current) return;
+      if (requestId !== academicRequestRef.current) return;
+      setOptions((current) => ({ ...current, branches: branchOptions }));
 
-    // College-branch mappings are optional in the master catalog. When none are
-    // configured (or the endpoint fails), allow the admin to select from active
-    // branches belonging to this university rather than locking the form.
-    if (!collegeId || collegeBranches.length === 0) {
-      try {
-        const response = await getUploadBranchesByUniversity(universityId);
-        const universityBranches = getResponseList(response).filter((branch) =>
-          branch.active !== false &&
-          (!branch.universityId || sameAcademicId(branch.universityId, universityId, "U", 100000))
-        );
-        if (requestId !== academicRequestRef.current) return;
-        setOptions((current) => ({ ...current, branches: universityBranches }));
-        if (collegeId && universityBranches.length > 0) {
-          toast("No college-specific branch mapping was found. Showing branches for the selected university.", { icon: "ℹ️", duration: 4500 });
-        } else if (universityBranches.length === 0) {
-          toast.error("No active branches are configured for this university.");
+      if (branchOptions.length === 0) {
+        if (universityBranchesResult.status === "rejected") {
+          toast.error(universityBranchesResult.reason?.response?.data?.message || "Could not load branches for this university.");
+        } else {
+          toast.error("No active branches are configured for the selected university.");
         }
-        if (collegeLookupError && universityBranches.length === 0) {
-          toast.error(collegeLookupError?.response?.data?.message || "Could not load college branches.");
-        }
-      } catch (fallbackError) {
-        if (requestId !== academicRequestRef.current) return;
+      }
+    } catch (error) {
+      if (requestId === academicRequestRef.current) {
         setOptions((current) => ({ ...current, branches: [] }));
-        toast.error(fallbackError?.response?.data?.message ||
-          collegeLookupError?.response?.data?.message ||
-          "Could not load branches. Check the backend branch endpoints.");
-      } finally {
-        if (requestId === academicRequestRef.current) setLoadingAcademic(false);
+        toast.error(error?.response?.data?.message || "Could not load branches for the selected college.");
       }
-      return;
+    } finally {
+      if (requestId === academicRequestRef.current) setLoadingAcademic(false);
     }
-
-    setOptions((current) => ({ ...current, branches: collegeBranches }));
-    setLoadingAcademic(false);
   };
 
   const handleAcademicYearChange = async (academicYearId) => {
