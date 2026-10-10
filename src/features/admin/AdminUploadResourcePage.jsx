@@ -16,6 +16,7 @@ import {
 } from "./components/AdminResourceUploadComponents";
 import {
   getUploadAcademicYears,
+  getUploadBranchesByCollege,
   getUploadBranchesByUniversity,
   getUploadCategories,
   getUploadColleges,
@@ -120,6 +121,15 @@ function toInternalId(value, prefix, offset) {
     throw new Error(`Invalid ${prefix} identifier`);
   }
   return internalNumber;
+}
+
+function sameAcademicId(first, second, prefix, offset) {
+  if (first == null || second == null || first === "" || second === "") return false;
+  try {
+    return toInternalId(first, prefix, offset) === toInternalId(second, prefix, offset);
+  } catch {
+    return String(first) === String(second);
+  }
 }
 
 function optionName(item, fallback = "Untitled") {
@@ -368,17 +378,64 @@ export default function AdminUploadResourcePage() {
   };
 
   const handleBranchChange = async (branchId) => {
-    setForm((current) => ({ ...current, branchId, semesterId: "", subjectOfferingId: "" }));
+    const branch = options.branches.find((item) => getPublicId(item.id) === branchId);
+    const requiredYear = branch?.academicYearId
+      ? options.academicYears.find((item) => sameAcademicId(item.id, branch.academicYearId, "AY", 10000))
+      : null;
+    const academicYearId = requiredYear ? getPublicId(requiredYear.id) : "";
+
+    setForm((current) => ({
+      ...current,
+      branchId,
+      academicYearId: branch?.academicYearId ? academicYearId : current.academicYearId,
+      semesterId: "",
+      subjectOfferingId: "",
+    }));
     setCurriculums([]);
     setOptions((current) => ({ ...current, semesters: [], subjects: [] }));
     if (!branchId) return;
 
     setLoadingAcademic(true);
+    const [curriculumResult, semesterResult] = await Promise.allSettled([
+      getUploadCurriculumsByBranch(branchId),
+      academicYearId ? getUploadSemesters(academicYearId) : Promise.resolve(null),
+    ]);
+    if (curriculumResult.status === "fulfilled") {
+      setCurriculums(getResponseList(curriculumResult.value));
+    } else {
+      setCurriculums([]);
+      toast.error(curriculumResult.reason?.response?.data?.message || "Could not load curriculum for this branch.");
+    }
+
+    if (semesterResult.status === "fulfilled") {
+      setOptions((current) => ({ ...current, semesters: semesterResult.value ? getResponseList(semesterResult.value) : [] }));
+    } else {
+      setOptions((current) => ({ ...current, semesters: [] }));
+      toast.error(semesterResult.reason?.response?.data?.message || "Could not load semesters for this branch's academic year.");
+    }
+    if (branch?.academicYearId && !academicYearId) {
+      toast.error("No active academic year matches the selected branch.");
+    }
+    setLoadingAcademic(false);
+  };
+
+  const handleCollegeChange = async (collegeId) => {
+    setForm((current) => ({
+      ...current, collegeId, branchId: "", academicYearId: "", semesterId: "", subjectOfferingId: "",
+    }));
+    setCurriculums([]);
+    setOptions((current) => ({ ...current, branches: [], semesters: [], subjects: [] }));
+    const universityId = form.universityId;
+    if (!universityId) return;
+
+    setLoadingAcademic(true);
     try {
-      const response = await getUploadCurriculumsByBranch(branchId);
-      setCurriculums(getResponseList(response));
+      const response = collegeId
+        ? await getUploadBranchesByCollege(collegeId)
+        : await getUploadBranchesByUniversity(universityId);
+      setOptions((current) => ({ ...current, branches: getResponseList(response) }));
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Could not load curriculum for this branch.");
+      toast.error(error?.response?.data?.message || "Could not load branches for the selected college.");
     } finally {
       setLoadingAcademic(false);
     }
@@ -407,6 +464,8 @@ export default function AdminUploadResourcePage() {
       handleBranchChange(value);
     } else if (field === "academicYearId") {
       handleAcademicYearChange(value);
+    } else if (field === "collegeId") {
+      handleCollegeChange(value);
     } else {
       updateField(field, value);
     }
@@ -541,9 +600,12 @@ export default function AdminUploadResourcePage() {
   const branches = options.branches.map((item) => ({
     ...item, id: getPublicId(item.id), name: optionName(item, "Unnamed branch"),
   }));
-  const academicYears = options.academicYears.map((item) => ({
-    ...item, id: getPublicId(item.id), name: optionName(item, "Unnamed academic year"),
-  }));
+  const selectedBranchRecord = options.branches.find((item) => getPublicId(item.id) === form.branchId);
+  const academicYears = options.academicYears
+    .filter((item) => !selectedBranchRecord?.academicYearId || sameAcademicId(item.id, selectedBranchRecord.academicYearId, "AY", 10000))
+    .map((item) => ({
+      ...item, id: getPublicId(item.id), name: optionName(item, "Unnamed academic year"),
+    }));
   const semesters = options.semesters.map((item) => ({
     ...item, id: getPublicId(item.id), name: item.name || (item.number ? `Semester ${item.number}` : optionName(item, "Unnamed semester")),
   }));
