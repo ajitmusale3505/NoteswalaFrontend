@@ -213,7 +213,7 @@ export function AdditionalInfoPanel({ values, onChange }) {
   );
 }
 
-export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranch, selectedSemester, selectedSubject, pdfFile, coverPreviewUrl }) {
+export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranch, selectedSemester, selectedSubject, pdfFile, pdfPreviewUrl, coverPreviewUrl }) {
   const documentLabel = values.documentType ? values.documentType.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()) : "Question Paper";
   const accessLabel = values.accessType === "FREE" ? "Free" : values.accessType === "DIRECT_PURCHASE" ? "Paid" : values.accessType === "BUNDLE_ONLY" ? "Bundle Only" : "Subscription";
   return (
@@ -240,8 +240,8 @@ export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranc
           {pdfFile && <p><FiFileText /> <span>{pdfFile.name}</span></p>}
         </div>
         <div className="admin-resource-preview-actions">
-          <button type="button" disabled={!pdfFile} onClick={() => { if (pdfFile) window.open(URL.createObjectURL(pdfFile), "_blank", "noopener,noreferrer"); }}><FiFileText /> View PDF</button>
-          <button type="button" disabled={!pdfFile} onClick={() => { if (!pdfFile) return; const url = URL.createObjectURL(pdfFile); const link = document.createElement("a"); link.href = url; link.download = pdfFile.name; link.click(); URL.revokeObjectURL(url); }}><FiDownload /> Download</button>
+          <button type="button" disabled={!pdfFile} onClick={() => { if (pdfPreviewUrl) window.open(pdfPreviewUrl, "_blank", "noopener,noreferrer"); }}><FiFileText /> View PDF</button>
+          <button type="button" disabled={!pdfFile} onClick={() => { if (!pdfPreviewUrl || !pdfFile) return; const link = document.createElement("a"); link.href = pdfPreviewUrl; link.download = pdfFile.name; link.click(); }}><FiDownload /> Download</button>
         </div>
       </div>
     </aside>
