@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FiClock, FiFileText, FiMoreVertical, FiUsers, FiLayers, FiMegaphone, FiBookOpen } from "react-icons/fi";
+import { FiClock, FiFileText, FiMoreVertical, FiUsers, FiLayers, FiBell, FiBookOpen } from "react-icons/fi";
 
 const initialResources = [
   { id: 1, title: "DBMS Handwritten Notes", category: "Handwritten Notes", subject: "DBMS", date: "30 Sep 2026", status: "Published", tone: "blue" },
@@ -10,7 +10,7 @@ const initialResources = [
 const activities = [
   { title: "New resource uploaded", description: "DBMS Handwritten Notes", time: "2 hours ago", icon: FiUsers, tone: "red" },
   { title: "Subject updated", description: "Operating System (Credits & Marks)", time: "4 hours ago", icon: FiLayers, tone: "purple" },
-  { title: "University update published", description: "SPPU Sem Exam Timetable", time: "1 day ago", icon: FiMegaphone, tone: "amber" },
+  { title: "University update published", description: "SPPU Sem Exam Timetable", time: "1 day ago", icon: FiBell, tone: "amber" },
   { title: "Resource published", description: "TOC Question Paper (2023)", time: "1 day ago", icon: FiBookOpen, tone: "green" },
 ];
 
