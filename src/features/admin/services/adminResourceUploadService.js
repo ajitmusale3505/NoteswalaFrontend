@@ -1,4 +1,4 @@
-import { apiClient } from "./api";
+import { apiClient } from "../../../services/api";
 
 export const getUploadCategories = () => apiClient.get("/categories");
 export const getUploadUniversities = () => apiClient.get("/universities");
