@@ -1,7 +1,7 @@
 import {
   FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
   FiFlag, FiGitBranch, FiHome, FiLandmark, FiLayers, FiList, FiSettings,
-  FiUploadCloud, FiUsers, FiMegaphone, FiChevronLeft, FiChevronRight, FiMenu,
+  FiUploadCloud, FiUsers, FiMegaphone, FiChevronLeft, FiMenu,
 } from "react-icons/fi";
 
 const navigationGroups = [
