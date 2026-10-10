@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiBell, FiChevronDown, FiLogOut, FiMenu, FiSearch } from "react-icons/fi";
+import { FiBell, FiBookOpen, FiChevronDown, FiLogOut, FiSearch } from "react-icons/fi";
 import { logout } from "../../../services/authService";
 
 function readCachedUser() {
@@ -38,7 +38,7 @@ export default function AdminTopbar({ collapsed, onToggle, searchValue, onSearch
   return (
     <header className="admin-topbar">
       <div className="admin-topbar-leading">
-        {collapsed && <button className="admin-menu-button" type="button" onClick={onToggle} aria-label="Expand sidebar"><FiMenu /></button>}
+        {collapsed && <a className="admin-topbar-brand" href="/admin" aria-label="NotesWala Admin Dashboard"><FiBookOpen /><span>NotesWala<small>Admin Panel</small></span></a>}
         <label className="admin-global-search">
           <FiSearch />
           <input value={searchValue} onChange={(event) => onSearchChange(event.target.value)}
