@@ -4,7 +4,7 @@ import {
   FiUploadCloud, FiUsers, FiBell, FiChevronLeft, FiMenu,
 } from "react-icons/fi";
 
-const navigationGroups = [
+const dashboardNavigationGroups = [
   { title: "Academic Management", items: [
     { label: "Universities & Colleges", icon: FiHome },
     { label: "Branches & Exam Patterns", icon: FiGitBranch },
@@ -28,7 +28,33 @@ const navigationGroups = [
   ]},
 ];
 
-export default function AdminSidebar({ collapsed, onToggle, activeItem, onSelect }) {
+const uploadNavigationGroups = [
+  { title: "Academic Management", items: [
+    { label: "Universities & Colleges", icon: FiHome },
+    { label: "Branches & Exam Patterns", icon: FiGitBranch },
+    { label: "Academic Years", icon: FiCalendar },
+    { label: "Semesters", icon: FiBookOpen },
+    { label: "Subjects & Curriculum", icon: FiBookOpen },
+    { label: "Units, Topics & Subtopics", icon: FiList },
+  ]},
+  { title: "Resource Management", items: [
+    { label: "Upload Resources", icon: FiUploadCloud },
+    { label: "Resource Library", icon: FiFileText },
+    { label: "Manage Categories", icon: FiLayers },
+  ]},
+  { title: "Users & Platform", items: [
+    { label: "Users & Roles", icon: FiUsers },
+    { label: "Reviews & Reports", icon: FiFlag },
+    { label: "Analytics & Insights", icon: FiBarChart2 },
+  ]},
+  { title: "System", items: [
+    { label: "Settings & Audit Logs", icon: FiSettings },
+  ]},
+];
+
+export default function AdminSidebar({ collapsed, onToggle, activeItem, onSelect, variant = "dashboard" }) {
+  const navigationGroups = variant === "upload" ? uploadNavigationGroups : dashboardNavigationGroups;
+
   return (
     <aside className={`admin-sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Administrator navigation">
       <div className="admin-sidebar-brand">
