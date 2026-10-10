@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap");
-
 .admin-app-shell{--admin-navy:#102e54;--admin-blue:#2456a6;--admin-ink:#16335a;--admin-muted:#587092;--admin-border:#e5ebf2;--admin-bg:#fbfcfe;--admin-amber:#a75200;display:flex;min-height:100dvh;background:var(--admin-bg);color:var(--admin-ink);font-family:"DM Sans",sans-serif;font-size:13px}
 .admin-app-shell *{box-sizing:border-box}
 .admin-app-shell button,.admin-app-shell input,.admin-app-shell select{font:inherit}
@@ -35,8 +33,10 @@
 .admin-workspace{display:flex;flex:1;flex-direction:column;min-width:0;min-height:100dvh}
 .admin-topbar{position:sticky;top:0;z-index:30;display:flex;flex:0 0 66px;align-items:center;justify-content:space-between;gap:20px;height:66px;padding:0 30px;background:rgba(255,255,255,.97);border-bottom:1px solid #e9edf3;backdrop-filter:blur(14px)}
 .admin-topbar-leading{display:flex;align-items:center;flex:1;min-width:0;gap:23px}
+.admin-app-shell.sidebar-collapsed .admin-topbar-leading{gap:65px}
+.admin-app-shell.sidebar-collapsed .admin-topbar-brand{display:flex}
 .admin-menu-button{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;padding:0;border:0;background:transparent;color:#244d83;font-size:20px}
-.admin-topbar-brand{display:flex;align-items:center;gap:9px;flex:0 0 auto;color:#102b50;white-space:nowrap}
+.admin-topbar-brand{display:none;align-items:center;gap:9px;flex:0 0 auto;color:#102b50;white-space:nowrap}
 .admin-topbar-brand>svg{font-size:31px}
 .admin-topbar-brand span{display:flex;flex-direction:column;font-family:"Libre Baskerville",serif;font-weight:700;font-size:17px;letter-spacing:-.04em}
 .admin-topbar-brand small{margin-top:2px;color:#587092;font-family:"DM Sans",sans-serif;font-size:10px;font-weight:400;letter-spacing:0}
@@ -91,7 +91,7 @@
 .admin-plant i{position:absolute;width:31px;height:15px;border-radius:100% 0 100% 0;background:linear-gradient(135deg,#c9d1a3,#526c41);transform:rotate(-27deg)}
 .admin-plant i:nth-child(1){top:14px;right:31px}.admin-plant i:nth-child(2){top:29px;right:50px;transform:rotate(24deg)}.admin-plant i:nth-child(3){top:42px;right:11px;transform:rotate(-7deg)}
 .admin-plant b{position:absolute;right:12px;bottom:0;width:49px;height:25px;border-radius:6px 6px 13px 13px;background:linear-gradient(90deg,#e8e4d9,#fbf9f3,#d6d0c3);box-shadow:0 5px 10px #4a45361c}
-.admin-metrics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.admin-metrics-grid{margin-top:-12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
 .admin-card{min-width:0;border:1px solid var(--admin-border);border-radius:10px;background:#fff;box-shadow:0 2px 6px #203f6710}
 .admin-metric-card{display:flex;align-items:center;gap:14px;min-height:124px;padding:15px 15px}
 .admin-metric-icon{display:grid;place-items:center;width:61px;height:61px;flex:0 0 61px;border-radius:12px;font-size:28px}
@@ -208,6 +208,7 @@
 }
 @media (max-width:760px){
  .admin-topbar{height:60px;flex-basis:60px;padding-inline:10px;gap:9px}
+ .admin-topbar-brand{display:flex}
  .admin-topbar-leading{gap:6px}.admin-topbar-brand span{display:none}.admin-topbar-brand>svg{font-size:27px}
  .admin-global-search{height:35px;gap:7px;padding-inline:9px}.admin-global-search kbd{display:none}
  .admin-topbar-actions{gap:10px}.admin-user-copy,.admin-user-button>svg{display:none}.admin-user-avatar{width:34px;height:34px}
