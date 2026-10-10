@@ -27,7 +27,7 @@ export const uploadAdminResource = (formData, metadata, onUploadProgress) => {
   });
 
   return apiClient.post("/admin/resources/upload", formData, {
-    headers: { "Content-Type": undefined },
+    headers: { "Content-Type": false },
     timeout: 120000,
     onUploadProgress,
   });
