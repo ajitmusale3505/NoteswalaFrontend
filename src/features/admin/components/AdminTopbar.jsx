@@ -11,7 +11,7 @@ function readCachedUser() {
   }
 }
 
-export default function AdminTopbar({ collapsed, onToggle, searchValue, onSearchChange }) {
+export default function AdminTopbar({ collapsed, searchValue, onSearchChange }) {
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
