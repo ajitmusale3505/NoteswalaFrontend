@@ -30,8 +30,10 @@ import {
 } from "./services/adminResourceUploadService";
 import "./admin-resource-upload.css";
 
-const MAX_PDF_BYTES = 50 * 1024 * 1024;
+// Keep these limits aligned with Spring Boot's 25 MiB file / 30 MiB request limit.
+const MAX_PDF_BYTES = 25 * 1024 * 1024;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_TOTAL_UPLOAD_BYTES = 29 * 1024 * 1024;
 
 const DOCUMENT_TYPES = [
   { value: "QUESTION_PAPER", label: "Question Paper" },
@@ -180,6 +182,7 @@ export default function AdminUploadResourcePage() {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingAcademic, setLoadingAcademic] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const academicRequestRef = useRef(0);
 
   const pdfPreviewUrl = useObjectUrl(pdfFile);
@@ -633,16 +636,25 @@ export default function AdminUploadResourcePage() {
     }
   };
 
+  const getSelectedUploadSize = (nextPdfFile = pdfFile, nextImageFiles = imageFiles) =>
+    (nextPdfFile?.size || 0) +
+    Object.values(nextImageFiles).reduce((total, file) => total + (file?.size || 0), 0);
+
   const handlePdfSelect = (file) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
       toast.error("Please choose a PDF file.");
       return;
     }
     if (file.size > MAX_PDF_BYTES) {
-      toast.error("The PDF must be 50 MB or smaller.");
+      toast.error("The PDF must be 25 MB or smaller to match the server upload limit.");
+      return;
+    }
+    if (getSelectedUploadSize(file) > MAX_TOTAL_UPLOAD_BYTES) {
+      toast.error("The PDF and optional images must total less than 29 MB. Remove an optional image and try again.");
       return;
     }
     setPdfFile(file);
+    setUploadProgress(0);
   };
 
   const handleImageSelect = (kind, file) => {
@@ -654,7 +666,13 @@ export default function AdminUploadResourcePage() {
       toast.error("Each optional image must be 5 MB or smaller.");
       return;
     }
-    setImageFiles((current) => ({ ...current, [kind]: file }));
+    const nextImages = { ...imageFiles, [kind]: file };
+    if (getSelectedUploadSize(pdfFile, nextImages) > MAX_TOTAL_UPLOAD_BYTES) {
+      toast.error("The PDF and optional images must total less than 29 MB. Remove an optional image and try again.");
+      return;
+    }
+    setImageFiles(nextImages);
+    setUploadProgress(0);
   };
 
   const jumpToStep = (step) => {
@@ -739,11 +757,40 @@ export default function AdminUploadResourcePage() {
         if (metadata[key] === undefined || metadata[key] === null || metadata[key] === "") delete metadata[key];
       });
 
-      await uploadAdminResource(formData, metadata);
+      setUploadProgress(0);
+      await uploadAdminResource(formData, metadata, (event) => {
+        if (event.total > 0) {
+          setUploadProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+        }
+      });
+      setUploadProgress(100);
       toast.success(published ? "Resource uploaded and published successfully." : "Resource saved as a draft.");
       navigate("/admin", { replace: true });
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.response?.data?.error || error?.message || "Resource upload failed.");
+      const status = error?.response?.status;
+      const responseMessage = error?.response?.data?.message || error?.response?.data?.error;
+      if (status === 413) {
+        toast.error("Upload too large. Keep the PDF under 25 MB and all selected files under 29 MB.");
+      } else if (status === 401 || status === 403) {
+        toast.error("Your admin session may have expired. Sign in again, then retry the upload.");
+      } else if (error?.code === "ERR_NETWORK" || !error?.response) {
+        console.error("[AdminResourceUpload] Request did not receive an HTTP response.", {
+          code: error?.code,
+          message: error?.message,
+          baseURL: error?.config?.baseURL,
+          url: error?.config?.url,
+          timeout: error?.config?.timeout,
+        });
+        toast.error("Could not reach the backend. Check that Spring Boot is running on port 8080 and that the browser allows the API request.");
+      } else {
+        console.error("[AdminResourceUpload] Upload failed.", {
+          status,
+          code: error?.code,
+          message: error?.message,
+          response: error?.response?.data,
+        });
+        toast.error(responseMessage || ("Upload failed (HTTP " + (status || "unknown") + "). Check the backend log for details."));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -811,7 +858,10 @@ export default function AdminUploadResourcePage() {
               coverImage={imageFiles.coverImage}
               previewImage={imageFiles.previewImage}
               onImageSelect={handleImageSelect}
-              onImageRemove={(kind) => setImageFiles((current) => ({ ...current, [kind]: null }))}
+              onImageRemove={(kind) => {
+                setImageFiles((current) => ({ ...current, [kind]: null }));
+                setUploadProgress(0);
+              }}
             />
             <BasicDetailsPanel
               values={form}
@@ -849,6 +899,7 @@ export default function AdminUploadResourcePage() {
             onSaveDraft={() => runUpload(false)}
             onPublish={() => runUpload(null)}
             submitting={submitting}
+            uploadProgress={uploadProgress}
           />
         </main>
       </div>
