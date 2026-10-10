@@ -9,6 +9,7 @@ import ResourceViewerPage from "../features/resources/ResourceViewerPage";
 import ProfilePage from "../features/profile/ProfilePage";
 import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
+import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
 
 export default function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+      <Route path="/admin/resources/upload" element={<AdminRoute><AdminUploadResourcePage /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
