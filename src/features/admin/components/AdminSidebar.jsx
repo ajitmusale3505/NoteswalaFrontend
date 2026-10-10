@@ -1,12 +1,12 @@
 import {
   FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
-  FiFlag, FiGitBranch, FiHome, FiLandmark, FiLayers, FiList, FiSettings,
-  FiUploadCloud, FiUsers, FiMegaphone, FiChevronLeft, FiMenu,
+  FiFlag, FiGitBranch, FiHome, FiHome, FiLayers, FiList, FiSettings,
+  FiUploadCloud, FiUsers, FiBell, FiChevronLeft, FiMenu,
 } from "react-icons/fi";
 
 const navigationGroups = [
   { title: "Academic Management", items: [
-    { label: "Universities & Colleges", icon: FiLandmark },
+    { label: "Universities & Colleges", icon: FiHome },
     { label: "Branches & Exam Patterns", icon: FiGitBranch },
     { label: "Academic Years & Semesters", icon: FiCalendar },
     { label: "Subjects & Curriculum", icon: FiBookOpen },
@@ -18,7 +18,7 @@ const navigationGroups = [
     { label: "Code & SQL Lab Content", icon: FiCode },
   ]},
   { title: "University & Platform", items: [
-    { label: "University Updates", icon: FiMegaphone },
+    { label: "University Updates", icon: FiBell },
     { label: "Users & Roles", icon: FiUsers },
     { label: "Reports & Moderation", icon: FiFlag },
     { label: "Analytics & Reports", icon: FiBarChart2 },
