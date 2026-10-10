@@ -74,8 +74,28 @@ export default function LoginPage() {
         // Login remains successful even if profile loading temporarily fails.
       }
 
+      // Role is provided by the login response in current deployments.
+      // Fall back to /auth/me for deployments that keep role data out of the token response.
+      let authenticatedUser = data?.user ?? data?.currentUser ?? data?.profile ?? null;
+      if (!authenticatedUser?.role && !authenticatedUser?.roles) {
+        try {
+          const { getCurrentUser } = await import("../../services/profileService");
+          const currentUserResponse = await getCurrentUser();
+          authenticatedUser = currentUserResponse.data?.data ?? currentUserResponse.data ?? authenticatedUser;
+        } catch {
+          // Keep login functional; protected routes independently verify the session.
+        }
+      }
+
+      const roleValue = authenticatedUser?.role?.name ?? authenticatedUser?.role ??
+        authenticatedUser?.roles?.[0]?.name ?? authenticatedUser?.roles?.[0] ??
+        data?.role?.name ?? data?.role ?? data?.roles?.[0]?.name ?? data?.roles?.[0] ?? "";
+      if (authenticatedUser) {
+        localStorage.setItem("noteswala_user", JSON.stringify(authenticatedUser));
+      }
+      const isAdmin = String(roleValue).toUpperCase().includes("ADMIN");
       toast.success("Login successful.");
-      navigate("/home", { replace: true });
+      navigate(isAdmin ? "/admin" : "/home", { replace: true });
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed.");
     } finally {
