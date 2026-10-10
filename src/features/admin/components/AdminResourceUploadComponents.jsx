@@ -54,7 +54,7 @@ export function UploadFilePanel({ pdfFile, onPdfSelect, onPdfRemove, thumbnail, 
         onDrop={(event) => { event.preventDefault(); const file = event.dataTransfer.files?.[0]; if (file) onPdfSelect(file); }}>
         <input type="file" accept="application/pdf,.pdf" onChange={(event) => { const file = event.target.files?.[0]; if (file) onPdfSelect(file); event.target.value = ""; }} />
         <FiFileText className="admin-pdf-drop-icon" />
-        <strong>Drop PDF file here</strong><span>or click to browse</span><small>Only PDF files are allowed (Max 50 MB)</small>
+        <strong>Drop PDF file here</strong><span>or click to browse</span><small>Only PDF files are allowed (Max 25 MB; total files under 29 MB)</small>
         <span className="admin-choose-file"><FiUploadCloud /> Choose PDF File</span>
       </label>
 
@@ -271,14 +271,14 @@ export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranc
   );
 }
 
-export function UploadReviewBar({ onCancel, onSaveDraft, onPublish, submitting }) {
+export function UploadReviewBar({ onCancel, onSaveDraft, onPublish, submitting, uploadProgress = 0 }) {
   return (
     <footer className="admin-upload-footer">
       <div className="admin-upload-review-note"><FiInfo /><span><strong>Review all details before uploading</strong><small>Make sure the information is correct and the file follows our content guidelines.</small></span></div>
       <div className="admin-upload-footer-actions">
         <button type="button" className="admin-upload-cancel" onClick={onCancel} disabled={submitting}><FiX /> Cancel</button>
         <button type="button" className="admin-upload-save-draft" onClick={onSaveDraft} disabled={submitting}><FiFileText /> Save as Draft</button>
-        <button type="button" className="admin-upload-submit" onClick={onPublish} disabled={submitting}>{submitting ? <span className="admin-upload-button-spinner" /> : <FiUploadCloud />}{submitting ? "Uploading…" : "Upload Resource"}</button>
+        <button type="button" className="admin-upload-submit" onClick={onPublish} disabled={submitting}>{submitting ? <span className="admin-upload-button-spinner" /> : <FiUploadCloud />}{submitting ? (uploadProgress > 0 ? `Uploading ${uploadProgress}%…` : "Uploading…") : "Upload Resource"}</button>
       </div>
     </footer>
   );
