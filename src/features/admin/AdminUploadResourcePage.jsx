@@ -169,6 +169,7 @@ export default function AdminUploadResourcePage() {
   const [loadingAcademic, setLoadingAcademic] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const pdfPreviewUrl = useObjectUrl(pdfFile);
   const coverPreviewUrl = useObjectUrl(imageFiles.coverImage);
   const thumbnailPreviewUrl = useObjectUrl(imageFiles.thumbnail);
 
@@ -601,6 +602,7 @@ export default function AdminUploadResourcePage() {
               selectedSemester={selectedSemester}
               selectedSubject={selectedSubject}
               pdfFile={pdfFile}
+              pdfPreviewUrl={pdfPreviewUrl}
               coverPreviewUrl={coverPreviewUrl || thumbnailPreviewUrl}
             />
           </div>
