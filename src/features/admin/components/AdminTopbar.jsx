@@ -38,7 +38,7 @@ export default function AdminTopbar({ collapsed, searchValue, onSearchChange }) 
   return (
     <header className="admin-topbar">
       <div className="admin-topbar-leading">
-        {collapsed && <a className="admin-topbar-brand" href="/admin" aria-label="NotesWala Admin Dashboard"><FiBookOpen /><span>NotesWala<small>Admin Panel</small></span></a>}
+        <a className="admin-topbar-brand" href="/admin" aria-label="NotesWala Admin Dashboard"><FiBookOpen /><span>NotesWala<small>Admin Panel</small></span></a>
         <label className="admin-global-search">
           <FiSearch />
           <input value={searchValue} onChange={(event) => onSearchChange(event.target.value)}
