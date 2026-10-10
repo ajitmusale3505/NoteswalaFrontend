@@ -227,3 +227,67 @@
  .admin-dashboard-footer{font-size:8px}
 }
 @media (prefers-reduced-motion:reduce){.admin-app-shell *,.admin-app-shell *:before,.admin-app-shell *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+/* Sidebar usability refinements: tighter labels and a persistent collapse control. */
+.admin-sidebar-toggle{
+  opacity:1;
+  border:1px solid #e1e9f3;
+  background:#fbfdff;
+  color:#315681;
+}
+.admin-sidebar-toggle:hover{background:#eef5ff;border-color:#cbdcf0}
+.admin-nav-item{gap:8px;padding-inline:10px}
+.admin-nav-item.active:before{left:-10px}
+
+/* Keep the expand/collapse interaction available at tablet and mobile breakpoints. */
+@media (max-width:1050px){
+  .admin-sidebar:not(.is-collapsed){flex-basis:225px;width:225px}
+  .admin-sidebar:not(.is-collapsed) .admin-sidebar-brand{
+    justify-content:flex-start;
+    gap:8px;
+    padding:0 12px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-brand-copy{display:flex}
+  .admin-sidebar:not(.is-collapsed) .admin-sidebar-toggle{
+    display:grid;
+    opacity:1;
+    flex:0 0 28px;
+    width:28px;
+    height:30px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-sidebar-nav{
+    align-items:stretch;
+    padding:15px 8px 22px;
+    gap:2px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item{
+    justify-content:flex-start;
+    gap:8px;
+    width:100%;
+    padding:0 10px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item span{display:inline}
+  .admin-sidebar:not(.is-collapsed) .admin-nav-group-heading{display:flex}
+  .admin-sidebar:not(.is-collapsed) .admin-nav-group{
+    align-items:stretch;
+    margin-top:25px;
+    padding-top:0;
+    border-top:0;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item.active:before{left:-8px}
+}
+
+@media (max-width:760px){
+  .admin-sidebar:not(.is-collapsed){flex-basis:225px;width:225px}
+  .admin-sidebar:not(.is-collapsed) .admin-sidebar-toggle{
+    flex-basis:28px;
+    width:28px;
+    height:30px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-nav-item{
+    min-height:41px;
+    font-size:11px;
+  }
+  .admin-sidebar:not(.is-collapsed) .admin-nav-group-heading{font-size:8px}
+}
