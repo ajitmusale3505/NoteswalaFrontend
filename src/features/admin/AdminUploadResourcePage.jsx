@@ -383,12 +383,16 @@ export default function AdminUploadResourcePage() {
     const requiredYear = branch?.academicYearId
       ? options.academicYears.find((item) => sameAcademicId(item.id, branch.academicYearId, "AY", 10000))
       : null;
-    const academicYearId = requiredYear ? getPublicId(requiredYear.id) : "";
+    // Most branch catalog records are not tied to a fixed academic year. Keep the
+    // currently selected year in that case and reload its semesters for this branch.
+    const academicYearId = branch?.academicYearId
+      ? (requiredYear ? getPublicId(requiredYear.id) : "")
+      : form.academicYearId;
 
     setForm((current) => ({
       ...current,
       branchId,
-      academicYearId: branch?.academicYearId ? academicYearId : current.academicYearId,
+      academicYearId,
       semesterId: "",
       subjectOfferingId: "",
     }));
