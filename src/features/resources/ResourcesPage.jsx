@@ -124,7 +124,10 @@ function mapSelectedSubjects(selectionResponse, academicResponse) {
     const isRegular = details.category === "REGULAR" ||
       details.category === "REGULAR_SUBJECT" ||
       details.category === "REGULAR_SUBJECT_OFFERING";
-    if (isRegular || (id && selectedIds.has(id))) {
+    // /academic-context/subjects is scoped to the signed-in user's academic context;
+    // some backend versions omit the category field for mandatory regular subjects.
+    const categoryNotProvided = !details.category;
+    if (isRegular || categoryNotProvided || (id && selectedIds.has(id))) {
       selectedDetails.push(details);
     }
   });
