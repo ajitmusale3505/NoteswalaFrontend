@@ -170,6 +170,7 @@ export default function AdminUploadResourcePage() {
   });
   const [activeItem, setActiveItem] = useState("Upload Resources");
   const [searchValue, setSearchValue] = useState("");
+  const [activeUploadStep, setActiveUploadStep] = useState(1);
   const [form, setForm] = useState(initialForm);
   const [options, setOptions] = useState(initialOptions);
   const [curriculums, setCurriculums] = useState([]);
@@ -310,7 +311,7 @@ export default function AdminUploadResourcePage() {
 
     loadSubjectOptions();
     return () => { active = false; };
-  }, [form.branchId, form.academicYearId, form.semesterId, curriculums]);
+  }, [form.branchId, form.academicYearId, form.semesterId, curriculums, options.academicYears, options.semesters]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((collapsed) => {
@@ -496,7 +497,8 @@ export default function AdminUploadResourcePage() {
   };
 
   const jumpToStep = (step) => {
-    document.getElementById(`upload-step-${step}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveUploadStep(step);
+    document.getElementById("upload-step-" + step)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const runUpload = async (publishedOverride = null) => {
@@ -635,7 +637,7 @@ export default function AdminUploadResourcePage() {
             </div>
           </header>
 
-          <UploadStepper activeStep={1} onStepSelect={jumpToStep} />
+          <UploadStepper activeStep={activeUploadStep} onStepSelect={jumpToStep} />
 
           {loadingInitial && <div className="admin-upload-loading" role="status"><span /> Loading academic data…</div>}
 
