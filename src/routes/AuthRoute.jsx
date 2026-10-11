@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { FiAlertCircle, FiRefreshCw } from "react-icons/fi";
 import { getCurrentUser } from "../services/profileService";
+import "../styles/auth-route.css";
 
 const ACCESS_TOKEN_KEY = "noteswala_access_token";
 const REFRESH_TOKEN_KEY = "noteswala_refresh_token";
