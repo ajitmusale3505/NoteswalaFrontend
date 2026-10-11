@@ -70,7 +70,17 @@ function buildSubject(rawSubject,resources,universityName){
    resource.published?"Published":"Available",
    presentationTones[index%presentationTones.length],
    resource.id,
-   resource.slug
+   resource.slug,
+   resource.tags||"",
+   resource.metadata||"",
+   resource.publishedAt||"",
+   resource.documentType||"",
+   resource.materialType||"",
+   Number(resource.fileSizeBytes||0),
+   Number(resource.ratingAverage||0),
+   Number(resource.downloadsCount||0),
+   resource.language||"",
+   resource.pageCount||""
  ]);
 
  const topicCounts=new Map();
