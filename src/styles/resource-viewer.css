@@ -91,3 +91,169 @@
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.6);
 }
 .resource-viewer-page .download-pdf.is-download-restricted svg{color:#687984}
+
+
+/* Resource viewer: keep a single details card on the left and give the PDF
+   reader the entire remaining workspace width. */
+.resource-viewer-live-workspace{
+  grid-template-columns:minmax(300px,380px) minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+}
+.resource-document-details{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:690px;
+  border:1px solid #e0e7eb;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 5px 18px rgba(22,45,66,.045);
+}
+.resource-document-details-heading{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:15px 16px 13px;
+  border-bottom:1px solid #edf0f2;
+}
+.resource-document-heading-icon{
+  display:grid;
+  place-items:center;
+  flex:0 0 39px;
+  width:39px;
+  height:39px;
+  border:1px solid #f0dfc8;
+  border-radius:9px;
+  background:#fff7ec;
+  color:#9a5a18;
+  font-size:21px;
+}
+.resource-document-details-heading h2{
+  margin:0;
+  color:#163b5e;
+  font:600 15px/1.3 "DM Sans",sans-serif;
+}
+.resource-document-details-heading p{
+  margin:3px 0 0;
+  color:#54718b;
+  font-size:11px;
+  line-height:1.4;
+}
+.resource-document-details .resource-document-summary{
+  display:block;
+  padding:15px 16px 12px;
+}
+.resource-document-identity{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+  padding-bottom:16px;
+}
+.resource-document-identity .resource-document-big-icon{
+  display:grid;
+  place-items:center;
+  flex:0 0 78px;
+  width:78px;
+  height:81px;
+  margin:0;
+  border:1px solid #f0d5b2;
+  border-radius:10px;
+  background:linear-gradient(145deg,#f5e5d0,#fffaf3);
+  box-shadow:none;
+  color:#945517;
+  font-size:27px;
+}
+.resource-document-identity-copy{min-width:0}
+.resource-document-identity-copy h3{
+  margin:0;
+  color:#183b5d;
+  font:600 15px/1.35 "DM Sans",sans-serif;
+  overflow-wrap:anywhere;
+}
+.resource-document-identity-copy>p{
+  margin:6px 0 8px;
+  color:#617b91;
+  font-size:11px;
+}
+.resource-document-tags{display:flex;gap:6px;flex-wrap:wrap}
+.resource-document-tags span{
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:4px 10px;
+  border-radius:15px;
+  background:#edf4ff;
+  color:#22528a;
+  font-size:10px;
+}
+.resource-document-detail-rows{border-top:1px solid #edf0f2}
+.resource-document-detail-row{
+  display:grid;
+  grid-template-columns:17px minmax(75px,.8fr) minmax(0,1.3fr);
+  align-items:center;
+  gap:9px;
+  min-height:42px;
+  padding:7px 4px;
+  border-bottom:1px solid #edf0f2;
+}
+.resource-document-detail-row>svg{
+  color:#153f69;
+  font-size:15px;
+}
+.resource-document-detail-row>span{
+  color:#58738e;
+  font-size:11px;
+}
+.resource-document-detail-row>strong{
+  color:#143c66;
+  font-size:11px;
+  font-weight:650;
+  line-height:1.35;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.resource-document-loading{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:180px;
+  padding:20px;
+  color:#5c768d;
+  font-size:11px;
+}
+.resource-pdf-reader-shell{
+  min-width:0;
+  width:100%;
+  height:calc(100vh - 200px);
+  min-height:690px;
+  max-height:1400px;
+  overflow:hidden;
+}
+.resource-pdf-reader-shell .pdf-reader{width:100%;min-width:0}
+@media(max-width:1250px){
+  .resource-viewer-live-workspace{
+    grid-template-columns:minmax(270px,325px) minmax(0,1fr);
+    gap:12px;
+    padding-inline:2%;
+  }
+}
+@media(max-width:1050px){
+  .resource-viewer-live-workspace{grid-template-columns:minmax(0,1fr);gap:12px}
+  .resource-document-details{min-height:auto}
+  .resource-document-details .resource-document-summary{display:block;padding:13px}
+  .resource-document-identity{grid-template-columns:none;display:flex}
+  .resource-document-detail-row{grid-template-columns:17px minmax(90px,.8fr) minmax(0,1.3fr)}
+  .resource-pdf-reader-shell{height:calc(100vh - 210px);min-height:650px}
+}
+@media(max-width:620px){
+  .resource-document-details-heading{padding:12px}
+  .resource-document-details .resource-document-summary{padding:12px}
+  .resource-document-identity .resource-document-big-icon{width:60px;height:64px;flex-basis:60px;font-size:23px}
+  .resource-document-identity-copy h3{font-size:13px}
+  .resource-document-detail-row{grid-template-columns:16px minmax(72px,.8fr) minmax(0,1.2fr);gap:7px;min-height:39px}
+  .resource-document-detail-row>span,.resource-document-detail-row>strong{font-size:10px}
+  .resource-pdf-reader-shell{height:calc(100dvh - 220px);min-height:600px}
+}
