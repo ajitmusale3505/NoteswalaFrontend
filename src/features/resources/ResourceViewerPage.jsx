@@ -5,7 +5,6 @@ import {
   FiCalendar,
   FiCheckCircle,
   FiDownload,
-  FiExternalLink,
   FiFileText,
   FiInfo,
   FiLock,
