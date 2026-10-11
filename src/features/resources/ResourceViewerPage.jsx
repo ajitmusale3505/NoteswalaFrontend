@@ -9,7 +9,6 @@ import {
   FiGitBranch,
   FiGlobe,
   FiGrid,
-  FiLayers,
   FiClock,
   FiUser,
 } from "react-icons/fi";
