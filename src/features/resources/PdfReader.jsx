@@ -439,7 +439,7 @@ export default function PdfReader({
     searchMatches.forEach((match, index) => {
       if (!grouped.has(match.pageNumber)) grouped.set(match.pageNumber, { items: new Set(), active: null });
       const group = grouped.get(match.pageNumber);
-      group.items.add(match.itemIndex);
+      (match.itemIndices || [match.itemIndex]).forEach((itemIndex) => group.items.add(itemIndex));
       if (index === activeMatchIndex) group.active = match.itemIndex;
     });
     return grouped;
@@ -566,7 +566,7 @@ export default function PdfReader({
             const start = pageText.length;
             pageText += item.str;
             segments.push({ itemIndex, start, end: pageText.length });
-            pageText += item.hasEOL ? "\\n" : " ";
+            pageText += item.hasEOL ? "\n" : " ";
           });
 
           const searchableText = normalizedText(pageText);
