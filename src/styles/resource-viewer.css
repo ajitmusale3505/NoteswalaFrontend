@@ -78,3 +78,16 @@
  .resource-viewer-state{min-height:560px;padding:15px}
  .resource-viewer-right{grid-template-columns:1fr}
 }
+
+/* Make admin-disabled downloads obvious while keeping the control discoverable. */
+.resource-viewer-page .download-pdf.is-download-restricted,
+.resource-viewer-page .download-pdf.is-download-restricted:disabled{
+  border:1px solid #d5dce1;
+  background:linear-gradient(120deg,#e9edf0,#f0f2f4);
+  color:#72808b;
+  opacity:.78;
+  filter:blur(.35px);
+  cursor:not-allowed;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.6);
+}
+.resource-viewer-page .download-pdf.is-download-restricted svg{color:#687984}
