@@ -277,6 +277,7 @@ export default function PdfReader({
   const thumbnailScrollRef = useRef(null);
   const pageElementsRef = useRef(new Map());
   const textContentCacheRef = useRef(new Map());
+  const searchRequestRef = useRef(0);
   const searchInputRef = useRef(null);
   const [pdf, setPdf] = useState(null);
   const [documentLoading, setDocumentLoading] = useState(true);
@@ -319,6 +320,8 @@ export default function PdfReader({
       return undefined;
     }
     let cancelled = false;
+    searchRequestRef.current += 1;
+    setSearching(false);
     const loadingTask = pdfjsLib.getDocument({ url: fileUrl, isEvalSupported: false });
     setDocumentLoading(true);
     setDocumentError("");
@@ -360,7 +363,8 @@ export default function PdfReader({
 
     return () => {
       cancelled = true;
-      loadingTask.destroy();
+      searchRequestRef.current += 1;
+      loadingTask.destroy().catch(() => {});
     };
   }, [fileUrl, initialError, resourceLoading]);
 
@@ -506,7 +510,8 @@ export default function PdfReader({
       if (document.fullscreenElement === readerRef.current) await document.exitFullscreen();
       else await readerRef.current.requestFullscreen();
     } catch {
-      setDocumentError("Full screen is not available in this browser.");
+      setCopyMessage("Full screen is not available in this browser.");
+      window.setTimeout(() => setCopyMessage(""), 2200);
     }
   };
 
@@ -545,11 +550,15 @@ export default function PdfReader({
   };
 
   const executeSearch = useCallback(async (term = searchInput) => {
+    const requestId = ++searchRequestRef.current;
     const query = term.trim();
     setSearchQuery(query);
     setSearchMatches([]);
     setActiveMatchIndex(0);
-    if (!query || !pdf || !pageCount) return;
+    if (!query || !pdf || !pageCount) {
+      setSearching(false);
+      return;
+    }
 
     setSearching(true);
     const normalizedQuery = normalizedText(query);
@@ -594,6 +603,7 @@ export default function PdfReader({
       }
     };
     await Promise.all(Array.from({ length: Math.min(4, pageCount) }, () => worker()));
+    if (requestId !== searchRequestRef.current) return;
     matches.sort((a, b) => a.pageNumber - b.pageNumber || a.itemIndex - b.itemIndex || a.offset - b.offset);
     setSearchMatches(matches);
     setActiveMatchIndex(0);
@@ -606,12 +616,20 @@ export default function PdfReader({
     const activeMatch = searchMatches[activeMatchIndex];
     if (!activeMatch) return undefined;
     scrollToPage(activeMatch.pageNumber);
-    const timer = window.setTimeout(() => {
+
+    let timer = 0;
+    let attempts = 0;
+    const revealActiveMatch = () => {
       const pageElement = pageElementsRef.current.get(activeMatch.pageNumber);
       const selector = 'span[data-pdf-item-index="' + activeMatch.itemIndex + '"]';
       const textSpan = pageElement?.querySelector(selector);
-      textSpan?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-    }, 160);
+      if (textSpan) {
+        textSpan.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      } else if (attempts++ < 20) {
+        timer = window.setTimeout(revealActiveMatch, 100);
+      }
+    };
+    timer = window.setTimeout(revealActiveMatch, 100);
     return () => window.clearTimeout(timer);
   }, [activeMatchIndex, searchMatches, scrollToPage]);
 
@@ -631,7 +649,8 @@ export default function PdfReader({
       const pageIndex = await pdf.getPageIndex(destination[0]);
       scrollToPage(pageIndex + 1);
     } catch {
-      setDocumentError("This table-of-contents entry could not be opened.");
+      setCopyMessage("This table-of-contents entry could not be opened.");
+      window.setTimeout(() => setCopyMessage(""), 2200);
     }
   };
 
@@ -720,8 +739,8 @@ export default function PdfReader({
             {viewMode === "continuous" ? <FiFileText /> : <FiList />}
           </button>
           <button type="button" onClick={copySelection} title="Copy selected PDF text" aria-label="Copy selected text"><FiCopy /></button>
-          <button type="button" onClick={handlePrint} title="Print PDF" aria-label="Print PDF"><FiPrinter /></button>
-          {canDownload && <button type="button" onClick={onDownload} disabled={downloading} title="Download original PDF" aria-label="Download PDF"><FiDownload /></button>}
+          <button type="button" onClick={handlePrint} disabled={!fileUrl} title="Print PDF" aria-label="Print PDF"><FiPrinter /></button>
+          {canDownload && <button type="button" onClick={onDownload} disabled={downloading || !fileUrl} title="Download original PDF" aria-label="Download PDF"><FiDownload /></button>}
           <button type="button" onClick={toggleFullscreen} title={fullscreen ? "Exit full screen" : "Full screen"} aria-label={fullscreen ? "Exit full screen" : "Full screen"}>
             {fullscreen ? <FiMinimize /> : <FiMaximize />}
           </button>
