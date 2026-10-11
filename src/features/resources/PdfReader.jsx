@@ -12,6 +12,7 @@ import {
   FiFileText,
   FiGrid,
   FiList,
+  FiLock,
   FiMaximize,
   FiMinimize,
   FiPrinter,
@@ -741,7 +742,17 @@ export default function PdfReader({
           </button>
           <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={copySelection} title="Copy selected PDF text" aria-label="Copy selected text"><FiCopy /></button>
           <button type="button" onClick={handlePrint} disabled={!fileUrl} title="Print PDF" aria-label="Print PDF"><FiPrinter /></button>
-          {canDownload && <button type="button" onClick={onDownload} disabled={downloading || !fileUrl} title="Download original PDF" aria-label="Download PDF"><FiDownload /></button>}
+          <button
+            type="button"
+            className={!canDownload ? "is-download-restricted" : ""}
+            onClick={() => { if (canDownload && fileUrl && !downloading) onDownload?.(); }}
+            disabled={!canDownload || downloading || !fileUrl}
+            aria-disabled={!canDownload || downloading || !fileUrl}
+            title={canDownload ? "Download original PDF" : "Downloading is disabled by the resource administrator"}
+            aria-label={canDownload ? "Download PDF" : "Download disabled by administrator"}
+          >
+            {canDownload ? <FiDownload /> : <FiLock />}
+          </button>
           <button type="button" onClick={toggleFullscreen} title={fullscreen ? "Exit full screen" : "Full screen"} aria-label={fullscreen ? "Exit full screen" : "Full screen"}>
             {fullscreen ? <FiMinimize /> : <FiMaximize />}
           </button>
