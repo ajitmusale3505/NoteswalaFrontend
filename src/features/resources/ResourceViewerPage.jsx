@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  FiAlertCircle,
+  FiBook,
   FiBookOpen,
   FiCalendar,
   FiCheckCircle,
-  FiDownload,
+  FiFile,
   FiFileText,
-  FiInfo,
-  FiLock,
-  FiRefreshCw,
+  FiGitBranch,
+  FiGlobe,
+  FiGrid,
+  FiLayers,
+  FiClock,
   FiUser,
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
@@ -70,66 +72,65 @@ async function resolveResource(resourceId) {
   throw new Error("This resource could not be found. Return to the subject page and open it again.");
 }
 
-function ResourceDetailsPanel({ resource, subjectCode, onDownload, downloading }) {
-  const details = [
-    ["Subject", resource.subjectName || subjectCode],
-    ["Branch", resource.branchName],
-    ["Semester", resource.semesterNumber ? `Semester ${resource.semesterNumber}` : null],
-    ["Category", resource.categoryName],
-    ["Document type", resource.documentType],
-    ["Material type", resource.materialType],
-    ["File size", formatFileSize(resource.fileSizeBytes)],
-    ["Pages", resource.pageCount],
-    ["Language", resource.language],
-    ["Version", resource.version],
-    ["Uploaded by", resource.uploadedByName],
-    ["Availability", resource.published && resource.active ? "Published" : "Not currently published"],
+function DocumentDetailsPanel({ resource, subjectCode }) {
+  const rows = [
+    { label: "Subject", value: resource.subjectName || subjectCode, Icon: FiGitBranch },
+    { label: "Branch", value: resource.branchName, Icon: FiUser },
+    { label: "Semester", value: resource.semesterNumber ? `Semester ${resource.semesterNumber}` : null, Icon: FiCalendar },
+    { label: "Category", value: resource.categoryName, Icon: FiGrid },
+    { label: "Document type", value: resource.documentType, Icon: FiFile },
+    { label: "Material type", value: resource.materialType, Icon: FiBookOpen },
+    { label: "File size", value: formatFileSize(resource.fileSizeBytes), Icon: FiFileText },
+    { label: "Pages", value: resource.pageCount, Icon: FiBook },
+    { label: "Language", value: resource.language, Icon: FiGlobe },
+    { label: "Version", value: resource.version, Icon: FiClock },
   ];
+  const fallbackTags = [
+    subjectCode?.split("-")[0],
+    /note/i.test(`${resource.title || ""} ${resource.materialType || ""}`) ? "Notes" : resource.documentType,
+  ].filter(Boolean);
+  const tags = (resource.tags
+    ? String(resource.tags).split(/[,;|]/).map((tag) => tag.trim()).filter(Boolean)
+    : fallbackTags).slice(0, 4);
 
   return (
-    <aside className="viewer-right">
-      <section className="viewer-side-card reading-card">
-        <h3><FiFileText /> Resource Information</h3>
-        <div className="resource-viewer-resource-name">
-          <span className="resource-viewer-file-icon"><FiBookOpen /></span>
-          <div><strong>{resource.title}</strong><small>{resource.documentType || resource.materialType || "Study material"}</small></div>
+    <aside className="viewer-outline resource-document-details">
+      <header className="resource-document-details-heading">
+        <span className="resource-document-heading-icon"><FiFileText /></span>
+        <div>
+          <h2>Document Details</h2>
+          <p>Complete information about this resource</p>
         </div>
-        <div className="resource-viewer-detail-list">
-          {details.map(([label, value]) => (
-            <div className="resource-viewer-detail-row" key={label}>
-              <span>{label}</span><strong>{displayValue(value)}</strong>
+      </header>
+
+      <div className="resource-document-summary">
+        <div className="resource-document-identity">
+          <span className="resource-document-big-icon"><FiFileText /></span>
+          <div className="resource-document-identity-copy">
+            <h3>{resource.title || "Loading resource…"}</h3>
+            <p>{resource.documentType || resource.materialType || "PDF document"}</p>
+            {tags.length > 0 && (
+              <div className="resource-document-tags">
+                {tags.map((tag) => <span key={tag}>{tag}</span>)}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="resource-document-detail-rows">
+          {rows.map(({ label, value, Icon }) => (
+            <div className="resource-document-detail-row" key={label}>
+              <Icon aria-hidden="true" />
+              <span>{label}</span>
+              <strong>{displayValue(value, "—")}</strong>
             </div>
           ))}
         </div>
-        <button
-          type="button"
-          className={`download-pdf ${!resource.downloadable ? "is-download-restricted" : ""}`}
-          onClick={() => { if (resource.downloadable && !downloading) onDownload(); }}
-          disabled={!resource.downloadable || downloading}
-          aria-disabled={!resource.downloadable || downloading}
-          title={!resource.downloadable ? "Downloading is disabled by the resource administrator" : "Download the original uploaded PDF"}
-        >
-          {!resource.downloadable
-            ? <FiLock />
-            : downloading
-              ? <FiRefreshCw className="resource-viewer-spinning" />
-              : <FiDownload />}
-          {!resource.downloadable ? "Download Disabled" : downloading ? "Preparing download…" : "Download PDF"}
-        </button>
-        {!resource.downloadable && (
-          <p className="resource-viewer-inline-note"><FiLock /> You can read this document, but downloading is disabled by the resource owner.</p>
-        )}
-      </section>
-      {resource.description && (
-        <section className="viewer-side-card resource-viewer-description">
-          <h3><FiInfo /> About this resource</h3>
-          <p>{resource.description}</p>
-          {resource.tags && <div className="resource-viewer-tags">{String(resource.tags).split(/[,;|]/).map((tag) => tag.trim()).filter(Boolean).map((tag) => <span key={tag}>{tag}</span>)}</div>}
-        </section>
-      )}
+      </div>
     </aside>
   );
 }
+
 
 export default function ResourceViewerPage() {
   const { subjectCode = "", resourceId = "" } = useParams();
@@ -264,21 +265,15 @@ export default function ResourceViewerPage() {
         </header>
 
         <div className="viewer-workspace resource-viewer-live-workspace">
-          <aside className="viewer-outline resource-document-details">
-            <div className="outline-tabs"><button type="button" className="active">Document</button><button type="button" disabled>Details</button></div>
-            <div className="resource-document-summary">
-              <span className="resource-document-big-icon"><FiFileText /></span>
-              <h2>{title}</h2>
-              <p>{resource?.description || "The original PDF stored for this resource will appear in the reader."}</p>
-              <div className="resource-document-summary-meta">
-                <div><span>File type</span><strong>PDF document</strong></div>
-                <div><span>File size</span><strong>{formatFileSize(resource?.fileSizeBytes)}</strong></div>
-                <div><span>Subject</span><strong>{resource?.subjectName || subjectCode}</strong></div>
-                <div><span>Semester</span><strong>{semesterLabel || "Not specified"}</strong></div>
-                <div><span>Access</span><strong>{resource?.free || resource?.accessType === "FREE" ? "Free" : displayValue(resource?.accessType)}</strong></div>
-              </div>
-            </div>
-          </aside>
+          {resource
+            ? <DocumentDetailsPanel resource={resource} subjectCode={subjectCode} />
+            : <aside className="viewer-outline resource-document-details">
+                <header className="resource-document-details-heading">
+                  <span className="resource-document-heading-icon"><FiFileText /></span>
+                  <div><h2>Document Details</h2><p>Complete information about this resource</p></div>
+                </header>
+                <div className="resource-document-loading"><span className="pdf-reader-spinner" /> Loading document details…</div>
+              </aside>}
 
           <section className="resource-pdf-reader-shell" aria-label="Uploaded PDF reader">
             <PdfReader
@@ -292,10 +287,6 @@ export default function ResourceViewerPage() {
               onRetry={retryLoad}
             />
           </section>
-
-          {resource
-            ? <ResourceDetailsPanel resource={resource} subjectCode={subjectCode} onDownload={handleDownload} downloading={downloading} />
-            : <aside className="viewer-right"><section className="viewer-side-card"><h3><FiInfo /> Resource details</h3><p>The details will appear when the resource has loaded.</p></section></aside>}
         </div>
       </main>
     </div>
