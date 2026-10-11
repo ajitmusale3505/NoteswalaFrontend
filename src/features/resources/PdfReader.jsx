@@ -5,7 +5,6 @@ import {
   FiAlertCircle,
   FiBookOpen,
   FiCheck,
-  FiChevronDown,
   FiChevronLeft,
   FiChevronRight,
   FiCopy,
@@ -124,16 +123,11 @@ function PdfPage({
   const textLayerRef = useRef(null);
   const [pageError, setPageError] = useState("");
   const [rendering, setRendering] = useState(false);
+  const [textLayerVersion, setTextLayerVersion] = useState(0);
   const scale = zoom / 100;
   const isRotated = rotation % 180 !== 0;
   const displayWidth = (isRotated ? estimatedSize.height : estimatedSize.width) * scale;
   const displayHeight = (isRotated ? estimatedSize.width : estimatedSize.height) * scale;
-
-  useEffect(() => {
-    const element = canvasRef.current?.closest("[data-page-number]");
-    if (element) registerPageElement(pageNumber, element);
-    return () => registerPageElement(pageNumber, null);
-  }, [pageNumber, registerPageElement, shouldRender]);
 
   useEffect(() => {
     if (!shouldRender || !pdf || !canvasRef.current) return undefined;
@@ -189,6 +183,7 @@ function PdfPage({
             const span = spans[spanIndex];
             if (span) span.dataset.pdfItemIndex = String(index);
           });
+          setTextLayerVersion((version) => version + 1);
         }
       } catch (error) {
         if (!cancelled && error?.name !== "RenderingCancelledException") {
@@ -216,7 +211,7 @@ function PdfPage({
       span.classList.toggle("pdf-reader-search-match", searchItemIndices?.has(index) || false);
       span.classList.toggle("pdf-reader-search-active", activeSearchItemIndex === index);
     });
-  }, [searchItemIndices, activeSearchItemIndex, shouldRender, zoom, rotation]);
+  }, [searchItemIndices, activeSearchItemIndex, shouldRender, zoom, rotation, textLayerVersion]);
 
   return (
     <article
@@ -274,6 +269,7 @@ export default function PdfReader({
   downloading = false,
   initialError = "",
   onRetry,
+  resourceLoading = false,
 }) {
   const readerRef = useRef(null);
   const documentScrollRef = useRef(null);
@@ -317,8 +313,8 @@ export default function PdfReader({
 
   useEffect(() => {
     if (!fileUrl) {
-      setDocumentLoading(false);
-      setDocumentError(initialError || "The PDF file is unavailable.");
+      setDocumentLoading(Boolean(resourceLoading));
+      setDocumentError(resourceLoading ? "" : (initialError || "The PDF file is unavailable."));
       return undefined;
     }
     let cancelled = false;
@@ -365,7 +361,7 @@ export default function PdfReader({
       cancelled = true;
       loadingTask.destroy();
     };
-  }, [fileUrl, initialError]);
+  }, [fileUrl, initialError, resourceLoading]);
 
   useEffect(() => {
     setPageInput(String(activePage));
@@ -563,15 +559,34 @@ export default function PdfReader({
         const pageNumber = nextPageNumber++;
         try {
           const textContent = await getTextContent(pageNumber);
+          let pageText = "";
+          const segments = [];
           textContent.items.forEach((item, itemIndex) => {
             if (typeof item.str !== "string" || !item.str) return;
-            const content = normalizedText(item.str);
-            let startIndex = content.indexOf(normalizedQuery);
-            while (startIndex !== -1) {
-              matches.push({ pageNumber, itemIndex, offset: startIndex, length: query.length });
-              startIndex = content.indexOf(normalizedQuery, startIndex + Math.max(1, normalizedQuery.length));
-            }
+            const start = pageText.length;
+            pageText += item.str;
+            segments.push({ itemIndex, start, end: pageText.length });
+            pageText += item.hasEOL ? "\\n" : " ";
           });
+
+          const searchableText = normalizedText(pageText);
+          let startIndex = searchableText.indexOf(normalizedQuery);
+          while (startIndex !== -1) {
+            const endIndex = startIndex + normalizedQuery.length;
+            const touchedItems = segments
+              .filter((segment) => segment.end > startIndex && segment.start < endIndex)
+              .map((segment) => segment.itemIndex);
+            if (touchedItems.length) {
+              matches.push({
+                pageNumber,
+                itemIndex: touchedItems[0],
+                itemIndices: touchedItems,
+                offset: startIndex,
+                length: query.length,
+              });
+            }
+            startIndex = searchableText.indexOf(normalizedQuery, startIndex + Math.max(1, normalizedQuery.length));
+          }
         } catch {
           // A damaged page should not prevent searching the remainder of the document.
         }
@@ -584,6 +599,20 @@ export default function PdfReader({
     setSearching(false);
     if (matches.length) scrollToPage(matches[0].pageNumber);
   }, [searchInput, pdf, pageCount, getTextContent, scrollToPage]);
+
+  useEffect(() => {
+    if (!searchMatches.length) return undefined;
+    const activeMatch = searchMatches[activeMatchIndex];
+    if (!activeMatch) return undefined;
+    scrollToPage(activeMatch.pageNumber);
+    const timer = window.setTimeout(() => {
+      const pageElement = pageElementsRef.current.get(activeMatch.pageNumber);
+      const selector = 'span[data-pdf-item-index="' + activeMatch.itemIndex + '"]';
+      const textSpan = pageElement?.querySelector(selector);
+      textSpan?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }, 160);
+    return () => window.clearTimeout(timer);
+  }, [activeMatchIndex, searchMatches, scrollToPage]);
 
   const navigateMatch = (direction) => {
     if (!searchMatches.length) return;
@@ -744,13 +773,13 @@ export default function PdfReader({
         )}
 
         <div className={`pdf-reader-document-scroll ${viewMode === "single" ? "is-single-page" : ""}`} ref={documentScrollRef}>
-          {documentLoading && (
+          {(documentLoading || resourceLoading) && (
             <div className="pdf-reader-loading-state" role="status"><span className="pdf-reader-spinner" /><strong>Preparing PDF reader…</strong><p>Loading page information and navigation.</p></div>
           )}
-          {!documentLoading && documentError && (
+          {!documentLoading && !resourceLoading && documentError && (
             <div className="pdf-reader-error-state" role="alert"><FiAlertCircle /><strong>Unable to load PDF</strong><p>{documentError}</p>{onRetry && <button type="button" onClick={onRetry}>Try again</button>}</div>
           )}
-          {!documentLoading && !documentError && pdf && Array.from({ length: pageCount }, (_, index) => index + 1)
+          {!documentLoading && !resourceLoading && !documentError && pdf && Array.from({ length: pageCount }, (_, index) => index + 1)
             .filter((pageNumber) => viewMode === "single" ? pageNumber === activePage : true)
             .map((pageNumber) => {
               const size = pageSizes[pageNumber] || pageSize;
