@@ -121,3 +121,10 @@
  .pdf-reader-statusbar{gap:6px;padding-inline:6px;font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){.pdf-reader *,.pdf-reader *:before,.pdf-reader *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* PDF.js text layer layout variables required for selectable, aligned text. */
+.pdf-reader-page-paper{--user-unit:1;--scale-factor:1;--total-scale-factor:1;position:relative}
+.pdf-reader-text-layer{--min-font-size:1;--text-scale-factor:calc(var(--total-scale-factor)*var(--min-font-size));--min-font-size-inv:1;z-index:2;color-scheme:only light;pointer-events:auto;overflow:hidden;forced-color-adjust:none;text-size-adjust:none;-webkit-text-size-adjust:none}
+.pdf-reader-text-layer>:not(.markedContent),.pdf-reader-text-layer .markedContent span:not(.markedContent){z-index:1;--font-height:0;font-size:calc(var(--text-scale-factor)*var(--font-height));--scale-x:1;--rotate:0deg;transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv))}
+.pdf-reader-text-layer .markedContent{display:contents}
+.pdf-reader-page-canvas{z-index:0}
