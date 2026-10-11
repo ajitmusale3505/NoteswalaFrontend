@@ -1,7 +1,7 @@
 import { FiArrowRight, FiBookOpen, FiEye, FiEyeOff, FiGithub, FiLinkedin, FiLock, FiMail } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sendOtp, verifyOtp, login } from "../../services/authService";
 import { getPersonalProfile } from "../../services/profileService";
 import toast from "react-hot-toast";
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const update = (field) => (event) =>
     setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -95,7 +96,22 @@ export default function LoginPage() {
       }
       const isAdmin = String(roleValue).toUpperCase().includes("ADMIN");
       toast.success("Login successful.");
-      navigate(isAdmin ? "/admin" : "/home", { replace: true });
+
+      // Return users to the protected URL they originally requested. Only accept
+      // app-local absolute paths to prevent open redirects; keep existing role-based
+      // destinations for normal sign-ins and let AdminRoute enforce admin access.
+      const requestedLocation = location.state?.from;
+      const requestedPath = typeof requestedLocation === "string"
+        ? requestedLocation
+        : requestedLocation
+          ? (requestedLocation.pathname || "/") + (requestedLocation.search || "") + (requestedLocation.hash || "")
+          : "";
+      const isSafeRequestedPath = requestedPath.startsWith("/") &&
+        !requestedPath.startsWith("//") &&
+        !requestedPath.startsWith("/login") &&
+        !requestedPath.startsWith("/register");
+
+      navigate(isSafeRequestedPath ? requestedPath : (isAdmin ? "/admin" : "/home"), { replace: true });
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed.");
     } finally {
