@@ -128,3 +128,20 @@
 .pdf-reader-text-layer>:not(.markedContent),.pdf-reader-text-layer .markedContent span:not(.markedContent){z-index:1;--font-height:0;font-size:calc(var(--text-scale-factor)*var(--font-height));--scale-x:1;--rotate:0deg;transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv))}
 .pdf-reader-text-layer .markedContent{display:contents}
 .pdf-reader-page-canvas{z-index:0}
+
+/* Download is explicitly locked when resource metadata says downloadable=false. */
+.pdf-reader-toolbar-group>button.is-download-restricted{
+  border-color:#5d666d;
+  background:linear-gradient(135deg,#3a4248,#30373c);
+  color:#aeb7bd;
+  opacity:.72;
+  filter:blur(.25px);
+  cursor:not-allowed;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+}
+.pdf-reader-toolbar-group>button.is-download-restricted:hover{
+  border-color:#5d666d;
+  background:linear-gradient(135deg,#3a4248,#30373c);
+  color:#aeb7bd;
+}
+.pdf-reader-toolbar-group>button.is-download-restricted svg{color:#c0c8cd}
