@@ -735,7 +735,7 @@ export default function AdminUploadResourcePage() {
         branchId: toInternalId(form.branchId, "B", 10000),
         academicYearId: toInternalId(form.academicYearId, "AY", 10000),
         semesterId: toInternalId(form.semesterId, "S", 10000),
-        subjectId: toInternalId(selectedOffering.subjectId, "SUB", 10000),
+        subjectId: selectedOffering.subjectId,
         subjectOfferingId: selectedOffering.id,
         documentType: form.documentType,
         materialType: form.materialType,
