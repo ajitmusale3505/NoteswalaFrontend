@@ -11,11 +11,23 @@ import {
   FiGrid,
   FiClock,
   FiUser,
+  FiStar,
+  FiSend,
+  FiMessageSquare,
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import HomeNavbar from "../home/components/HomeNavbar";
 import PdfReader from "./PdfReader";
-import { downloadResource, getResourceById, getResources, viewResource } from "../../services/resourceService";
+import {
+  createResourceReview,
+  downloadResource,
+  getMyResourceReview,
+  getResourceById,
+  getResourceReviewSummary,
+  getResources,
+  updateResourceReview,
+  viewResource,
+} from "../../services/resourceService";
 import "../../styles/resource-viewer.css";
 
 const slugify = (value = "") => String(value)
@@ -125,8 +137,215 @@ function DocumentDetailsPanel({ resource, subjectCode }) {
             </div>
           ))}
         </div>
+        <RatingFeedbackPanel resourceId={resource.id} />
       </div>
     </aside>
+  );
+}
+
+
+function getReviewErrorMessage(error) {
+  return error?.response?.data?.message
+    || error?.response?.data?.error
+    || error?.message
+    || "Your rating could not be submitted. Please try again.";
+}
+
+function RatingFeedbackPanel({ resourceId }) {
+  const [summary, setSummary] = useState({ ratingAverage: 0, ratingCount: 0 });
+  const [myReview, setMyReview] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setStatusMessage("");
+    setErrorMessage("");
+
+    const loadReviewData = async () => {
+      const [summaryResult, reviewResult] = await Promise.allSettled([
+        getResourceReviewSummary(resourceId),
+        getMyResourceReview(resourceId),
+      ]);
+      if (cancelled) return;
+
+      if (summaryResult.status === "fulfilled") {
+        const payload = unwrapResponse(summaryResult.value) || {};
+        setSummary({
+          ratingAverage: Number(payload.ratingAverage) || 0,
+          ratingCount: Number(payload.ratingCount) || 0,
+        });
+      } else {
+        setErrorMessage(getReviewErrorMessage(summaryResult.reason));
+      }
+
+      if (reviewResult.status === "fulfilled") {
+        const review = unwrapResponse(reviewResult.value);
+        setMyReview(review);
+        setRating(Number(review?.rating) || 0);
+        setFeedback(review?.review || "");
+      } else {
+        const status = reviewResult.reason?.response?.status;
+        if (status === 404) {
+          setMyReview(null);
+          setRating(0);
+          setFeedback("");
+        } else if (!errorMessage) {
+          setErrorMessage(getReviewErrorMessage(reviewResult.reason));
+        }
+      }
+      setLoading(false);
+    };
+
+    loadReviewData();
+    return () => { cancelled = true; };
+  }, [resourceId]);
+
+  const refreshSummary = async () => {
+    try {
+      const response = await getResourceReviewSummary(resourceId);
+      const payload = unwrapResponse(response) || {};
+      setSummary({
+        ratingAverage: Number(payload.ratingAverage) || 0,
+        ratingCount: Number(payload.ratingCount) || 0,
+      });
+    } catch {
+      // Keep the last known summary if refreshing the aggregate fails.
+    }
+  };
+
+  const submitReview = async (event) => {
+    event.preventDefault();
+    if (!rating || submitting) {
+      if (!rating) setErrorMessage("Please choose a star rating from 1 to 5.");
+      return;
+    }
+    if (feedback.length > 2000) {
+      setErrorMessage("Feedback must be 2,000 characters or fewer.");
+      return;
+    }
+
+    setSubmitting(true);
+    setStatusMessage("");
+    setErrorMessage("");
+    const payload = { rating, review: feedback.trim() || null };
+
+    try {
+      const response = myReview
+        ? await updateResourceReview(resourceId, myReview.id, payload)
+        : await createResourceReview(resourceId, payload);
+      const savedReview = unwrapResponse(response);
+      setMyReview(savedReview);
+      setRating(Number(savedReview?.rating) || rating);
+      setFeedback(savedReview?.review ?? payload.review ?? "");
+      setStatusMessage(myReview ? "Your rating and feedback have been updated." : "Thank you! Your rating and feedback have been submitted.");
+      await refreshSummary();
+    } catch (error) {
+      const status = error?.response?.status;
+      const message = getReviewErrorMessage(error);
+      if (status === 403) {
+        setErrorMessage("You need access to this resource before you can submit a review.");
+      } else if (status === 409 || /already reviewed/i.test(message)) {
+        // Recover gracefully if the review was saved from another tab/session.
+        try {
+          const response = await getMyResourceReview(resourceId);
+          const existingReview = unwrapResponse(response);
+          setMyReview(existingReview);
+          setRating(Number(existingReview?.rating) || rating);
+          setFeedback(existingReview?.review || feedback);
+          setErrorMessage("You already have a review for this resource. Your existing review has been loaded so you can update it.");
+        } catch {
+          setErrorMessage(message);
+        }
+      } else {
+        setErrorMessage(message);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const average = summary.ratingAverage.toFixed(1);
+
+  return (
+    <section className="resource-rating-card" aria-labelledby="resource-rating-title">
+      <header className="resource-rating-header">
+        <div className="resource-rating-header-icon"><FiStar /></div>
+        <div>
+          <h3 id="resource-rating-title">Rate this PDF</h3>
+          <p>Share your experience with other students</p>
+        </div>
+      </header>
+
+      <div className="resource-rating-summary">
+        <div className="resource-rating-average">
+          <strong>{average}</strong>
+          <span aria-label={`${average} out of 5 stars`}>
+            {Array.from({ length: 5 }, (_, index) => (
+              <FiStar key={index} className={index < Math.round(summary.ratingAverage) ? "is-filled" : ""} />
+            ))}
+          </span>
+          <small>{summary.ratingCount} {summary.ratingCount === 1 ? "rating" : "ratings"}</small>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="resource-rating-loading" role="status">Loading your review…</div>
+      ) : (
+        <form className="resource-rating-form" onSubmit={submitReview}>
+          <fieldset disabled={submitting}>
+            <legend>{myReview ? "Update your rating" : "Your rating"}</legend>
+            <div className="resource-rating-star-picker" role="group" aria-label="Choose a rating from one to five stars">
+              {Array.from({ length: 5 }, (_, index) => {
+                const value = index + 1;
+                return (
+                  <button
+                    type="button"
+                    key={value}
+                    className={value <= rating ? "is-selected" : ""}
+                    onClick={() => { setRating(value); setErrorMessage(""); }}
+                    aria-label={`${value} ${value === 1 ? "star" : "stars"}`}
+                    aria-pressed={rating === value}
+                    title={`${value} out of 5 stars`}
+                  >
+                    <FiStar />
+                  </button>
+                );
+              })}
+              <span className="resource-rating-selected-label">{rating ? `${rating}/5` : "Select stars"}</span>
+            </div>
+          </fieldset>
+
+          <label className="resource-rating-feedback-label" htmlFor={`resource-feedback-${resourceId}`}>
+            <span><FiMessageSquare /> Feedback <small>(optional)</small></span>
+            <textarea
+              id={`resource-feedback-${resourceId}`}
+              value={feedback}
+              onChange={(event) => { setFeedback(event.target.value); setErrorMessage(""); }}
+              maxLength={2000}
+              rows={3}
+              placeholder="Was this PDF useful? Share feedback for other students…"
+              disabled={submitting}
+            />
+            <small className="resource-rating-character-count">{feedback.length}/2000</small>
+          </label>
+
+          {errorMessage && <p className="resource-rating-message is-error" role="alert">{errorMessage}</p>}
+          {statusMessage && <p className="resource-rating-message is-success" role="status">{statusMessage}</p>}
+
+          <button className="resource-rating-submit" type="submit" disabled={loading || submitting || rating < 1 || rating > 5}>
+            <FiSend />
+            {submitting ? "Submitting…" : myReview ? "Update rating & feedback" : "Submit rating & feedback"}
+          </button>
+          {myReview && <p className="resource-rating-edit-note">You have already reviewed this PDF. You can update your rating and feedback at any time.</p>}
+        </form>
+      )}
+    </section>
   );
 }
 
