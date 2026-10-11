@@ -222,7 +222,7 @@ function PdfPage({
       style={{ width: displayWidth, minHeight: displayHeight }}
       onMouseEnter={() => onPageVisible(pageNumber)}
     >
-      <div className="pdf-reader-page-paper" style={{ width: displayWidth, height: displayHeight }}>
+      <div className="pdf-reader-page-paper" style={{ width: displayWidth, height: displayHeight, "--scale-factor": scale, "--total-scale-factor": scale }}>
         {shouldRender ? (
           <>
             <canvas className="pdf-reader-page-canvas" ref={canvasRef} />
