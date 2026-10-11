@@ -68,7 +68,9 @@ function buildSubject(rawSubject,resources,universityName){
    resource.downloadsCount?String(resource.downloadsCount)+" downloads":"0 downloads",
    resource.materialType||resource.documentType||"Resource",
    resource.published?"Published":"Available",
-   presentationTones[index%presentationTones.length]
+   presentationTones[index%presentationTones.length],
+   resource.id,
+   resource.slug
  ]);
 
  const topicCounts=new Map();
