@@ -103,13 +103,18 @@ function ResourceDetailsPanel({ resource, subjectCode, onDownload, downloading }
         </div>
         <button
           type="button"
-          className="download-pdf"
-          onClick={onDownload}
+          className={`download-pdf ${!resource.downloadable ? "is-download-restricted" : ""}`}
+          onClick={() => { if (resource.downloadable && !downloading) onDownload(); }}
           disabled={!resource.downloadable || downloading}
-          title={!resource.downloadable ? "Downloads are disabled for this resource" : "Download the original uploaded PDF"}
+          aria-disabled={!resource.downloadable || downloading}
+          title={!resource.downloadable ? "Downloading is disabled by the resource administrator" : "Download the original uploaded PDF"}
         >
-          {downloading ? <FiRefreshCw className="resource-viewer-spinning" /> : <FiDownload />}
-          {downloading ? "Preparing download…" : resource.downloadable ? "Download PDF" : "Download Disabled"}
+          {!resource.downloadable
+            ? <FiLock />
+            : downloading
+              ? <FiRefreshCw className="resource-viewer-spinning" />
+              : <FiDownload />}
+          {!resource.downloadable ? "Download Disabled" : downloading ? "Preparing download…" : "Download PDF"}
         </button>
         {!resource.downloadable && (
           <p className="resource-viewer-inline-note"><FiLock /> You can read this document, but downloading is disabled by the resource owner.</p>
