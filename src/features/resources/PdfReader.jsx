@@ -3,7 +3,6 @@ import * as pdfjsLib from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import "../../styles/pdf-reader.css";
 import {
-  FiAlertCircle,
   FiBookOpen,
   FiCheck,
   FiChevronLeft,
@@ -30,6 +29,7 @@ const MAX_ZOOM = 300;
 const ZOOM_STEP = 10;
 const RENDER_NEARBY_PAGES = 2;
 const THUMBNAIL_SCALE = 0.18;
+const CSS_UNITS = 96 / 72;
 
 function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -125,7 +125,7 @@ function PdfPage({
   const [pageError, setPageError] = useState("");
   const [rendering, setRendering] = useState(false);
   const [textLayerVersion, setTextLayerVersion] = useState(0);
-  const scale = zoom / 100;
+  const scale = (zoom / 100) * CSS_UNITS;
   const isRotated = rotation % 180 !== 0;
   const displayWidth = (isRotated ? estimatedSize.height : estimatedSize.width) * scale;
   const displayHeight = (isRotated ? estimatedSize.width : estimatedSize.height) * scale;
@@ -427,10 +427,11 @@ export default function PdfReader({
       const height = Math.max(220, scrollPanel.clientHeight - 42);
       const rotatedWidth = rotation % 180 ? pageSize.height : pageSize.width;
       const rotatedHeight = rotation % 180 ? pageSize.width : pageSize.height;
-      const widthPercent = (width / rotatedWidth) * 100;
+      const widthPercent = (width / (rotatedWidth * CSS_UNITS)) * 100;
+      const pageHeightPercent = (height / (rotatedHeight * CSS_UNITS)) * 100;
       const nextZoom = fitMode === "width"
         ? widthPercent
-        : Math.min(widthPercent, (height / rotatedHeight) * 100);
+        : Math.min(widthPercent, pageHeightPercent);
       setZoom(clamp(Math.floor(nextZoom), MIN_ZOOM, MAX_ZOOM));
     };
     fit();
@@ -738,7 +739,7 @@ export default function PdfReader({
           <button type="button" onClick={() => setViewMode((value) => value === "continuous" ? "single" : "continuous")} title={viewMode === "continuous" ? "Switch to single page" : "Switch to continuous scroll"} aria-label="Toggle page layout" className={viewMode === "single" ? "is-active" : ""}>
             {viewMode === "continuous" ? <FiFileText /> : <FiList />}
           </button>
-          <button type="button" onClick={copySelection} title="Copy selected PDF text" aria-label="Copy selected text"><FiCopy /></button>
+          <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={copySelection} title="Copy selected PDF text" aria-label="Copy selected text"><FiCopy /></button>
           <button type="button" onClick={handlePrint} disabled={!fileUrl} title="Print PDF" aria-label="Print PDF"><FiPrinter /></button>
           {canDownload && <button type="button" onClick={onDownload} disabled={downloading || !fileUrl} title="Download original PDF" aria-label="Download PDF"><FiDownload /></button>}
           <button type="button" onClick={toggleFullscreen} title={fullscreen ? "Exit full screen" : "Full screen"} aria-label={fullscreen ? "Exit full screen" : "Full screen"}>
