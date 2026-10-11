@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { getCurrentUser } from "../../services/profileService";
 
 function normalizeRole(role) {
@@ -22,6 +22,7 @@ function userHasAdminRole(user) {
 }
 
 export default function AdminRoute({ children }) {
+  const location = useLocation();
   const [status, setStatus] = useState("checking");
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function AdminRoute({ children }) {
   }
 
   if (status === "unauthenticated") {
-    return <Navigate to="/login" replace state={{ from: "/admin" }} />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (status === "forbidden") {
