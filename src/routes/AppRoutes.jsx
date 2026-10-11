@@ -10,21 +10,30 @@ import ProfilePage from "../features/profile/ProfilePage";
 import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
 import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
+import AuthRoute from "./AuthRoute";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public entry points stay accessible without a session. */}
       <Route path="/" element={<LandingPage />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/dashboard" element={<HomePage />} />
-      <Route path="/resources" element={<ResourcesPage />} />
-      <Route path="/resources/:subjectCode" element={<SubjectPage />} />
-      <Route path="/resources/:subjectCode/:resourceId" element={<ResourceViewerPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
+
+      {/* All student-facing pages verify the session before they mount. */}
+      <Route element={<AuthRoute />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/dashboard" element={<HomePage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/resources/:subjectCode" element={<SubjectPage />} />
+        <Route path="/resources/:subjectCode/:resourceId" element={<ResourceViewerPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+
+      {/* Admin routes retain their existing server-verified role guard. */}
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/resources/upload" element={<AdminRoute><AdminUploadResourcePage /></AdminRoute>} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
