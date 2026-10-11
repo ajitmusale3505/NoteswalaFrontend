@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import HomeNavbar from "../home/components/HomeNavbar";
+import PdfReader from "./PdfReader";
 import { downloadResource, getResourceById, getResources, viewResource } from "../../services/resourceService";
 import "../../styles/resource-viewer.css";
 
@@ -274,39 +275,17 @@ export default function ResourceViewerPage() {
             </div>
           </aside>
 
-          <section className="document-frame resource-live-document-frame" aria-label="Uploaded PDF reader">
-            <div className="document-toolbar resource-live-toolbar">
-              <div className="resource-live-toolbar-title"><FiFileText /><span>{title}</span></div>
-              <div className="document-tools-right">
-                <span>{resource?.pageCount ? `${resource.pageCount} pages` : "PDF document"}</span>
-                <button type="button" onClick={retryLoad} title="Reload PDF" aria-label="Reload PDF"><FiRefreshCw /></button>
-                {resource?.downloadable && <button type="button" onClick={handleDownload} disabled={downloading} title="Download PDF" aria-label="Download PDF"><FiDownload /></button>}
-              </div>
-            </div>
-            <div className="document-stage resource-live-document-stage">
-              {loading && <div className="resource-viewer-state" role="status"><span className="resource-viewer-spinner" /><strong>Loading your PDF…</strong><p>Retrieving the original document from NotesWala storage.</p></div>}
-              {!loading && errorMessage && (
-                <div className="resource-viewer-state resource-viewer-error" role="alert">
-                  <FiAlertCircle />
-                  <strong>Unable to open this document</strong>
-                  <p>{errorMessage}</p>
-                  <button type="button" onClick={retryLoad}><FiRefreshCw /> Try again</button>
-                </div>
-              )}
-              {!loading && !errorMessage && pdfUrl && (
-                <iframe
-                  key={pdfUrl}
-                  className="resource-live-pdf-frame"
-                  title={`PDF reader for ${title}`}
-                  src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
-                />
-              )}
-            </div>
-            <div className="document-statusbar">
-              <span><FiFileText /> {title}.pdf</span>
-              <span>{resource ? formatFileSize(resource.fileSizeBytes) : " "}</span>
-              <span>{resource?.pageCount ? `${resource.pageCount} pages` : "Original uploaded PDF"}</span>
-            </div>
+          <section className="resource-pdf-reader-shell" aria-label="Uploaded PDF reader">
+            <PdfReader
+              fileUrl={pdfUrl}
+              title={title}
+              onDownload={handleDownload}
+              canDownload={Boolean(resource?.downloadable)}
+              downloading={downloading}
+              initialError={errorMessage}
+              resourceLoading={loading}
+              onRetry={retryLoad}
+            />
           </section>
 
           {resource
