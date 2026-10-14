@@ -84,8 +84,10 @@ async function resolveResource(resourceId) {
 }
 
 function DocumentDetailsPanel({ resource, subjectCode }) {
+  const isUniversityWideSyllabus = !resource.subjectName
+    && String(resource.categoryName || "").toLowerCase().includes("syllabus");
   const rows = [
-    { label: "Subject", value: resource.subjectName || subjectCode, Icon: FiGitBranch },
+    ...(!isUniversityWideSyllabus ? [{ label: "Subject", value: resource.subjectName || subjectCode, Icon: FiGitBranch }] : []),
     { label: "Branch", value: resource.branchName, Icon: FiUser },
     { label: "Semester", value: resource.semesterNumber ? `Semester ${resource.semesterNumber}` : null, Icon: FiCalendar },
     { label: "Category", value: resource.categoryName, Icon: FiGrid },
@@ -97,8 +99,8 @@ function DocumentDetailsPanel({ resource, subjectCode }) {
     { label: "Version", value: resource.version, Icon: FiClock },
   ];
   const fallbackTags = [
-    subjectCode?.split("-")[0],
-    /note/i.test(`${resource.title || ""} ${resource.materialType || ""}`) ? "Notes" : resource.documentType,
+    !isUniversityWideSyllabus ? subjectCode?.split("-")[0] : null,
+    isUniversityWideSyllabus ? "Syllabus" : (/note/i.test(`${resource.title || ""} ${resource.materialType || ""}`) ? "Notes" : resource.documentType),
   ].filter(Boolean);
   const tags = (resource.tags
     ? String(resource.tags).split(/[,;|]/).map((tag) => tag.trim()).filter(Boolean)
@@ -459,15 +461,20 @@ export default function ResourceViewerPage() {
         <header className="viewer-hero">
           <div className="viewer-breadcrumb">
             <Link to="/resources">Resources</Link><span>›</span>
-            <Link to={`/resources/${subjectCode}`}>{resource?.subjectName || subjectCode || "Subject"}</Link><span>›</span>
-            <b>{title}</b>
+            {(subjectCode.toLowerCase() === "view" || (!resource?.subjectName && String(resource?.categoryName || "").toLowerCase().includes("syllabus")))
+              ? <b>{title}</b>
+              : <>
+                  <Link to={`/resources/${subjectCode}`}>{resource?.subjectName || subjectCode || "Subject"}</Link><span>›</span>
+                  <b>{title}</b>
+                </>}
           </div>
           <div className="viewer-resource-head">
             <div className="viewer-cover"><FiBookOpen /></div>
             <div className="viewer-resource-info">
               <div className="viewer-title-line"><h1>{title}</h1><label>{category}</label></div>
               <div className="viewer-meta">
-                <span>{subjectCode}</span>{semesterLabel && <><i /><span>{semesterLabel}</span></>}
+                {(subjectCode.toLowerCase() !== "view" && resource?.subjectName) && <span>{resource.subjectName}</span>}
+                {semesterLabel && <><i /><span>{semesterLabel}</span></>}
                 {resource?.branchName && <><i /><span>{resource.branchName}</span></>}
                 {resource?.categoryName && <><i /><span>{resource.categoryName}</span></>}
               </div>
