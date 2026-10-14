@@ -7,7 +7,7 @@ import {
   FiClock,
   FiEye,
   FiFileText,
-  FiFlame,
+  FiActivity,
   FiLoader,
   FiRefreshCw,
 } from "react-icons/fi";
@@ -165,7 +165,7 @@ function ResourceSection({
   const recent = mode === "recent";
   const title = recent ? "Recently Viewed Resources" : "Most Viewed Resources";
   const subtitle = recent ? "Continue where you left off" : "Popular among students";
-  const Icon = recent ? FiClock : FiFlame;
+  const Icon = recent ? FiClock : FiActivity;
   const pageCount = Math.max(1, Math.ceil(resources.length / CARDS_PER_VIEW));
   const maxStart = Math.max(0, (pageCount - 1) * CARDS_PER_VIEW);
   const visible = resources.slice(startIndex, startIndex + CARDS_PER_VIEW);
