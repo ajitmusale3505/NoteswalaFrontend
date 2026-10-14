@@ -15,6 +15,7 @@ const dashboardNavigationGroups = [
   { title: "Resource Management", items: [
     { label: "Resource Library", icon: FiFileText },
     { label: "Upload Resources", icon: FiUploadCloud },
+    { label: "Manage Categories", icon: FiLayers },
     { label: "Code & SQL Lab Content", icon: FiCode },
   ]},
   { title: "University & Platform", items: [
