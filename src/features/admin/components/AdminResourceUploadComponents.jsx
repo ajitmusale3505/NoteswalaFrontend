@@ -87,6 +87,7 @@ export function UploadFilePanel({ pdfFile, onPdfSelect, onPdfRemove, thumbnail, 
 
 export function getDetectedDocumentType(file) {
   if (!file) return "";
+  if (file.type === "application/pdf") return "PDF";
   const extension = String(file.name || "").split(".").pop().toLowerCase();
   const documentTypes = {
     pdf: "PDF",
@@ -107,6 +108,7 @@ export function getDetectedDocumentType(file) {
 
 export function getDetectedFileType(file) {
   if (!file) return "";
+  if (file.type === "application/pdf") return "PDF document (.pdf)";
   const extension = String(file.name || "").split(".").pop().toLowerCase();
   const knownTypes = {
     pdf: "PDF document (.pdf)",
