@@ -98,6 +98,9 @@ function CommunityPageContent() {
   const [room, setRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [members, setMembers] = useState([]);
+  const [membersPage, setMembersPage] = useState(0);
+  const [membersTotalPages, setMembersTotalPages] = useState(1);
+  const [membersLoading, setMembersLoading] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [pinnedMessage, setPinnedMessage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -161,7 +164,12 @@ function CommunityPageContent() {
         ]);
         if (!mounted) return;
 
-        if (results[1].status === "fulfilled") setMembers(unwrap(results[1].value) || []);
+        if (results[1].status === "fulfilled") {
+          const memberPage = responsePage(results[1].value);
+          setMembers(memberPage.content || []);
+          setMembersPage(0);
+          setMembersTotalPages(memberPage.totalPages || 1);
+        }
         if (results[2].status === "fulfilled") setAttachments(unwrap(results[2].value) || []);
         if (results[3].status === "fulfilled") setPinnedMessage(unwrap(results[3].value));
         const firstFailure = results.find((result) => result.status === "rejected");
@@ -221,6 +229,47 @@ function CommunityPageContent() {
       client.deactivate();
     };
   }, [room?.id, reloadLatest]);
+
+  useEffect(() => {
+    if (activeSection !== "members" || !room?.id) return undefined;
+    let active = true;
+    setMembersLoading(true);
+    getUniversityMembers(30, 0)
+      .then((response) => {
+        if (!active) return;
+        const page = responsePage(response);
+        setMembers(page.content || []);
+        setMembersPage(0);
+        setMembersTotalPages(page.totalPages || 1);
+      })
+      .catch((error) => {
+        if (active) toast.error(errorMessage(error));
+      })
+      .finally(() => {
+        if (active) setMembersLoading(false);
+      });
+    return () => { active = false; };
+  }, [activeSection, room?.id]);
+
+  const loadMoreMembers = async () => {
+    const nextPage = membersPage + 1;
+    if (membersLoading || nextPage >= membersTotalPages) return;
+    setMembersLoading(true);
+    try {
+      const page = responsePage(await getUniversityMembers(30, nextPage));
+      const incoming = page.content || [];
+      setMembers((current) => {
+        const knownIds = new Set(current.map((member) => member.userId));
+        return [...current, ...incoming.filter((member) => !knownIds.has(member.userId))];
+      });
+      setMembersPage(nextPage);
+      setMembersTotalPages(page.totalPages || 1);
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setMembersLoading(false);
+    }
+  };
 
   const loadOlderMessages = useCallback(async () => {
     const channelId = room?.id;
@@ -538,7 +587,9 @@ function CommunityPageContent() {
                         <span><strong>{member.fullName}</strong><small>{member.branchName || "Student"}{member.currentYear ? ` · ${ordinalYear(member.currentYear)}` : ""}{member.semesterName ? ` · ${displaySemester(member.semesterName)}` : ""}</small></span>
                         <span className="community-student-badge">Student</span>
                       </div>
-                    ))}</div> : <div className="community-empty-state"><FiUsers /><h3>No member details available</h3><p>Member details will appear when student profiles are completed.</p></div>}
+                    ))}</div> : membersLoading ? <div className="community-empty-state"><span className="community-spinner" /><p>Loading university members…</p></div> : <div className="community-empty-state"><FiUsers /><h3>No member details available</h3><p>Member details will appear when student profiles are completed.</p></div>}
+                    {membersLoading && members.length > 0 && <div className="community-history-loading">Loading members…</div>}
+                    {!membersLoading && membersPage + 1 < membersTotalPages && <button className="community-load-more-members" type="button" onClick={loadMoreMembers}>Load more members <FiChevronRight /></button>}
                     <button className="community-back-chat" type="button" onClick={() => setActiveSection("chat")}><FiMessageCircle /> Back to chat</button>
                   </div>
                 )}

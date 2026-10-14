@@ -3,8 +3,8 @@ import { apiClient } from "./api";
 const root = "/community/channels";
 
 export const getUniversityCommunity = () => apiClient.get(`${root}/university`);
-export const getUniversityMembers = (limit = 8) =>
-  apiClient.get(`${root}/university/members`, { params: { limit } });
+export const getUniversityMembers = (limit = 8, page = 0) =>
+  apiClient.get(`${root}/university/members`, { params: { limit, page } });
 export const getCommunityMessages = (channelId, params = {}) =>
   apiClient.get(`${root}/${channelId}/messages`, { params });
 export const getPinnedCommunityMessage = (channelId) =>

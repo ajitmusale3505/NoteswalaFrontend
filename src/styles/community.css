@@ -166,6 +166,8 @@
 .community-empty-state h3{margin:12px 0 0;color:#27445e;font:700 15px "Libre Baskerville",serif}
 .community-empty-state p{max-width:330px;margin:8px 0 0;font-size:11px;line-height:1.6}
 .community-back-chat{display:flex;align-items:center;gap:8px;margin-top:16px;padding:10px 13px;border:1px solid #dce4e9;border-radius:7px;background:#fff;color:#234d72;font-size:11px}
+.community-load-more-members{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:14px;padding:11px;border:1px solid #dce5ed;border-radius:8px;background:#f8fbfe;color:#2a5c88;font-size:11px;font-weight:600}
+.community-load-more-members:hover{background:#edf5fc}
 .community-all-files{margin-top:8px}
 .community-file-row{display:grid;grid-template-columns:42px minmax(0,1fr) 17px;align-items:center;gap:12px;padding:13px 3px;border-bottom:1px solid #ebeff2;color:#244662}
 .community-file-document{display:grid;place-items:center;width:40px;height:42px;border-radius:7px;background:#fff0ef;color:#d24b43;font-size:21px}
