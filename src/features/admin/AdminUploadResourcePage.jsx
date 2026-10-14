@@ -114,6 +114,12 @@ function optionName(item, fallback = "Untitled") {
   return item?.name || item?.title || item?.label || item?.code || fallback;
 }
 
+function isSyllabusCategory(category) {
+  const name = String(category?.name || "").toLowerCase();
+  const slug = String(category?.slug || "").toLowerCase();
+  return name.includes("syllabus") || slug.includes("syllabus");
+}
+
 function useObjectUrl(file) {
   const [url, setUrl] = useState("");
   useEffect(() => {
@@ -164,6 +170,12 @@ export default function AdminUploadResourcePage() {
   const coverPreviewUrl = useObjectUrl(imageFiles.coverImage);
   const thumbnailPreviewUrl = useObjectUrl(imageFiles.thumbnail);
 
+  const selectedCategory = useMemo(
+    () => options.categories.find((item) => getPublicId(item.id) === form.categoryId),
+    [options.categories, form.categoryId],
+  );
+  const isSyllabusResource = isSyllabusCategory(selectedCategory);
+
   const selectedUniversity = useMemo(
     () => options.universities.find((item) => getPublicId(item.id) === form.universityId),
     [options.universities, form.universityId],
@@ -182,10 +194,19 @@ export default function AdminUploadResourcePage() {
   );
 
   const updateField = (field, value) => {
+    const nextCategory = field === "categoryId"
+      ? options.categories.find((item) => getPublicId(item.id) === value)
+      : selectedCategory;
+    const selectingSyllabus = field === "categoryId" && isSyllabusCategory(nextCategory);
+
     setForm((current) => {
       const next = { ...current, [field]: value };
       if (field === "categoryId") {
-        next.categoryName = options.categories.find((item) => getPublicId(item.id) === value)?.name || "";
+        next.categoryName = nextCategory?.name || "";
+        if (selectingSyllabus) {
+          next.collegeId = "";
+          next.subjectOfferingId = "";
+        }
       }
       if (field === "accessType" && value === "FREE") {
         next.price = "0";
@@ -193,6 +214,12 @@ export default function AdminUploadResourcePage() {
       }
       return next;
     });
+
+    // If the previous category was college-scoped, reload all branches for the
+    // selected university so syllabus mapping cannot retain college-filtered choices.
+    if (selectingSyllabus && form.collegeId) {
+      void handleCollegeChange("");
+    }
   };
 
   useEffect(() => {
@@ -233,6 +260,11 @@ export default function AdminUploadResourcePage() {
     let active = true;
 
     const loadSubjectOptions = async () => {
+      if (isSyllabusResource) {
+        setOptions((current) => current.subjects.length ? { ...current, subjects: [] } : current);
+        setForm((current) => current.subjectOfferingId ? { ...current, subjectOfferingId: "" } : current);
+        return;
+      }
       if (!form.branchId || !form.academicYearId || !form.semesterId || !curriculums.length) {
         setOptions((current) => ({ ...current, subjects: [] }));
         return;
@@ -311,7 +343,7 @@ export default function AdminUploadResourcePage() {
 
     loadSubjectOptions();
     return () => { active = false; };
-  }, [form.branchId, form.academicYearId, form.semesterId, curriculums, options.academicYears, options.semesters]);
+  }, [isSyllabusResource, form.branchId, form.academicYearId, form.semesterId, curriculums, options.academicYears, options.semesters]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((collapsed) => {
@@ -673,8 +705,11 @@ export default function AdminUploadResourcePage() {
       jumpToStep(2);
       return;
     }
-    if (!form.universityId || !form.branchId || !form.academicYearId || !form.semesterId || !form.subjectOfferingId) {
-      toast.error("Select all required academic mapping fields.");
+    if (!form.universityId || !form.branchId || !form.academicYearId || !form.semesterId
+      || (!isSyllabusResource && !form.subjectOfferingId)) {
+      toast.error(isSyllabusResource
+        ? "Select the university, branch, academic year and semester."
+        : "Select all required academic mapping fields.");
       jumpToStep(3);
       return;
     }
@@ -691,8 +726,10 @@ export default function AdminUploadResourcePage() {
       return;
     }
 
-    const selectedOffering = options.subjects.find((item) => item.id === form.subjectOfferingId);
-    if (!selectedOffering?.subjectId) {
+    const selectedOffering = isSyllabusResource
+      ? null
+      : options.subjects.find((item) => item.id === form.subjectOfferingId);
+    if (!isSyllabusResource && !selectedOffering?.subjectId) {
       toast.error("The selected subject offering is invalid. Please choose the subject again.");
       jumpToStep(3);
       return;
@@ -711,12 +748,12 @@ export default function AdminUploadResourcePage() {
         description: form.description.trim() || undefined,
         categoryId: Number(form.categoryId),
         universityId: toInternalId(form.universityId, "U", 100000),
-        collegeId: form.collegeId ? toInternalId(form.collegeId, "C", 10000) : undefined,
+        collegeId: !isSyllabusResource && form.collegeId ? toInternalId(form.collegeId, "C", 10000) : undefined,
         branchId: toInternalId(form.branchId, "B", 10000),
         academicYearId: toInternalId(form.academicYearId, "AY", 10000),
         semesterId: toInternalId(form.semesterId, "S", 10000),
-        subjectId: selectedOffering.subjectId,
-        subjectOfferingId: selectedOffering.id,
+        subjectId: isSyllabusResource ? undefined : selectedOffering.subjectId,
+        subjectOfferingId: isSyllabusResource ? undefined : selectedOffering.id,
         documentType: form.documentType,
         accessType: form.accessType,
         price: form.accessType === "FREE" ? 0 : price,
@@ -871,6 +908,7 @@ export default function AdminUploadResourcePage() {
               options={{ universities, colleges, branches, academicYears, semesters, subjects }}
               loading={loadingAcademic}
               disabled={loadingInitial}
+              isSyllabusResource={isSyllabusResource}
             />
             <AccessPricingPanel values={form} onChange={updateField} />
             <AdditionalInfoPanel values={form} onChange={updateField} />
