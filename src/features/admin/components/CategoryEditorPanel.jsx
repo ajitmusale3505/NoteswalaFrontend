@@ -1,13 +1,13 @@
 import {
-  FiAward, FiBook, FiBookOpen, FiBriefcase, FiCheckCircle, FiCode,
-  FiFile, FiFileText, FiFlask, FiHelpCircle, FiLayers, FiList,
-  FiMessageCircle, FiPackage, FiPenTool, FiPuzzle, FiSave, FiXCircle,
+  FiActivity, FiAward, FiBook, FiBookOpen, FiBriefcase, FiCheckCircle, FiCode,
+  FiFile, FiFileText, FiHelpCircle, FiLayers, FiList,
+  FiMessageCircle, FiPackage, FiPenTool, FiTarget, FiSave, FiXCircle,
 } from "react-icons/fi";
 
 export const CATEGORY_ICONS = [
   { value: "book-open", label: "Books", Icon: FiBookOpen },
   { value: "file-text", label: "Document", Icon: FiFileText },
-  { value: "flask", label: "Lab", Icon: FiFlask },
+  { value: "activity", label: "Lab", Icon: FiActivity },
   { value: "code", label: "Code", Icon: FiCode },
   { value: "help-circle", label: "Questions", Icon: FiHelpCircle },
   { value: "file", label: "File", Icon: FiFile },
@@ -19,7 +19,7 @@ export const CATEGORY_ICONS = [
   { value: "briefcase", label: "Career", Icon: FiBriefcase },
   { value: "list", label: "List", Icon: FiList },
   { value: "pen-tool", label: "Handwritten", Icon: FiPenTool },
-  { value: "puzzle", label: "Practice", Icon: FiPuzzle },
+  { value: "target", label: "Practice", Icon: FiTarget },
 ];
 
 export function CategoryIcon({ value, className = "" }) {
