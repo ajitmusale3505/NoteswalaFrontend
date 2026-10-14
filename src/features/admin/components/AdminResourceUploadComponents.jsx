@@ -166,14 +166,14 @@ export function BasicDetailsPanel({ values, onChange, categories, file }) {
   );
 }
 
-export function AcademicMappingPanel({ values, onChange, options, loading, disabled }) {
+export function AcademicMappingPanel({ values, onChange, options, loading, disabled, isSyllabusResource = false }) {
   const fields = [
     ["universityId", "University", options.universities, true],
-    ["collegeId", "College", options.colleges, false],
+    ...(!isSyllabusResource ? [["collegeId", "College", options.colleges, false]] : []),
     ["branchId", "Branch", options.branches, true],
     ["academicYearId", "Academic Year", options.academicYears, true],
     ["semesterId", "Semester", options.semesters, true],
-    ["subjectOfferingId", "Subject", options.subjects, true],
+    ...(!isSyllabusResource ? [["subjectOfferingId", "Subject", options.subjects, true]] : []),
   ];
 
   const emptyOptionLabel = (key, items) => {
@@ -200,7 +200,7 @@ export function AcademicMappingPanel({ values, onChange, options, loading, disab
 
   return (
     <section className="admin-upload-card" id="upload-step-3">
-      <UploadPanelHeading number="3" title="Academic Mapping" description="Select university, branch, academic year, semester and subject" />
+      <UploadPanelHeading number="3" title="Academic Mapping" description={isSyllabusResource ? "Select university, branch, academic year and semester" : "Select university, branch, academic year, semester and subject"} />
       {loading && <div className="admin-upload-inline-loading"><span /> Updating academic options…</div>}
       <div className="admin-upload-field-grid">
         {fields.map(([key, label, items, required]) => (
@@ -213,7 +213,7 @@ export function AcademicMappingPanel({ values, onChange, options, loading, disab
           </Field>
         ))}
       </div>
-      <p className="admin-upload-academic-note"><FiInfo /> Subject choices follow the selected branch, academic year and semester.</p>
+      <p className="admin-upload-academic-note"><FiInfo /> {isSyllabusResource ? "This syllabus applies to all colleges under the selected university for this branch, year and semester." : "Subject choices follow the selected branch, academic year and semester."}</p>
     </section>
   );
 }
