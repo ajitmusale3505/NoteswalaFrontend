@@ -112,3 +112,324 @@
 .quick-card-spinner{animation:quick-card-spin .8s linear infinite}
 @keyframes quick-card-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.quick-card-spinner{animation:none}}
+
+
+/* Home resource collections: recent reading history and backend-ranked resources. */
+.home-main{
+  height:auto;
+  min-height:calc(100dvh - 68px);
+  grid-template-rows:270px 135px 270px 210px 145px 58px;
+  overflow:visible;
+}
+.home-resource-collections{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  min-width:0;
+}
+.home-resource-section{
+  min-width:0;
+  min-height:260px;
+  padding:10px 11px 11px;
+}
+.home-resource-section-header{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  min-height:38px;
+}
+.home-resource-section-icon{
+  flex:0 0 23px;
+  display:grid;
+  place-items:center;
+  color:#b66a25;
+  font-size:20px;
+}
+.home-resource-section-heading{
+  min-width:0;
+  flex:1 1 auto;
+}
+.home-resource-section-heading h2{
+  margin:0;
+  color:#163c8b;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font:400 16px/1.25 "Libre Baskerville",serif;
+}
+.home-resource-section-heading p{
+  margin:2px 0 0;
+  color:#7488a2;
+  font-size:9px;
+  line-height:1.25;
+}
+.home-resource-view-all{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:5px 4px;
+  flex:0 0 auto;
+  border:0;
+  background:transparent;
+  color:#163c8b;
+  font-size:9px;
+  cursor:pointer;
+}
+.home-resource-view-all svg{font-size:11px}
+.home-resource-carousel-controls{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex:0 0 auto;
+}
+.home-resource-carousel-controls button{
+  width:27px;
+  height:27px;
+  display:grid;
+  place-items:center;
+  border:1px solid #e0e7f0;
+  border-radius:50%;
+  background:#fff;
+  color:#1b4d91;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+.home-resource-carousel-controls button:hover:not(:disabled){background:#f2f7fd;border-color:#b8cbe1}
+.home-resource-carousel-controls button:disabled{opacity:.35;cursor:default}
+.home-resource-carousel-controls svg{font-size:12px}
+.home-resource-cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-top:6px;
+  min-width:0;
+}
+.home-resource-card{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:195px;
+  padding:7px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:linear-gradient(180deg,#fff 0%,#fbfcfe 100%);
+}
+.home-resource-card-main{
+  display:grid;
+  grid-template-columns:minmax(54px,72px) minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+  min-width:0;
+  flex:1;
+}
+.home-resource-cover{
+  position:relative;
+  min-width:0;
+  height:103px;
+  overflow:visible;
+  border:1px solid #e7e8e7;
+  border-radius:5px;
+  background:#f7f5f0;
+  box-shadow:0 2px 5px #1e38500a;
+}
+.home-resource-cover>img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:4px;
+}
+.home-resource-cover-placeholder{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:5px;
+  overflow:hidden;
+  text-align:center;
+  color:#715b42;
+  background:linear-gradient(145deg,#f7ead4,#fffdf8 70%);
+}
+.home-resource-cover-placeholder svg{font-size:19px;flex:0 0 auto}
+.home-resource-cover-placeholder span{
+  display:-webkit-box;
+  -webkit-line-clamp:4;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  max-width:100%;
+  color:#253b51;
+  font:400 7px/1.35 "Libre Baskerville",serif;
+  overflow-wrap:anywhere;
+}
+.home-resource-cover-placeholder small{
+  color:#9b5c24;
+  font-size:7px;
+  font-weight:700;
+}
+.home-resource-rank{
+  position:absolute;
+  z-index:1;
+  left:-4px;
+  top:-5px;
+  display:grid;
+  place-items:center;
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  color:#5a3b08;
+  border:1px solid #e3b347;
+  background:#ffcd4e;
+  box-shadow:0 2px 4px #142a4325;
+  font-size:10px;
+  font-weight:800;
+}
+.home-resource-rank.rank-2{background:#e5ebf0;border-color:#b8c2cc;color:#34485a}
+.home-resource-rank.rank-3{background:#edaa73;border-color:#dc8b4c;color:#63300a}
+.home-resource-card-details{min-width:0}
+.home-resource-category{
+  display:inline-block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  padding:4px 7px;
+  border-radius:12px;
+  color:#2768a7;
+  background:#eaf3ff;
+  font-size:7px;
+  line-height:1.1;
+}
+.home-resource-card:nth-child(3n+2) .home-resource-category{background:#e8f7f0;color:#23815b}
+.home-resource-card:nth-child(3n) .home-resource-category{background:#f2eaff;color:#8050be}
+.home-resource-card-details h3{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:25px;
+  margin:6px 0 7px;
+  color:#123c85;
+  font:400 9px/1.35 "Libre Baskerville",serif;
+  overflow-wrap:anywhere;
+}
+.home-resource-card-details p{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+  margin:0 0 6px;
+  overflow:hidden;
+  color:#71839a;
+  font-size:7px;
+  line-height:1.25;
+}
+.home-resource-card-details p svg{flex:0 0 auto;font-size:10px;color:#385879}
+.home-resource-card-details p:last-child{margin-bottom:0}
+.home-resource-progress{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:8px 1px 7px;
+}
+.home-resource-progress-track{
+  height:5px;
+  flex:1;
+  overflow:hidden;
+  border-radius:8px;
+  background:#e4e9ed;
+}
+.home-resource-progress-track span{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:#c9995e;
+}
+.home-resource-progress strong{
+  flex:0 0 auto;
+  color:#24518a;
+  font-size:8px;
+}
+.home-resource-card-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-height:29px;
+  margin-top:8px;
+  padding:5px 6px;
+  border:1px solid #dce4ec;
+  border-radius:6px;
+  color:#173e7b;
+  background:#fff;
+  font:400 8px "Libre Baskerville",serif;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+.home-resource-card-action svg{font-size:11px}
+.home-resource-card-action:hover{background:#f3f8ff;border-color:#b8cbe1}
+.home-resource-card-action.primary{
+  border-color:#153d5e;
+  background:#153d5e;
+  color:#fff;
+}
+.home-resource-card-action.primary:hover{background:#0f304c}
+.home-resource-section-state{
+  display:flex;
+  min-height:175px;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:20px;
+  color:#71839a;
+  text-align:center;
+  font-size:11px;
+  line-height:1.5;
+}
+.home-resource-section-state.is-error{flex-direction:column;color:#a44738}
+.home-resource-section-state button{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border:1px solid #d9e3ef;
+  border-radius:6px;
+  background:#fff;
+  color:#164578;
+  cursor:pointer;
+}
+.home-resource-section-state .is-spinning{animation:home-resource-spin .8s linear infinite}
+@keyframes home-resource-spin{to{transform:rotate(360deg)}}
+
+@media (max-width:1350px){
+  .home-resource-collections{grid-template-columns:1fr}
+  .home-resource-section{min-height:245px}
+  .home-resource-card{min-height:185px}
+  .home-main{grid-template-rows:260px 132px auto 207px 142px 56px}
+}
+@media (max-width:900px){
+  .home-main{height:auto;min-height:calc(100dvh - 64px);grid-template-rows:none;overflow:visible}
+  .home-resource-collections{grid-template-columns:minmax(0,1fr)}
+  .home-resource-section{min-height:0}
+  .home-resource-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-resource-card{min-height:195px}
+}
+@media (max-width:560px){
+  .home-resource-section-header{flex-wrap:wrap;row-gap:5px;padding-bottom:5px}
+  .home-resource-section-heading{flex-basis:calc(100% - 40px)}
+  .home-resource-view-all{margin-left:auto}
+  .home-resource-carousel-controls button{width:25px;height:25px}
+  .home-resource-cards{grid-template-columns:minmax(0,1fr)}
+  .home-resource-card-main{grid-template-columns:78px minmax(0,1fr)}
+  .home-resource-cover{height:112px}
+  .home-resource-card{min-height:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-resource-carousel-controls button,.home-resource-card-action{transition:none}
+  .home-resource-section-state .is-spinning{animation:none}
+}
