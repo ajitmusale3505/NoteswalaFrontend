@@ -174,7 +174,7 @@ function CommunityPageContent() {
       return undefined;
     }
 
-    const apiBase = (import.meta.env.VITE_API_BASE_URL || window.location.origin).replace(/\/+$/, "");
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080").replace(/\/+$/, "");
     const brokerURL = `${apiBase.replace(/^https:/i, "wss:").replace(/^http:/i, "ws:")}/ws`;
     const client = new Client({
       brokerURL,
