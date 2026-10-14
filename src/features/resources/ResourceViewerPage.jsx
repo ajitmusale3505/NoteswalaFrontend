@@ -16,6 +16,8 @@ import {
   FiMessageSquare,
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
+import { getCurrentUser } from "../../services/profileService";
+import { recordRecentlyViewedResource, updateRecentlyViewedProgress } from "../home/services/recentlyViewedService";
 import HomeNavbar from "../home/components/HomeNavbar";
 import PdfReader from "./PdfReader";
 import {
@@ -360,8 +362,14 @@ export default function ResourceViewerPage() {
   const [downloading, setDownloading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [reloadToken, setReloadToken] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const retryLoad = useCallback(() => setReloadToken((value) => value + 1), []);
+
+  const handleProgressChange = useCallback((progress) => {
+    if (!currentUserId || !resource?.id || !progress?.totalPages) return;
+    updateRecentlyViewedProgress(currentUserId, resource.id, progress.currentPage, progress.totalPages);
+  }, [currentUserId, resource?.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -421,6 +429,25 @@ export default function ResourceViewerPage() {
       if (createdObjectUrl) URL.revokeObjectURL(createdObjectUrl);
     };
   }, [resourceId, subjectCode, reloadToken]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!pdfUrl || !resource?.id) return undefined;
+
+    getCurrentUser()
+      .then((response) => {
+        const user = response?.data?.data ?? response?.data ?? response;
+        const userId = user?.userId ?? user?.id;
+        if (cancelled || !userId) return;
+        setCurrentUserId(userId);
+        recordRecentlyViewedResource(userId, resource, subjectCode);
+      })
+      .catch(() => {
+        // Opening the PDF must continue if the optional history request fails.
+      });
+
+    return () => { cancelled = true; };
+  }, [pdfUrl, resource?.id, subjectCode]);
 
   const handleDownload = async () => {
     if (!resource?.id || !resource.downloadable || downloading) return;
@@ -510,6 +537,7 @@ export default function ResourceViewerPage() {
               initialError={errorMessage}
               resourceLoading={loading}
               onRetry={retryLoad}
+              onProgressChange={handleProgressChange}
             />
           </section>
         </div>
