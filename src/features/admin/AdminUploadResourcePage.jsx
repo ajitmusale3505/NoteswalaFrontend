@@ -357,6 +357,10 @@ export default function AdminUploadResourcePage() {
       navigate("/admin/resources/upload");
       return;
     }
+    if (label === "Manage Categories") {
+      navigate("/admin/categories");
+      return;
+    }
     if (label === "Resource Library") {
       toast("Resource Library management is not part of this screen.");
       return;
