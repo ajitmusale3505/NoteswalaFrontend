@@ -28,6 +28,11 @@ export default function CategoryManagementTable({
   onEdit,
   onStatusChange,
   togglingCategoryId,
+  searchValue,
+  onSearchChange,
+  statusFilter,
+  onStatusFilterChange,
+  onAddCategory,
 }) {
   const totalPages = Math.max(1, Math.ceil(allCount / pageSize));
   const start = allCount ? (page - 1) * pageSize + 1 : 0;
@@ -43,6 +48,18 @@ export default function CategoryManagementTable({
             <h2>Resource Categories</h2>
             <p>Manage all resource categories, their status and resource counts.</p>
           </div>
+        </div>
+        <div className="admin-category-table-tools">
+          <label className="admin-category-search">
+            <FiSearch aria-hidden="true" />
+            <input value={searchValue} onChange={(event) => onSearchChange(event.target.value)} placeholder="Search categories…" aria-label="Search categories" />
+          </label>
+          <select className="admin-category-status-filter" value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value)} aria-label="Filter categories by status">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <button className="admin-category-add-button" type="button" onClick={onAddCategory}><span>+</span> Add Category</button>
         </div>
       </header>
 
