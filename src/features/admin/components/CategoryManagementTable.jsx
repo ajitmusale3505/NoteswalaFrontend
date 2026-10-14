@@ -1,5 +1,5 @@
 import {
-  FiChevronLeft, FiChevronRight, FiEdit2, FiFileText, FiSearch,
+  FiChevronLeft, FiChevronRight, FiEdit2, FiFileText, FiLayers, FiSearch,
 } from "react-icons/fi";
 import { CategoryIcon } from "./CategoryEditorPanel";
 
