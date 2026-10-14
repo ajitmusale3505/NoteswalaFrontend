@@ -41,6 +41,10 @@ export default function AdminDashboardPage() {
       navigate("/admin/resources/upload");
       return;
     }
+    if (label === "Manage Categories") {
+      navigate("/admin/categories");
+      return;
+    }
     if (label !== "Dashboard") {
       toast(label === "Settings & Audit Logs" ? "System settings are selected." : `${label} selected.`, { icon: "↗" });
     }
