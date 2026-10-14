@@ -28,14 +28,33 @@ function classifyResource(resource){
  return "Others";
 }
 
+function sameScopeId(first, second) {
+ return first !== null && first !== undefined && second !== null && second !== undefined
+   && String(first).trim().toUpperCase() === String(second).trim().toUpperCase();
+}
+
 function buildSubject(rawSubject,resources,universityName){
  const subjectName=rawSubject.subjectName||"Subject";
  const subjectCode=rawSubject.subjectCode||rawSubject.code||"";
- const subjectResources=resources.filter(resource=>
-   text(resource?.subjectName)===text(subjectName) &&
-   (!rawSubject.branchName || !resource?.branchName || text(resource.branchName)===text(rawSubject.branchName)) &&
-   (!rawSubject.semesterNumber || resource?.semesterNumber==null || Number(resource.semesterNumber)===Number(rawSubject.semesterNumber))
- );
+ const subjectResources=resources.filter(resource=>{
+   const matchesSubject=
+     text(resource?.subjectName)===text(subjectName) &&
+     (!rawSubject.branchName || !resource?.branchName || text(resource.branchName)===text(rawSubject.branchName)) &&
+     (!rawSubject.semesterNumber || resource?.semesterNumber==null || Number(resource.semesterNumber)===Number(rawSubject.semesterNumber));
+
+   // A syllabus is university-wide for its selected branch/year/semester, so it
+   // appears for each matching subject at that university regardless of college.
+   const matchesUniversityWideSyllabus=
+     text(resource?.categoryName).includes("syllabus") &&
+     resource?.active === true &&
+     resource?.published === true &&
+     sameScopeId(resource?.universityId, rawSubject?.universityId) &&
+     sameScopeId(resource?.branchId, rawSubject?.branchId) &&
+     sameScopeId(resource?.academicYearId, rawSubject?.academicYearId) &&
+     sameScopeId(resource?.semesterId, rawSubject?.semesterId);
+
+   return matchesSubject || matchesUniversityWideSyllabus;
+ });
 
  const counts={Notes:0,PYQs:0,Practicals:0,Books:0,Others:0};
  subjectResources.forEach(resource=>{counts[classifyResource(resource)]++;});
