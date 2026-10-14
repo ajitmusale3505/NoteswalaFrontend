@@ -85,6 +85,27 @@ export function UploadFilePanel({ pdfFile, onPdfSelect, onPdfRemove, thumbnail, 
   );
 }
 
+export function getDetectedFileType(file) {
+  if (!file) return "";
+  const extension = String(file.name || "").split(".").pop().toLowerCase();
+  const knownTypes = {
+    pdf: "PDF document (.pdf)",
+    doc: "Microsoft Word document (.doc)",
+    docx: "Microsoft Word document (.docx)",
+    zip: "ZIP archive (.zip)",
+    rar: "RAR archive (.rar)",
+    "7z": "7-Zip archive (.7z)",
+    ppt: "PowerPoint presentation (.ppt)",
+    pptx: "PowerPoint presentation (.pptx)",
+    xls: "Excel spreadsheet (.xls)",
+    xlsx: "Excel spreadsheet (.xlsx)",
+    txt: "Text document (.txt)",
+    csv: "CSV spreadsheet (.csv)",
+  };
+  if (knownTypes[extension]) return knownTypes[extension];
+  if (file.type === "application/pdf") return "PDF document (.pdf)";
+  return file.type ? `${file.type} (.${extension})` : `File (.${extension})`;
+}
 function Field({ label, required = false, hint, className = "", children }) {
   return <label className={`admin-upload-field ${className}`}>
     <span className="admin-upload-field-label">{label}{required && <b> *</b>}{hint && <small>{hint}</small>}</span>
@@ -92,26 +113,18 @@ function Field({ label, required = false, hint, className = "", children }) {
   </label>;
 }
 
-export function BasicDetailsPanel({ values, onChange, categories, documentTypes, materialTypes }) {
+export function BasicDetailsPanel({ values, onChange, categories, file }) {
   return (
     <section className="admin-upload-card admin-upload-basic-panel" id="upload-step-2">
-      <UploadPanelHeading number="2" title="Basic Details" description="Add title, type, description and category" />
+      <UploadPanelHeading number="2" title="Basic Details" description="Add title, file type, description and category" />
       <div className="admin-upload-field-grid">
         <Field label="Resource Title" required className="span-2">
           <input maxLength={200} value={values.title} onChange={(event) => onChange("title", event.target.value)} placeholder="e.g. DBMS Previous Year Question Paper 2024" required />
           <small className="admin-character-count">{values.title.length}/200</small>
         </Field>
-        <Field label="Document Type" required>
-          <select value={values.documentType} onChange={(event) => onChange("documentType", event.target.value)} required>
-            <option value="">Select document type</option>
-            {documentTypes.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Material Type" required>
-          <select value={values.materialType} onChange={(event) => onChange("materialType", event.target.value)} required>
-            <option value="">Select material type</option>
-            {materialTypes.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}
-          </select>
+        <Field label="Document Type" required className="span-2">
+          <input className="admin-detected-file-type" value={getDetectedFileType(file)} readOnly aria-readonly="true" placeholder="Upload a file to detect its type automatically" required />
+          <small>Detected automatically from the uploaded file. This field cannot be changed manually.</small>
         </Field>
         <Field label="Category" required className="span-2">
           <select value={values.categoryId} onChange={(event) => onChange("categoryId", event.target.value)} required>
@@ -237,7 +250,7 @@ export function AdditionalInfoPanel({ values, onChange }) {
 }
 
 export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranch, selectedSemester, selectedSubject, pdfFile, pdfPreviewUrl, coverPreviewUrl }) {
-  const documentLabel = values.documentType ? values.documentType.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()) : "Question Paper";
+  const documentLabel = getDetectedFileType(pdfFile) || "Detected after file upload";
   const accessLabel = values.accessType === "FREE" ? "Free" : values.accessType === "DIRECT_PURCHASE" ? "Paid" : values.accessType === "BUNDLE_ONLY" ? "Bundle Only" : "Subscription";
   return (
     <aside className="admin-upload-card admin-resource-preview-panel">
@@ -249,7 +262,6 @@ export function ResourcePreviewPanel({ values, selectedUniversity, selectedBranc
         <div className="admin-resource-preview-main">
           <h3>{values.title || "DBMS Previous Year Question Paper 2024"}</h3>
           <div className="admin-preview-chips">
-            {values.materialType && <span>{values.materialType.replaceAll("_", " ")}</span>}
             {values.categoryId && <span>{values.categoryName || "Selected Category"}</span>}
           </div>
         </div>
