@@ -1,4 +1,5 @@
 const STORAGE_PREFIX = "noteswala:recently-viewed:v1:";
+const HISTORY_EVENT = "noteswala:recently-viewed-updated";
 const MAX_RECENT_RESOURCES = 12;
 
 function getStorageKey(userId) {
@@ -23,6 +24,7 @@ function writeHistory(userId, history) {
   if (!key) return;
   try {
     window.localStorage.setItem(key, JSON.stringify(history.slice(0, MAX_RECENT_RESOURCES)));
+    window.dispatchEvent(new CustomEvent(HISTORY_EVENT, { detail: { userId: String(userId) } }));
   } catch {
     // Storage may be disabled or full; never break PDF viewing for this.
   }
