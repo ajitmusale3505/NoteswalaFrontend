@@ -10,6 +10,7 @@ import ProfilePage from "../features/profile/ProfilePage";
 import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
 import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
+import AdminManageCategoriesPage from "../features/admin/AdminManageCategoriesPage";
 import AuthRoute from "./AuthRoute";
 
 export default function AppRoutes() {
@@ -33,6 +34,7 @@ export default function AppRoutes() {
       {/* Admin routes retain their existing server-verified role guard. */}
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/resources/upload" element={<AdminRoute><AdminUploadResourcePage /></AdminRoute>} />
+      <Route path="/admin/categories" element={<AdminRoute><AdminManageCategoriesPage /></AdminRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
