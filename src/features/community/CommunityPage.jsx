@@ -70,6 +70,16 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
 
+function formatDateHeader(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const fullDate = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(date);
+  const relativeDate = formatDate(value);
+  return relativeDate === "Today" || relativeDate === "Yesterday"
+    ? `${relativeDate}, ${fullDate}`
+    : fullDate;
+}
+
 function ordinalYear(value) {
   const year = Number(value);
   if (!Number.isFinite(year) || year < 1) return "Student";
@@ -434,7 +444,20 @@ function CommunityPageContent() {
                     {loadError && <div className="community-inline-error"><FiAlertCircle /> {loadError}</div>}
                     <div className="community-messages" ref={messageScrollRef} onScroll={onMessageScroll}>
                       {olderLoading && <div className="community-history-loading">Loading older messages…</div>}
-                      {filteredMessages.length ? filteredMessages.map(renderMessage) : (
+                      {filteredMessages.length ? filteredMessages.map((message, index) => {
+                        const dateKey = message.createdAt ? new Date(message.createdAt).toDateString() : "";
+                        const previousDateKey = index > 0 && filteredMessages[index - 1].createdAt
+                          ? new Date(filteredMessages[index - 1].createdAt).toDateString()
+                          : "";
+                        return (
+                          <div className="community-message-date-group" key={message.id || message.clientMessageId || ("message-" + index)}>
+                            {dateKey && dateKey !== previousDateKey && (
+                              <div className="community-date-separator"><span>{formatDateHeader(message.createdAt)}</span></div>
+                            )}
+                            {renderMessage(message)}
+                          </div>
+                        );
+                      }) : (
                         <div className="community-empty-chat">
                           <span><FiMessageCircle /></span>
                           <h3>{searchTerm ? "No matching messages" : "Start a conversation"}</h3>

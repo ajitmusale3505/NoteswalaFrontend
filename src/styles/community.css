@@ -58,6 +58,10 @@
 .community-messages::-webkit-scrollbar{width:7px}
 .community-messages::-webkit-scrollbar-thumb{border-radius:8px;background:#cbd7e0}
 .community-history-loading{text-align:center;padding:5px;color:#71849b;font-size:10px}
+.community-message-date-group{display:contents}
+.community-date-separator{align-self:center;display:flex;align-items:center;gap:10px;margin:1px 0 2px;color:#285783;font-size:10px}
+.community-date-separator:before,.community-date-separator:after{content:"";width:18px;height:1px;background:#dfe8f2}
+.community-date-separator span{padding:5px 11px;border:1px solid #e3ecf8;border-radius:15px;background:#eaf2ff;font-weight:600;white-space:nowrap}
 .community-message-row{display:flex;align-items:flex-start;gap:10px;max-width:100%;min-width:0}
 .community-message-row.mine{justify-content:flex-end}
 .community-avatar{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#d4bda3,#8b6a52);color:#fff;font-size:11px;font-weight:700;box-shadow:0 1px 3px #172f4610}
