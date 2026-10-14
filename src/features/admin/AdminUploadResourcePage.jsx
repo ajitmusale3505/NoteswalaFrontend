@@ -13,6 +13,7 @@ import {
   UploadFilePanel,
   UploadReviewBar,
   UploadStepper,
+  getDetectedDocumentType,
 } from "./components/AdminResourceUploadComponents";
 import {
   getUploadAcademicYears,
@@ -35,35 +36,9 @@ const MAX_PDF_BYTES = 25 * 1024 * 1024;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_TOTAL_UPLOAD_BYTES = 29 * 1024 * 1024;
 
-const DOCUMENT_TYPES = [
-  { value: "QUESTION_PAPER", label: "Question Paper" },
-  { value: "SOLVED_PAPER", label: "Solved Paper" },
-  { value: "BOOK", label: "Book" },
-  { value: "NOTE", label: "Notes" },
-  { value: "IMPORTANT_QUESTION", label: "Important Questions" },
-  { value: "STUDY_MATERIAL", label: "Study Material" },
-];
-
-const MATERIAL_TYPES = [
-  { value: "RAW_PYQ", label: "Raw Previous Year Papers" },
-  { value: "RAW_NOTES", label: "Class Notes" },
-  { value: "LAB_MANUAL", label: "Lab Manual" },
-  { value: "SOLVED_PYQ", label: "Solved Previous Year Papers" },
-  { value: "PREMIUM_NOTES", label: "Premium Notes" },
-  { value: "LAB_MANUAL_CODES", label: "Lab Manual with Codes" },
-  { value: "VIVA_QUESTIONS", label: "Viva Questions" },
-  { value: "BOOK_PDF", label: "Reference Book" },
-  { value: "FORMULA_SHEET", label: "Formula Sheet" },
-  { value: "MCQ_BANK", label: "MCQ Bank" },
-  { value: "VIMP_QUESTIONS", label: "Very Important Questions" },
-  { value: "MOCK_TEST", label: "Mock Test" },
-  { value: "PLACEMENT_PACK", label: "Placement Pack" },
-];
-
 const initialForm = {
   title: "",
   documentType: "",
-  materialType: "",
   categoryId: "",
   categoryName: "",
   description: "",
@@ -658,6 +633,7 @@ export default function AdminUploadResourcePage() {
       return;
     }
     setPdfFile(file);
+    setForm((current) => ({ ...current, documentType: getDetectedDocumentType(file) }));
     setUploadProgress(0);
   };
 
@@ -692,7 +668,7 @@ export default function AdminUploadResourcePage() {
       jumpToStep(1);
       return;
     }
-    if (!form.title.trim() || !form.documentType || !form.materialType || !form.categoryId) {
+    if (!form.title.trim() || !form.documentType || !form.categoryId) {
       toast.error("Complete the required basic details first.");
       jumpToStep(2);
       return;
@@ -742,7 +718,6 @@ export default function AdminUploadResourcePage() {
         subjectId: selectedOffering.subjectId,
         subjectOfferingId: selectedOffering.id,
         documentType: form.documentType,
-        materialType: form.materialType,
         accessType: form.accessType,
         price: form.accessType === "FREE" ? 0 : price,
         discountPrice: discountPrice,
@@ -857,7 +832,11 @@ export default function AdminUploadResourcePage() {
             <UploadFilePanel
               pdfFile={pdfFile}
               onPdfSelect={handlePdfSelect}
-              onPdfRemove={() => setPdfFile(null)}
+              onPdfRemove={() => {
+                setPdfFile(null);
+                setForm((current) => ({ ...current, documentType: "" }));
+                setUploadProgress(0);
+              }}
               thumbnail={imageFiles.thumbnail}
               coverImage={imageFiles.coverImage}
               previewImage={imageFiles.previewImage}
@@ -871,8 +850,7 @@ export default function AdminUploadResourcePage() {
               values={form}
               onChange={updateField}
               categories={categories}
-              documentTypes={DOCUMENT_TYPES}
-              materialTypes={MATERIAL_TYPES}
+              file={pdfFile}
             />
             <ResourcePreviewPanel
               values={form}
