@@ -85,6 +85,26 @@ export function UploadFilePanel({ pdfFile, onPdfSelect, onPdfRemove, thumbnail, 
   );
 }
 
+export function getDetectedDocumentType(file) {
+  if (!file) return "";
+  const extension = String(file.name || "").split(".").pop().toLowerCase();
+  const documentTypes = {
+    pdf: "PDF",
+    doc: "WORD",
+    docx: "WORD",
+    zip: "ZIP",
+    rar: "RAR",
+    "7z": "SEVEN_ZIP",
+    ppt: "POWERPOINT",
+    pptx: "POWERPOINT",
+    xls: "EXCEL",
+    xlsx: "EXCEL",
+    txt: "TEXT",
+    csv: "CSV",
+  };
+  return documentTypes[extension] || "OTHER";
+}
+
 export function getDetectedFileType(file) {
   if (!file) return "";
   const extension = String(file.name || "").split(".").pop().toLowerCase();
