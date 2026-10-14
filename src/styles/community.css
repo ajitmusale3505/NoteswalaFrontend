@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap");
+
+.community-page{min-height:100dvh;display:flex;flex-direction:column;background:#f7f8f7;color:#16304b;font-family:"DM Sans",sans-serif}
+.community-main{width:100%;flex:1;min-width:0;padding:0 1.45% 14px;display:flex;flex-direction:column;gap:10px}
+.community-hero{height:126px;flex:0 0 126px;position:relative;display:flex;align-items:center;gap:25px;padding:13px 22px;border:1px solid #e7ebed;border-radius:12px;overflow:hidden;background:#fff}
+.community-hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(255,255,255,.99) 0%,rgba(255,255,255,.96) 35%,rgba(255,255,255,.63) 58%,rgba(255,255,255,.1) 100%),url("/illustrations/engineering-campus.svg");background-size:cover;background-position:center 46%;background-repeat:no-repeat}
+.community-hero-icon{position:relative;z-index:1;flex:0 0 100px;height:98px;display:grid;place-items:center;border-radius:20px;background:#fff6eb;color:#c47c24;font-size:48px}
+.community-hero-copy{position:relative;z-index:1;min-width:0}
+.community-hero-copy h1{margin:0;color:#102f51;font:700 34px/1.2 "Libre Baskerville",serif;letter-spacing:-.045em}
+.community-hero-copy p{margin:7px 0 0;color:#6885b6;font-size:14px}
+.community-hero-motto{position:absolute;z-index:1;right:42%;top:10px;color:#ba5d13;text-align:center;font:italic 700 20px/1.02 Georgia,serif;transform:rotate(-11deg)}
+.community-hero-university{position:absolute;z-index:2;right:14px;top:24px;max-width:340px;min-width:290px;min-height:78px;display:flex;align-items:center;gap:11px;padding:10px 13px;background:#ffffffed;border:1px solid #e5e8e8;border-radius:11px;box-shadow:0 8px 20px #16304b0b}
+.community-seal,.community-header-seal,.community-large-seal,.community-detail-seal{display:grid;place-items:center;flex:0 0 auto;border-radius:50%;background:#fff;color:#16304b;border:1px solid #e1e7eb}
+.community-seal{width:52px;height:52px;font-size:29px}
+.community-hero-university strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 12px "Libre Baskerville",serif;color:#123452}
+.community-hero-university small{display:block;margin-top:7px;color:#6e8099;font-size:10px}
+.community-hero-university small i,.community-member-count i,.community-header-copy p i{display:inline-block;width:3px;height:3px;margin:0 5px;background:#7d8998;border-radius:50%;vertical-align:middle}
+.community-layout{display:grid;grid-template-columns:minmax(245px,.91fr) minmax(440px,2.48fr) minmax(265px,.98fr);align-items:stretch;gap:10px;min-width:0;min-height:calc(100dvh - 214px);flex:1}
+.community-left-panel,.community-chat-card,.community-right-panel{min-width:0;background:#fff;border:1px solid #e4e8eb;border-radius:12px;box-shadow:0 4px 16px #102c4708}
+.community-left-panel{padding:17px 12px;display:flex;flex-direction:column;min-height:0}
+.community-group-summary{text-align:center;padding:4px 1px 19px;border-bottom:1px solid #edf0f2}
+.community-large-seal{width:95px;height:95px;margin:0 auto 13px;font-size:47px}
+.community-group-summary h2{margin:0;color:#123555;font:700 16px/1.35 "Libre Baskerville",serif}
+.community-member-count{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 0;color:#687c93;font-size:10px}
+.community-verified{display:grid;place-items:center;width:14px;height:14px;border-radius:50%;background:#20b779;color:#fff;font-size:10px}
+.community-learner-context{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin:18px auto 0;width:max-content;max-width:100%;color:#677b92;font-size:11px}
+.community-learner-context span{display:flex;align-items:center;gap:9px}
+.community-learner-context svg{font-size:13px;color:#53779b}
+.community-side-nav{display:flex;flex-direction:column;gap:2px;margin:18px 0 0}
+.community-side-nav button{height:42px;width:100%;display:flex;align-items:center;gap:13px;padding:0 15px;border:0;border-left:2px solid transparent;border-radius:8px;background:transparent;color:#1d3b59;text-align:left;font:400 12px "Libre Baskerville",serif;transition:background .16s,border-color .16s}
+.community-side-nav button:hover{background:#faf8f5}
+.community-side-nav button.active{background:#fff6ec;border-left-color:#bc792f;color:#7b4315}
+.community-side-nav button>svg{font-size:19px}
+.community-side-nav button small{display:grid;place-items:center;min-width:20px;height:20px;margin-left:auto;border-radius:50%;background:#ffebeb;color:#d34d4c;font:700 10px "DM Sans",sans-serif}
+.community-left-note{display:flex;align-items:flex-start;gap:8px;margin-top:auto;padding:13px 8px 0;border-top:1px solid #edf0f2;color:#8090a0;font-size:9px;line-height:1.55}
+.community-left-note svg{flex:0 0 auto;color:#6086a9;font-size:15px}
+.community-chat-card{position:relative;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.community-chat-header{height:64px;flex:0 0 64px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid #edf0f2;background:#fff}
+.community-header-seal{width:48px;height:48px;font-size:26px}
+.community-header-copy{min-width:0;flex:1}
+.community-header-copy h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;color:#143656;font:700 15px "Libre Baskerville",serif}
+.community-header-copy p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:5px 0 0;color:#71849c;font-size:10px}
+.community-header-actions{display:flex;align-items:center;gap:8px}
+.community-header-actions button{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:7px;background:transparent;color:#163c65;font-size:18px}
+.community-header-actions button:hover{background:#f3f7fa}
+.community-connection{width:8px;height:8px;margin-left:2px;border-radius:50%;background:#d5a34e;box-shadow:0 0 0 3px #fff6e6}
+.community-connection.connected{background:#28b879;box-shadow:0 0 0 3px #e5f8ef}
+.community-connection.disconnected{background:#d95d54;box-shadow:0 0 0 3px #fff0ef}
+.community-connection.reconnecting{background:#d5a34e}
+.community-pinned-banner{min-height:55px;display:flex;align-items:center;gap:12px;margin:9px 11px 0;padding:8px 12px;border-radius:9px;background:linear-gradient(100deg,#eaf2ff,#deebff);color:#124883}
+.community-pinned-banner>svg{flex:0 0 auto;font-size:18px}
+.community-pinned-banner>div{flex:1;min-width:0}
+.community-pinned-banner strong{display:block;font-size:11px;font-weight:700}
+.community-pinned-banner p{overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;margin:3px 0 0;color:#5979a9;font-size:10px}
+.community-pinned-banner button{display:flex;align-items:center;gap:4px;padding:5px 0;border:0;background:transparent;color:#124a8a;white-space:nowrap;font-size:10px}
+.community-inline-error{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff5f1;color:#a94b3b;font-size:11px}
+.community-messages{position:relative;flex:1;min-height:200px;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:12px;padding:17px 15px 14px;background-color:#fbfcfd;background-image:radial-gradient(#e6edf2 0.65px,transparent .65px);background-size:14px 14px;scrollbar-width:thin;scrollbar-color:#c9d5df transparent}
+.community-messages::-webkit-scrollbar{width:7px}
+.community-messages::-webkit-scrollbar-thumb{border-radius:8px;background:#cbd7e0}
+.community-history-loading{text-align:center;padding:5px;color:#71849b;font-size:10px}
+.community-message-row{display:flex;align-items:flex-start;gap:10px;max-width:100%;min-width:0}
+.community-message-row.mine{justify-content:flex-end}
+.community-avatar{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#d4bda3,#8b6a52);color:#fff;font-size:11px;font-weight:700;box-shadow:0 1px 3px #172f4610}
+.community-avatar.own-avatar{background:linear-gradient(145deg,#b7cef5,#648dc9)}
+.community-message-stack{min-width:0;max-width:88%;display:flex;flex-direction:column;align-items:flex-start}
+.community-message-row.mine .community-message-stack{align-items:flex-end}
+.community-message-bubble{position:relative;min-width:145px;max-width:100%;padding:9px 12px 20px;border:1px solid #e7ebef;border-radius:12px;background:#fff;box-shadow:0 2px 5px #19344b07}
+.community-message-row.mine .community-message-bubble{background:#e6f9eb;border-color:#d4f0dd;border-radius:12px 12px 3px 12px}
+.community-message-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:5px;color:#7b8ca0;font-size:9px}
+.community-message-meta strong{color:#1263a5;font-size:11px;font-weight:700}
+.community-message-meta i{width:3px;height:3px;border-radius:50%;background:#91a0b1}
+.community-message-bubble p{overflow-wrap:anywhere;white-space:pre-wrap;margin:0;color:#26374a;font-size:12px;line-height:1.45}
+.community-message-bubble time{position:absolute;right:10px;bottom:5px;color:#91a0ad;font-size:9px}
+.community-message-row.mine .community-message-bubble time{color:#6e9c7b}
+.community-message-pinned{display:inline-flex;align-items:center;gap:3px;padding:2px 5px;background:#fff5df;border-radius:5px;color:#a16a21}
+.community-message-pinned svg{font-size:10px}
+.community-message-attachment{display:flex;align-items:center;gap:9px;min-width:0;margin-top:9px;padding:8px;border:1px solid #e1e7ec;border-radius:8px;background:#f7fafc;color:#254a70}
+.community-file-badge{display:grid;place-items:center;flex:0 0 34px;width:34px;height:36px;border-radius:5px;background:#ffecea;color:#d84139;font-size:19px}
+.community-file-copy{min-width:0;flex:1}
+.community-file-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.community-file-copy small{display:block;margin-top:3px;color:#8494a4;font-size:9px}
+.community-message-attachment>svg{flex:0 0 auto}
+.community-empty-chat{margin:auto;text-align:center;max-width:300px;padding:30px 15px;color:#71849a}
+.community-empty-chat>span{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 13px;border-radius:50%;background:#eef4f9;color:#4678aa;font-size:27px}
+.community-empty-chat h3{margin:0;color:#27445f;font:700 15px "Libre Baskerville",serif}
+.community-empty-chat p{margin:8px 0 0;font-size:11px;line-height:1.6}
+.community-jump-latest{position:absolute;z-index:3;right:21px;bottom:90px;display:flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid #dbe4eb;border-radius:24px;background:#fff;color:#2b5277;box-shadow:0 5px 16px #19344b18;font-size:10px}
+.community-composer{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:5px;margin:10px 12px 0;padding:5px 6px 5px 9px;border:1px solid #e0e7ec;border-radius:12px;background:#fff;box-shadow:0 3px 10px #16304b08}
+.community-composer>button:not(.community-send-button){display:grid;place-items:center;flex:0 0 29px;width:29px;height:32px;border:0;border-radius:6px;background:transparent;color:#214f80;font-size:18px}
+.community-composer>button:not(.community-send-button):hover,.community-composer>button.selected{background:#eef5fc}
+.community-composer-input{flex:1;min-width:0;height:38px;padding:0 10px;border:1px solid #e5ebef;border-radius:9px;outline:none;color:#263e57;font-size:11px}
+.community-composer-input:focus{border-color:#bfd2e2}
+.community-composer-input::placeholder{color:#8494a8}
+.community-send-button{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border:0;border-radius:50%;background:#143a61;color:#fff;font-size:18px;box-shadow:0 3px 6px #143a6122}
+.community-send-button:disabled{opacity:.52;cursor:not-allowed}
+.community-file-input{display:none}
+.community-selected-file{display:flex;align-items:center;gap:8px;margin:7px 14px 0;padding:8px 11px;border-radius:8px;background:#f4f8fc;color:#365875;font-size:10px}
+.community-selected-file>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.community-selected-file small{color:#8291a1}
+.community-selected-file button{display:grid;place-items:center;margin-left:auto;width:23px;height:23px;border:0;border-radius:5px;background:transparent;color:#63798f}
+.community-emoji-picker{display:flex;flex-wrap:wrap;gap:4px;margin:7px 15px 0;padding:9px;border:1px solid #e3e9ee;border-radius:9px;background:#fff;box-shadow:0 5px 18px #19344b0b}
+.community-emoji-picker button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:5px;background:transparent;font-size:17px}
+.community-emoji-picker button:hover{background:#f0f5f9}
+.community-chat-footer{display:flex;justify-content:space-between;gap:10px;padding:8px 15px 10px;color:#8a98a7;font-size:9px}
+.community-chat-footer>span:first-child{display:flex;align-items:center;gap:5px}
+.community-chat-footer i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#29b879}
+.community-chat-footer span:last-child{text-align:right}
+.community-right-panel{display:flex;flex-direction:column;gap:10px;min-height:0;background:transparent;border:0;box-shadow:none}
+.community-info-card{min-width:0;padding:13px 15px;border:1px solid #e4e8eb;border-radius:12px;background:#fff;box-shadow:0 4px 16px #102c4707}
+.community-info-card h3{display:flex;align-items:center;gap:9px;margin:0;color:#153958;font:700 13px "Libre Baskerville",serif}
+.community-info-card h3>svg{font-size:16px;color:#174d86}
+.community-info-identity{display:grid;grid-template-columns:66px minmax(0,1fr);align-items:center;gap:10px;margin-top:18px}
+.community-detail-seal{width:63px;height:63px;font-size:31px}
+.community-info-identity>div:nth-child(2){min-width:0}
+.community-info-identity strong{display:block;color:#173b5d;font:700 11px/1.4 "Libre Baskerville",serif}
+.community-info-identity small{display:block;margin-top:5px;color:#7b8da4;font-size:10px}
+.community-official-badge{grid-column:2;justify-self:start;display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:12px;background:#e3faed;color:#118b5d;font-size:9px;white-space:nowrap}
+.community-official-badge i{width:7px;height:7px;border-radius:50%;background:#21b978}
+.community-info-description{margin:13px 0;color:#647b97;font-size:11px;line-height:1.55}
+.community-info-card dl{margin:0}
+.community-info-card dl>div{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #edf0f2;font-size:10px}
+.community-info-card dt{flex:0 0 auto;color:#71849b}
+.community-info-card dd{margin:0;max-width:65%;color:#48617e;text-align:right;overflow-wrap:anywhere}
+.community-info-card>header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.community-info-card>header button{display:flex;align-items:center;gap:4px;padding:2px 0;border:0;background:transparent;color:#285b8b;white-space:nowrap;font-size:10px}
+.community-mini-file{display:grid;grid-template-columns:29px minmax(0,1fr) 13px;align-items:center;gap:8px;min-height:43px;border-bottom:1px solid #eff1f2;color:#173d64}
+.community-mini-file:first-of-type{margin-top:9px}
+.community-mini-file:last-of-type{border-bottom:0}
+.community-mini-file-icon{display:grid;place-items:center;width:28px;height:31px;border-radius:5px;background:#fff0ef;color:#d64a42;font-size:17px}
+.community-mini-file:nth-of-type(3) .community-mini-file-icon{background:#edf5ff;color:#3477bf}
+.community-mini-file>span:nth-child(2){min-width:0}
+.community-mini-file strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:600}
+.community-mini-file small{display:block;margin-top:3px;color:#8091a5;font-size:9px}
+.community-mini-file>svg{font-size:13px}
+.community-mini-member{display:grid;grid-template-columns:31px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:44px}
+.community-mini-member:first-of-type{margin-top:7px}
+.community-mini-member .community-avatar{width:30px;height:30px;flex-basis:30px;font-size:9px}
+.community-mini-member>span:nth-child(2){min-width:0}
+.community-mini-member strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#2c4c6c;font-size:10px}
+.community-mini-member small{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#7e90a4;font-size:9px}
+.community-student-badge{padding:5px 7px;border-radius:12px;background:#dcf8e9;color:#158b5b;font-size:9px;white-space:nowrap}
+.community-card-empty{margin:12px 0 2px;color:#8a98a7;font-size:10px}
+.community-state{flex:1;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:24px;text-align:center;color:#6e8299}
+.community-state p{max-width:330px;margin:0;font-size:12px;line-height:1.6}
+.community-state h3{margin:0;color:#243f5c;font:700 16px "Libre Baskerville",serif}
+.community-state>svg{font-size:28px;color:#b45b49}
+.community-state button{padding:9px 14px;border:0;border-radius:7px;background:#163b61;color:#fff;font-size:11px}
+.community-spinner,.community-send-spinner{display:inline-block;width:27px;height:27px;border:3px solid #e1e9ef;border-top-color:#285b85;border-radius:50%;animation:community-spin .8s linear infinite}
+.community-send-spinner{width:17px;height:17px;border-width:2px;border-color:#ffffff66;border-top-color:#fff}
+@keyframes community-spin{to{transform:rotate(360deg)}}
+.community-detail-view{flex:1;min-height:350px;overflow:auto;padding:25px 28px 28px}
+.community-view-heading{display:flex;align-items:center;gap:13px;padding-bottom:19px;border-bottom:1px solid #ebeff2}
+.community-view-heading>span{display:grid;place-items:center;width:45px;height:45px;border-radius:11px;background:#edf5fc;color:#285f91;font-size:22px}
+.community-view-heading h3{margin:0;color:#163a5a;font:700 19px "Libre Baskerville",serif}
+.community-view-heading p{margin:6px 0 0;color:#778ba0;font-size:11px;line-height:1.5}
+.community-announcement{margin-top:22px;padding:17px 18px;border:1px solid #dce7f5;border-radius:10px;background:linear-gradient(110deg,#f6faff,#edf4ff)}
+.community-announcement-label{display:flex;align-items:center;gap:7px;color:#285c92;font-size:11px;font-weight:700}
+.community-announcement p{margin:13px 0;color:#294662;font-size:13px;line-height:1.65;white-space:pre-wrap}
+.community-announcement small{color:#8392a3;font-size:10px}
+.community-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;padding:25px;text-align:center;color:#75879b}
+.community-empty-state>svg{font-size:30px;color:#8da7c0}
+.community-empty-state h3{margin:12px 0 0;color:#27445e;font:700 15px "Libre Baskerville",serif}
+.community-empty-state p{max-width:330px;margin:8px 0 0;font-size:11px;line-height:1.6}
+.community-back-chat{display:flex;align-items:center;gap:8px;margin-top:16px;padding:10px 13px;border:1px solid #dce4e9;border-radius:7px;background:#fff;color:#234d72;font-size:11px}
+.community-all-files{margin-top:8px}
+.community-file-row{display:grid;grid-template-columns:42px minmax(0,1fr) 17px;align-items:center;gap:12px;padding:13px 3px;border-bottom:1px solid #ebeff2;color:#244662}
+.community-file-document{display:grid;place-items:center;width:40px;height:42px;border-radius:7px;background:#fff0ef;color:#d24b43;font-size:21px}
+.community-file-row>span:nth-child(2){min-width:0}
+.community-file-row strong{display:block;overflow-wrap:anywhere;font-size:12px}
+.community-file-row small{display:block;margin-top:5px;color:#7e90a3;font-size:10px}
+.community-all-members{margin-top:8px}
+.community-member-row{display:grid;grid-template-columns:39px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #ebeff2}
+.community-member-row>span:nth-child(2){min-width:0}
+.community-member-row strong{display:block;color:#274862;font-size:12px}
+.community-member-row small{display:block;margin-top:5px;color:#7f90a3;font-size:10px;overflow-wrap:anywhere}
+@media(min-width:1500px){.community-layout{grid-template-columns:minmax(270px,.9fr) minmax(540px,2.5fr) minmax(290px,.98fr)}}
+@media(max-width:1200px){.community-main{padding-inline:12px}.community-hero-university{max-width:285px;min-width:245px}.community-hero-motto{right:34%}.community-layout{grid-template-columns:minmax(220px,.82fr) minmax(390px,2fr) minmax(245px,.9fr)}.community-left-panel{padding-inline:9px}.community-info-card{padding:12px}.community-message-stack{max-width:92%}.community-header-copy h2{font-size:13px}.community-header-actions{gap:2px}}
+@media(max-width:980px){.community-layout{grid-template-columns:210px minmax(0,1fr);min-height:calc(100dvh - 212px)}.community-right-panel{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}.community-info-card{height:100%}.community-hero-motto{right:31%}.community-hero-university{right:12px;max-width:260px;min-width:220px}.community-hero-copy{max-width:48%}.community-hero-copy h1{font-size:29px}.community-hero-copy p{max-width:320px;font-size:12px}.community-hero-icon{flex-basis:80px;height:80px;font-size:38px}.community-chat-card{min-height:620px}}
+@media(max-width:700px){.community-main{gap:8px;padding:0 8px 10px}.community-hero{height:auto;min-height:120px;flex-basis:auto;gap:12px;padding:15px}.community-hero-icon{flex:0 0 55px;height:55px;border-radius:12px;font-size:28px}.community-hero-copy{max-width:none;padding-right:0}.community-hero-copy h1{font-size:22px}.community-hero-copy p{margin-top:5px;font-size:10px;line-height:1.4}.community-hero-motto,.community-hero-university{display:none}.community-layout{display:flex;flex-direction:column;gap:8px;min-height:0}.community-left-panel{padding:0;display:block;overflow:visible}.community-group-summary,.community-left-note{display:none}.community-side-nav{flex-direction:row;gap:4px;margin:0;padding:6px;overflow-x:auto}.community-side-nav button{flex:1 0 auto;justify-content:center;gap:6px;height:38px;padding:0 10px;border-left:0;border-bottom:2px solid transparent;font:500 10px "DM Sans",sans-serif;white-space:nowrap}.community-side-nav button.active{border-left:0;border-bottom-color:#bc792f}.community-side-nav button>svg{font-size:15px}.community-chat-card{min-height:calc(100dvh - 226px);height:calc(100dvh - 226px);flex:1}.community-chat-header{height:58px;flex-basis:58px;padding-inline:9px;gap:8px}.community-header-seal{width:37px;height:37px;font-size:20px}.community-header-copy h2{font-size:11px}.community-header-copy p{font-size:8px}.community-header-actions button{width:28px;height:30px;font-size:16px}.community-header-actions{gap:0}.community-header-search{position:absolute;z-index:5;right:10px;top:58px;width:calc(100% - 20px);background:#fff}.community-pinned-banner{margin:6px 6px 0;padding:7px;gap:7px}.community-pinned-banner>svg{font-size:14px}.community-pinned-banner strong{font-size:9px}.community-pinned-banner p{font-size:9px}.community-pinned-banner button{font-size:8px}.community-messages{padding:12px 8px;gap:9px}.community-avatar.message-avatar{width:29px;height:29px;flex-basis:29px;font-size:9px}.community-message-row{gap:6px}.community-message-stack{max-width:calc(100% - 35px)}.community-message-bubble{padding:8px 9px 19px;min-width:0}.community-message-meta{font-size:8px;gap:4px}.community-message-meta strong{font-size:9px}.community-message-bubble p{font-size:11px}.community-composer{margin:7px 6px 0;padding:4px;gap:1px}.community-composer>button:not(.community-send-button){width:25px;flex-basis:25px;font-size:16px}.community-composer-input{height:35px;padding-inline:6px;font-size:10px}.community-send-button{height:34px;width:34px;flex-basis:34px;font-size:15px}.community-chat-footer{padding:6px 9px 8px;font-size:8px}.community-chat-footer span:last-child{display:none}.community-right-panel{display:flex;gap:8px}.community-info-card{height:auto}.community-info-identity{grid-template-columns:56px minmax(0,1fr)}.community-detail-seal{width:52px;height:52px;font-size:25px}.community-info-identity strong{font-size:10px}.community-detail-view{padding:16px}.community-view-heading h3{font-size:16px}}
+@media(max-width:390px){.community-side-nav button{font-size:9px;padding-inline:7px}.community-header-copy p{max-width:150px}.community-connection{display:none}.community-message-meta span:nth-of-type(1){display:none}.community-message-meta i{display:none}}
+@media(prefers-reduced-motion:reduce){.community-spinner,.community-send-spinner{animation-duration:2s}.community-side-nav button{transition:none}}
