@@ -107,3 +107,8 @@
 @media(max-width:900px){
   .home-profile-dropdown{right:-3px;top:calc(100% + 10px);width:245px}
 }
+
+.quick-card.is-opening{cursor:wait;opacity:.82}
+.quick-card-spinner{animation:quick-card-spin .8s linear infinite}
+@keyframes quick-card-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.quick-card-spinner{animation:none}}
