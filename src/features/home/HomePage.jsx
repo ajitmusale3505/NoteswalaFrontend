@@ -1,6 +1,7 @@
 import HomeNavbar from "./components/HomeNavbar";
 import HomeHero from "./components/HomeHero";
 import QuickAccess from "./components/QuickAccess";
+import HomeResourceCollections from "./components/HomeResourceCollections";
 import DashboardPanels from "./components/DashboardPanels";
 import HomeFooterStrip from "./components/HomeFooterStrip";
 import HomeFooter from "./components/HomeFooter";
@@ -14,6 +15,7 @@ export default function HomePage() {
         <main className="home-main">
           <HomeHero />
           <QuickAccess />
+          <HomeResourceCollections />
           <DashboardPanels />
           <HomeFooterStrip />
         </main>
