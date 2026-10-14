@@ -272,6 +272,7 @@ export default function PdfReader({
   initialError = "",
   onRetry,
   resourceLoading = false,
+  onProgressChange,
 }) {
   const readerRef = useRef(null);
   const documentScrollRef = useRef(null);
@@ -372,6 +373,15 @@ export default function PdfReader({
   useEffect(() => {
     setPageInput(String(activePage));
   }, [activePage]);
+
+  useEffect(() => {
+    if (!pageCount || typeof onProgressChange !== "function") return;
+    onProgressChange({
+      currentPage: activePage,
+      totalPages: pageCount,
+      progressPercent: Math.min(100, Math.round((activePage / pageCount) * 100)),
+    });
+  }, [activePage, pageCount, onProgressChange]);
 
   useEffect(() => {
     const element = readerRef.current;
