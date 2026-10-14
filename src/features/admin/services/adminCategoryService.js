@@ -1,6 +1,6 @@
 import { apiClient } from "../../../services/api";
 
-export const getAdminCategories = () => apiClient.get("/categories/admin");
+export const getAdminCategories = () => apiClient.get("/admin/categories");
 export const createAdminCategory = (payload) => apiClient.post("/categories", payload);
 export const updateAdminCategory = (categoryId, payload) =>
   apiClient.put(`/categories/${categoryId}`, payload);
