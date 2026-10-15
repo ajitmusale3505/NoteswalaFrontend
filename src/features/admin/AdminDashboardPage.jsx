@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FiArrowRight, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminSidebar from "./components/AdminSidebar";
@@ -82,6 +83,15 @@ export default function AdminDashboardPage() {
               <p>Welcome back, Admin <span aria-hidden="true">👋</span></p>
               <h1>Dashboard</h1>
               <span>Manage academic content, resources and platform information for NotesWala.</span>
+              <button
+                type="button"
+                className="admin-dashboard-community-link"
+                onClick={() => navigate("/admin/community-groups")}
+              >
+                <FiUsers />
+                <span>Manage Community Groups</span>
+                <FiArrowRight />
+              </button>
             </div>
             <div className="admin-date-display">
               <span className="admin-date-icon"><i /></span>

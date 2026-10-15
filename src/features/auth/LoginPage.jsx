@@ -7,6 +7,22 @@ import { getPersonalProfile } from "../../services/profileService";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
+function normalizeRole(role) {
+  if (typeof role === "string") return role.toUpperCase();
+  if (role && typeof role === "object") {
+    return String(role.name ?? role.roleName ?? role.authority ?? role.code ?? "").toUpperCase();
+  }
+  return "";
+}
+
+function hasAdminRole(user, loginData) {
+  const roleValues = [
+    user?.role, user?.roles, user?.authorities, user?.userRole,
+    loginData?.role, loginData?.roles, loginData?.authorities, loginData?.userRole,
+  ].flat(Infinity);
+  return roleValues.some((role) => normalizeRole(role).includes("ADMIN"));
+}
+
 const initialForm = { email: "", otp: "", password: "", remember: false };
 
 export default function LoginPage() {
@@ -78,7 +94,13 @@ export default function LoginPage() {
       // Role is provided by the login response in current deployments.
       // Fall back to /auth/me for deployments that keep role data out of the token response.
       let authenticatedUser = data?.user ?? data?.currentUser ?? data?.profile ?? null;
-      if (!authenticatedUser?.role && !authenticatedUser?.roles) {
+      const hasRoleMetadata = [
+        authenticatedUser?.role, authenticatedUser?.roles,
+        authenticatedUser?.authorities, authenticatedUser?.userRole,
+        data?.role, data?.roles, data?.authorities, data?.userRole,
+      ].some((value) => value != null);
+
+      if (!hasRoleMetadata) {
         try {
           const { getCurrentUser } = await import("../../services/profileService");
           const currentUserResponse = await getCurrentUser();
@@ -88,13 +110,13 @@ export default function LoginPage() {
         }
       }
 
-      const roleValue = authenticatedUser?.role?.name ?? authenticatedUser?.role ??
-        authenticatedUser?.roles?.[0]?.name ?? authenticatedUser?.roles?.[0] ??
-        data?.role?.name ?? data?.role ?? data?.roles?.[0]?.name ?? data?.roles?.[0] ?? "";
       if (authenticatedUser) {
         localStorage.setItem("noteswala_user", JSON.stringify(authenticatedUser));
       }
-      const isAdmin = String(roleValue).toUpperCase().includes("ADMIN");
+
+      // Use the same role fields supported by AdminRoute/ProfileCompletionGate.
+      // Some deployments provide authorities or userRole instead of role/roles.
+      const isAdmin = hasAdminRole(authenticatedUser, data);
       toast.success("Login successful.");
 
       // Return users to the protected URL they originally requested. Only accept

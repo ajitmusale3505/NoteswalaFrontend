@@ -303,3 +303,12 @@
 @media (max-width:760px){
   .admin-sidebar:not(.is-collapsed) .admin-nav-item{min-height:34px}
 }
+
+
+/* Explicit access to the admin's community-group manager. */
+.admin-dashboard-community-link{display:inline-flex;align-items:center;gap:8px;min-height:34px;margin-top:13px;padding:0 12px;border:1px solid #d6e2f0;border-radius:7px;background:#fff;color:#163e6d;font-size:10px;font-weight:700;box-shadow:0 2px 5px #163b6409;transition:background .15s,border-color .15s,transform .15s}
+.admin-dashboard-community-link>svg{font-size:14px}
+.admin-dashboard-community-link>svg:last-child{margin-left:4px;color:#6d86a4}
+.admin-dashboard-community-link:hover{border-color:#a9c2e0;background:#f5f9ff;transform:translateY(-1px)}
+.admin-dashboard-community-link:focus-visible{outline:2px solid #3e77b8;outline-offset:2px}
+@media(max-width:650px){.admin-dashboard-community-link{min-height:31px;margin-top:10px;padding:0 9px;font-size:9px}}
