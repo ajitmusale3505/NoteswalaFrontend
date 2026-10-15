@@ -8,6 +8,7 @@ import SubjectPage from "../features/subjects/SubjectPage";
 import ResourceViewerPage from "../features/resources/ResourceViewerPage";
 import ProfilePage from "../features/profile/ProfilePage";
 import CommunityPage from "../features/community/CommunityPage";
+import UniversityPage from "../features/university/UniversityPage";
 import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
 import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
@@ -33,6 +34,7 @@ export default function AppRoutes() {
         <Route path="/resources/:subjectCode/:resourceId" element={<ResourceViewerPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/community" element={<CommunityPage />} />
+        <Route path="/university" element={<UniversityPage />} />
       </Route>
 
       {/* Admin routes retain their existing server-verified role guard. */}

@@ -87,8 +87,8 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
       </a>
       <nav className="home-nav">
         {homeNavItems.map(([label, href, Icon]) => {
-          const target = label === "Home" ? "/home" : label === "Resources" ? "/resources" : label === "Community" ? "/community" : href;
-          const active = label === "Home" ? pathname === "/home" || pathname === "/dashboard" : label === "Resources" ? pathname.startsWith("/resources") : label === "Community" && pathname.startsWith("/community");
+          const target = label === "Home" ? "/home" : label === "Resources" ? "/resources" : label === "Community" ? "/community" : label === "University" ? "/university" : href;
+          const active = label === "Home" ? pathname === "/home" || pathname === "/dashboard" : label === "Resources" ? pathname.startsWith("/resources") : label === "Community" ? pathname.startsWith("/community") : label === "University" && pathname.startsWith("/university");
           return <a key={label} href={target} className={active ? "active" : ""}><Icon /><span>{label}</span></a>;
         })}
       </nav>
