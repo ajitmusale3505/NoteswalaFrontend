@@ -2,6 +2,25 @@ import { useEffect, useState } from "react";
 import { getCurrentUser, getUserAcademicProfile } from "../../services/profileService";
 import ProfileCompletionModal from "./ProfileCompletionModal";
 
+function normalizeRole(role) {
+  if (typeof role === "string") return role.toUpperCase();
+  if (role && typeof role === "object") {
+    return String(role.name ?? role.roleName ?? role.authority ?? role.code ?? "").toUpperCase();
+  }
+  return "";
+}
+
+function userHasAdminRole(user) {
+  if (!user) return false;
+  const roleValues = [
+    user.role,
+    user.roles,
+    user.authorities,
+    user.userRole,
+  ].flat(Infinity);
+  return roleValues.some((role) => normalizeRole(role).includes("ADMIN"));
+}
+
 export default function ProfileCompletionGate({ children }) {
   const [user, setUser] = useState(null);
   const [academic, setAcademic] = useState(null);
@@ -16,6 +35,14 @@ export default function ProfileCompletionGate({ children }) {
       const userResponse = await getCurrentUser();
       const currentUser = userResponse.data?.data || null;
       setUser(currentUser);
+
+      // Academic/personal onboarding is for student accounts only. Admins use
+      // the admin workspace and must not be blocked by student profile setup.
+      if (userHasAdminRole(currentUser)) {
+        setAcademic(null);
+        setRequired(false);
+        return;
+      }
 
       if (!currentUser?.userId) return;
       try {
