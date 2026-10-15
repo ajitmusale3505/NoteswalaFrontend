@@ -18,10 +18,6 @@ const dashboardNavigationGroups = [
     { label: "Manage Categories", icon: FiLayers },
     { label: "Code & SQL Lab Content", icon: FiCode },
   ]},
-  { title: "Community Management", items: [
-    { label: "Manage Groups", icon: FiUsers },
-    { label: "Group Messages", icon: FiMessageCircle },
-  ]},
   { title: "University & Platform", items: [
     { label: "University Updates", icon: FiBell },
     { label: "Users & Roles", icon: FiUsers },
@@ -81,6 +77,18 @@ export default function AdminSidebar({ collapsed, onToggle, activeItem, onSelect
           onClick={() => onSelect("Dashboard")} title={collapsed ? "Dashboard" : undefined}>
           <FiHome /><span>Dashboard</span>
         </button>
+        <div className="admin-nav-group admin-nav-community-pinned">
+          {!collapsed && <div className="admin-nav-group-heading"><span>Community Management</span><i /></div>}
+          <button
+            type="button"
+            className={`admin-nav-item ${activeItem === "Manage Groups" ? "active" : ""}`}
+            onClick={() => onSelect("Manage Groups")}
+            title={collapsed ? "Manage Groups" : undefined}
+            aria-label="Manage Community Groups"
+          >
+            <FiUsers /><span>Manage Groups</span>
+          </button>
+        </div>
 
         {navigationGroups.map((group) => (
           <div className="admin-nav-group" key={group.title}>

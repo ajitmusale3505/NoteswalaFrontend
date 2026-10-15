@@ -18,6 +18,12 @@
 .admin-nav-item.active{background:#fbf2e6;color:#954500}
 .admin-nav-item.active:before{position:absolute;left:-13px;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0;background:#a75a09;content:""}
 .admin-nav-group{display:flex;flex-direction:column;gap:2px;margin-top:25px}
+.admin-nav-community-pinned{margin-top:10px!important;margin-bottom:4px;padding-bottom:9px;border-bottom:1px solid #edf1f5}
+.admin-nav-community-pinned .admin-nav-group-heading{color:#8b4a0b}
+.admin-nav-community-pinned .admin-nav-item{background:#fffaf3}
+.admin-nav-community-pinned .admin-nav-item:hover{background:#fbf0e2}
+.admin-nav-community-pinned .admin-nav-item.active{background:#fbf0e2;color:#984900}
+
 .admin-nav-group-heading{display:flex;align-items:center;gap:12px;height:16px;margin:0 6px 9px;color:#6d7682;font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
 .admin-nav-group-heading i{height:1px;flex:1;background:#e8edf2}
 .admin-sidebar.is-collapsed{flex-basis:88px;width:88px}
