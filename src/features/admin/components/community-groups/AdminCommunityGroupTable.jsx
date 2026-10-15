@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   FiCheckCircle, FiChevronDown, FiChevronLeft, FiChevronRight,
   FiEdit2, FiHome, FiMoreVertical, FiPlus, FiSearch, FiSliders,
@@ -14,6 +14,18 @@ function formatDate(value) {
 
 function formatNumber(value) {
   return (Number(value) || 0).toLocaleString("en-IN");
+}
+
+function AdminCommunityGroupIcon({ group }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  return (
+    <span className={`admin-community-row-icon ${group.active ? "" : "is-inactive"}`}>
+      {group.iconUrl && !imageFailed
+        ? <img src={group.iconUrl} alt="" onError={() => setImageFailed(true)} />
+        : <FiHome />}
+    </span>
+  );
 }
 
 function AdminCommunityGroupTable(props) {
@@ -95,9 +107,7 @@ function AdminCommunityGroupTable(props) {
                             <td className="admin-community-number-col">{startRow + index}</td>
                             <td>
                               <div className="admin-community-group-name-cell">
-                                <span className={`admin-community-row-icon ${group.active ? "" : "is-inactive"}`}>
-                                  {group.iconUrl ? <img src={group.iconUrl} alt="" /> : <FiHome />}
-                                </span>
+                                <AdminCommunityGroupIcon group={group} />
                                 <span><strong title={group.name}>{group.name}</strong><small>{group.semesterName || "Semester not set"}</small></span>
                               </div>
                             </td>
