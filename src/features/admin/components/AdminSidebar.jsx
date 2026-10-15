@@ -1,7 +1,7 @@
 import {
   FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
   FiFlag, FiGitBranch, FiHome, FiLayers, FiList, FiSettings,
-  FiUploadCloud, FiUsers, FiBell, FiChevronLeft, FiMenu,
+  FiUploadCloud, FiUsers, FiBell, FiChevronLeft, FiMenu, FiMessageCircle,
 } from "react-icons/fi";
 
 const dashboardNavigationGroups = [
@@ -17,6 +17,10 @@ const dashboardNavigationGroups = [
     { label: "Upload Resources", icon: FiUploadCloud },
     { label: "Manage Categories", icon: FiLayers },
     { label: "Code & SQL Lab Content", icon: FiCode },
+  ]},
+  { title: "Community Management", items: [
+    { label: "Manage Groups", icon: FiUsers },
+    { label: "Group Messages", icon: FiMessageCircle },
   ]},
   { title: "University & Platform", items: [
     { label: "University Updates", icon: FiBell },
@@ -42,6 +46,10 @@ const uploadNavigationGroups = [
     { label: "Upload Resources", icon: FiUploadCloud },
     { label: "Resource Library", icon: FiFileText },
     { label: "Manage Categories", icon: FiLayers },
+  ]},
+  { title: "Community Management", items: [
+    { label: "Manage Groups", icon: FiUsers },
+    { label: "Group Messages", icon: FiMessageCircle },
   ]},
   { title: "Users & Platform", items: [
     { label: "Users & Roles", icon: FiUsers },

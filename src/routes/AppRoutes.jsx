@@ -12,6 +12,7 @@ import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
 import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
 import AdminManageCategoriesPage from "../features/admin/AdminManageCategoriesPage";
+import AdminCommunityGroupsPage from "../features/admin/AdminCommunityGroupsPage";
 import AuthRoute from "./AuthRoute";
 
 export default function AppRoutes() {
@@ -37,6 +38,7 @@ export default function AppRoutes() {
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/resources/upload" element={<AdminRoute><AdminUploadResourcePage /></AdminRoute>} />
       <Route path="/admin/categories" element={<AdminRoute><AdminManageCategoriesPage /></AdminRoute>} />
+      <Route path="/admin/community-groups" element={<AdminRoute><AdminCommunityGroupsPage /></AdminRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

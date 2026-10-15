@@ -45,6 +45,10 @@ export default function AdminDashboardPage() {
       navigate("/admin/categories");
       return;
     }
+    if (label === "Manage Groups") {
+      navigate("/admin/community-groups");
+      return;
+    }
     if (label !== "Dashboard") {
       toast(label === "Settings & Audit Logs" ? "System settings are selected." : `${label} selected.`, { icon: "↗" });
     }
