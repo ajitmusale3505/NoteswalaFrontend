@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   FiBarChart2, FiBookOpen, FiCalendar, FiCode, FiFileText,
   FiFlag, FiGitBranch, FiHome, FiLayers, FiList, FiSettings,
@@ -17,10 +18,6 @@ const dashboardNavigationGroups = [
     { label: "Upload Resources", icon: FiUploadCloud },
     { label: "Manage Categories", icon: FiLayers },
     { label: "Code & SQL Lab Content", icon: FiCode },
-  ]},
-  { title: "Community Management", items: [
-    { label: "Manage Groups", icon: FiUsers },
-    { label: "Group Messages", icon: FiMessageCircle },
   ]},
   { title: "University & Platform", items: [
     { label: "University Updates", icon: FiBell },
@@ -83,16 +80,33 @@ export default function AdminSidebar({ collapsed, onToggle, activeItem, onSelect
         </button>
 
         {navigationGroups.map((group) => (
-          <div className="admin-nav-group" key={group.title}>
-            {!collapsed && <div className="admin-nav-group-heading"><span>{group.title}</span><i /></div>}
-            {group.items.map(({ label, icon: Icon }) => (
-              <button type="button" key={label}
-                className={`admin-nav-item ${activeItem === label ? "active" : ""}`}
-                onClick={() => onSelect(label)} title={collapsed ? label : undefined}>
-                <Icon /><span>{label}</span>
-              </button>
-            ))}
-          </div>
+          <Fragment key={group.title}>
+            <div className="admin-nav-group">
+              {!collapsed && <div className="admin-nav-group-heading"><span>{group.title}</span><i /></div>}
+              {group.items.map(({ label, icon: Icon }) => (
+                <button type="button" key={label}
+                  className={`admin-nav-item ${activeItem === label ? "active" : ""}`}
+                  onClick={() => onSelect(label)} title={collapsed ? label : undefined}>
+                  <Icon /><span>{label}</span>
+                </button>
+              ))}
+            </div>
+            {group.title === "Resource Management" && (
+              <div className="admin-nav-group admin-nav-community-group">
+                {!collapsed && <div className="admin-nav-group-heading"><span>Community Management</span><i /></div>}
+                <button type="button"
+                  className={`admin-nav-item ${activeItem === "Manage Groups" ? "active" : ""}`}
+                  onClick={() => onSelect("Manage Groups")} title={collapsed ? "Manage Groups" : undefined}>
+                  <FiUsers /><span>Manage Groups</span>
+                </button>
+                <button type="button"
+                  className={`admin-nav-item ${activeItem === "Group Messages" ? "active" : ""}`}
+                  onClick={() => onSelect("Group Messages")} title={collapsed ? "Group Messages" : undefined}>
+                  <FiMessageCircle /><span>Group Messages</span>
+                </button>
+              </div>
+            )}
+          </Fragment>
         ))}
       </nav>
     </aside>
