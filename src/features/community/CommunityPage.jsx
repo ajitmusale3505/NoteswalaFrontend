@@ -453,7 +453,7 @@ function CommunityPageContent() {
             </div>
             <p>{message.content}</p>
             {messageFiles.map((file) => (
-              <a className="community-message-attachment" key={file.id} href={file.fileUrl} target="_blank" rel="noreferrer">
+              <a className="community-message-attachment" key={file.id} href={file.fileUrl} download={file.fileName || true} rel="noreferrer">
                 <span className="community-file-badge"><FiFileText /></span>
                 <span className="community-file-copy"><strong>{file.fileName}</strong><small>{formatBytes(file.sizeBytes)}</small></span>
                 <FiDownload />
@@ -643,7 +643,7 @@ function CommunityPageContent() {
                   <div className="community-detail-view">
                     <div className="community-view-heading"><span><FiFileText /></span><div><h3>Shared Files</h3><p>Files attached to messages in this university community.</p></div></div>
                     {attachments.length ? <div className="community-all-files">{attachments.map((file) => (
-                      <a key={file.id} href={file.fileUrl} target="_blank" rel="noreferrer" className="community-file-row">
+                      <a key={file.id} href={file.fileUrl} download={file.fileName || true} rel="noreferrer" className="community-file-row">
                         <span className="community-file-document"><FiFileText /></span><span><strong>{file.fileName}</strong><small>{formatBytes(file.sizeBytes)}{file.authorName ? ` · Shared by ${file.authorName}` : ""}{file.createdAt ? ` · ${formatDate(file.createdAt)}` : ""}</small></span><FiDownload />
                       </a>
                     ))}</div> : <div className="community-empty-state"><FiFileText /><h3>No shared files yet</h3><p>Share a file from the message composer to make it available to your group.</p></div>}
@@ -690,7 +690,7 @@ function CommunityPageContent() {
             <section className="community-info-card community-files-card">
               <header><h3><FiFileText /> Shared Files</h3><button type="button" onClick={() => setActiveSection("files")}>View All <FiChevronRight /></button></header>
               {attachments.length ? attachments.slice(0, 3).map((file) => (
-                <a key={file.id} className="community-mini-file" href={file.fileUrl} target="_blank" rel="noreferrer">
+                <a key={file.id} className="community-mini-file" href={file.fileUrl} download={file.fileName || true} rel="noreferrer">
                   <span className="community-mini-file-icon"><FiFileText /></span>
                   <span><strong>{file.fileName}</strong><small>{formatBytes(file.sizeBytes)}{file.createdAt ? ` · ${formatDate(file.createdAt)}` : ""}</small></span>
                   <FiChevronRight />
