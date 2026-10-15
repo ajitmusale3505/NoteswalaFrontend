@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FiAlertCircle, FiArrowDown, FiBookOpen, FiCheck, FiChevronRight, FiClock,
   FiDownload, FiFileText, FiHome, FiMessageCircle,
-  FiPaperclip, FiPin, FiSearch, FiSend, FiShield, FiSmile, FiUsers, FiX,
+  FiPaperclip, FiBookmark, FiSearch, FiSend, FiShield, FiSmile, FiUsers, FiX,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import HomeNavbar from "../home/components/HomeNavbar";
@@ -449,7 +449,7 @@ function CommunityPageContent() {
               <span>{ordinalYear(room?.currentYear)}</span>
               <i />
               <span>{branchName}</span>
-              {message.pinned && <span className="community-message-pinned"><FiPin /> Pinned</span>}
+              {message.pinned && <span className="community-message-pinned"><FiBookmark /> Pinned</span>}
             </div>
             <p>{message.content}</p>
             {messageFiles.map((file) => (
@@ -543,7 +543,7 @@ function CommunityPageContent() {
               )}
               <div className="community-header-actions">
                 <button type="button" title="Search messages" aria-label="Search messages" onClick={() => { setSearchOpen((open) => !open); setSearchTerm(""); }}><FiSearch /></button>
-                <button type="button" title="View pinned announcement" aria-label="View pinned announcement" onClick={() => setActiveSection("announcements")}><FiPin /></button>
+                <button type="button" title="View pinned announcement" aria-label="View pinned announcement" onClick={() => setActiveSection("announcements")}><FiBookmark /></button>
                 <span className={`community-connection ${connection}`} title={connection === "connected" ? "Live connection active" : "Connecting to live chat"} />
               </div>
             </header>
@@ -558,7 +558,7 @@ function CommunityPageContent() {
                   <>
                     {pinnedMessage && (
                       <div className="community-pinned-banner">
-                        <FiPin />
+                        <FiBookmark />
                         <div><strong>Pinned by Admin</strong><p>{pinnedMessage.content}</p></div>
                         <button type="button" onClick={() => setActiveSection("announcements")}>View Details <FiChevronRight /></button>
                       </div>
@@ -630,7 +630,7 @@ function CommunityPageContent() {
                     <div className="community-view-heading"><span><FiShield /></span><div><h3>Announcements</h3><p>Important updates shared with your university community.</p></div></div>
                     {pinnedMessage ? (
                       <article className="community-announcement">
-                        <div className="community-announcement-label"><FiPin /> Pinned announcement</div>
+                        <div className="community-announcement-label"><FiBookmark /> Pinned announcement</div>
                         <p>{pinnedMessage.content}</p>
                         <small>{pinnedMessage.authorName || "Community administrator"}{pinnedMessage.createdAt ? ` · ${formatDate(pinnedMessage.createdAt)} at ${formatTime(pinnedMessage.createdAt)}` : ""}</small>
                       </article>
