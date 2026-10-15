@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  FiCheckCircle, FiChevronDown, FiChevronLeft, FiChevronRight,
-  FiEdit2, FiHome, FiImage, FiMoreVertical, FiPlus, FiSearch,
-  FiSliders, FiUploadCloud, FiUsers, FiX, FiXCircle,
-} from "react-icons/fi";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminTopbar from "./components/AdminTopbar";
+import AdminCommunityGroupMetrics from "./components/community-groups/AdminCommunityGroupMetrics";
+import AdminCommunityGroupTable from "./components/community-groups/AdminCommunityGroupTable";
+import AdminCommunityGroupEditor from "./components/community-groups/AdminCommunityGroupEditor";
 import {
   createAdminCommunityGroup,
   getAdminCommunityGroupSummary,
@@ -47,17 +45,6 @@ function getErrorMessage(error, fallback) {
     || error?.response?.data?.error
     || error?.message
     || fallback;
-}
-
-function formatDate(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(date);
-}
-
-function formatNumber(value) {
-  return (Number(value) || 0).toLocaleString("en-IN");
 }
 
 export default function AdminCommunityGroupsPage() {
@@ -218,19 +205,17 @@ export default function AdminCommunityGroupsPage() {
     return () => URL.revokeObjectURL(url);
   }, [iconFile]);
 
-  const totalVisiblePages = Math.max(1, totalPages);
   const startRow = totalElements === 0 ? 0 : (page - 1) * pageSize + 1;
-  const endRow = Math.min(page * pageSize, totalElements);
 
-  const openCreateForm = () => {
+  const openCreateForm = useCallback(() => {
     setEditingGroup(null);
     setForm({ ...DEFAULT_FORM, active: true });
     setIconFile(null);
     setFormOpen(true);
     setOpenActionId(null);
-  };
+  }, []);
 
-  const openEditForm = (group) => {
+  const openEditForm = useCallback((group) => {
     setEditingGroup(group);
     setForm({
       universityId: group.universityId || "",
@@ -243,21 +228,21 @@ export default function AdminCommunityGroupsPage() {
     setIconFile(null);
     setFormOpen(true);
     setOpenActionId(null);
-  };
+  }, []);
 
-  const closeForm = () => {
+  const closeForm = useCallback(() => {
     if (saving) return;
     setFormOpen(false);
     setEditingGroup(null);
     setIconFile(null);
-  };
+  }, [saving]);
 
-  const updateForm = (field, value) => {
+  const updateForm = useCallback((field, value) => {
     setForm((current) => {
       if (field === "universityId") return { ...current, universityId: value, branchId: "" };
       return { ...current, [field]: value };
     });
-  };
+  }, []);
 
   const saveGroup = async (event) => {
     event.preventDefault();
@@ -315,7 +300,7 @@ export default function AdminCommunityGroupsPage() {
     }
   };
 
-  const changeGroupStatus = async (group) => {
+  const changeGroupStatus = useCallback(async (group) => {
     setTogglingId(group.id);
     setOpenActionId(null);
     try {
@@ -327,13 +312,7 @@ export default function AdminCommunityGroupsPage() {
     } finally {
       setTogglingId(null);
     }
-  };
-
-  const pageButtons = useMemo(() => {
-    const total = Math.max(1, totalPages);
-    const first = Math.max(1, Math.min(page - 2, total - 4));
-    return Array.from({ length: Math.min(5, total) }, (_, index) => first + index).filter((value) => value <= total);
-  }, [page, totalPages]);
+  }, [loadGroups, loadSummary]);
 
   return (
     <div className={`admin-app-shell admin-community-groups-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -364,249 +343,57 @@ export default function AdminCommunityGroupsPage() {
               </div>
             </section>
 
-            <section className="admin-community-metrics" aria-label="Community group statistics">
-              <MetricCard icon={<FiUsers />} tone="amber" label="Total Groups" value={formatNumber(summary.totalGroups)} note="All university groups" />
-              <MetricCard icon={<span className="admin-community-metric-dot" />} tone="green" label="Active Groups" value={formatNumber(summary.activeGroups)} note={`${summary.activePercentage}% active`} />
-              <MetricCard icon={<span className="admin-community-metric-dot" />} tone="red" label="Inactive Groups" value={formatNumber(summary.inactiveGroups)} note={`${summary.inactivePercentage}% inactive`} />
-              <MetricCard icon={<FiUsers />} tone="blue" label="Total Members" value={formatNumber(summary.totalMembers)} note="Across all university groups" />
-            </section>
+            <AdminCommunityGroupMetrics summary={summary} />
 
-            <section className="admin-community-table-card">
-              <div className="admin-community-table-tools">
-                <label className="admin-community-search">
-                  <FiSearch />
-                  <input
-                    value={searchValue}
-                    onChange={(event) => setSearchValue(event.target.value)}
-                    placeholder="Search groups by name, university, branch…"
-                    aria-label="Search community groups"
-                  />
-                  {searchValue && <button type="button" onClick={() => setSearchValue("")} aria-label="Clear search"><FiX /></button>}
-                </label>
-                <label className="admin-community-filter-select">
-                  <FiSliders />
-                  <select value={universityFilter} onChange={(event) => setUniversityFilter(event.target.value)} aria-label="Filter by university">
-                    <option value="">All Universities</option>
-                    {universities.map((university) => <option value={university.id} key={university.id}>{university.name}</option>)}
-                  </select>
-                  <FiChevronDown />
-                </label>
-                <label className="admin-community-filter-select admin-community-status-filter">
-                  <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} aria-label="Filter by status">
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                  <FiChevronDown />
-                </label>
-                {!formOpen && <button type="button" className="admin-community-primary-button" onClick={openCreateForm}><FiPlus /> Create Group</button>}
-              </div>
-
-              <div className="admin-community-table-scroll">
-                <table className="admin-community-table">
-                  <thead>
-                    <tr>
-                      <th className="admin-community-number-col">#</th>
-                      <th>Group Name</th>
-                      <th>University</th>
-                      <th>Branch</th>
-                      <th>Members</th>
-                      <th>Status</th>
-                      <th>Created At</th>
-                      <th>Updated At</th>
-                      <th className="admin-community-actions-col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      <tr><td colSpan={9}><div className="admin-community-table-message"><span className="admin-community-spinner" /> Loading community groups…</div></td></tr>
-                    ) : groups.length === 0 ? (
-                      <tr><td colSpan={9}>
-                        <div className="admin-community-empty">
-                          <span><FiUsers /></span>
-                          <strong>{debouncedSearch || universityFilter || statusFilter !== "all" ? "No groups match these filters" : "No university groups created yet"}</strong>
-                          <small>Create a group for a university, branch and semester to make it available to students.</small>
-                          {!formOpen && <button type="button" className="admin-community-primary-button" onClick={openCreateForm}><FiPlus /> Create Group</button>}
-                        </div>
-                      </td></tr>
-                    ) : groups.map((group, index) => (
-                      <tr key={group.id}>
-                        <td className="admin-community-number-col">{startRow + index}</td>
-                        <td>
-                          <div className="admin-community-group-name-cell">
-                            <span className={`admin-community-row-icon ${group.active ? "" : "is-inactive"}`}>
-                              {group.iconUrl ? <img src={group.iconUrl} alt="" /> : <FiHome />}
-                            </span>
-                            <span><strong title={group.name}>{group.name}</strong><small>{group.semesterName || "Semester not set"}</small></span>
-                          </div>
-                        </td>
-                        <td><span className="admin-community-university-short">{group.universityShortCode || "—"}</span></td>
-                        <td><span className="admin-community-branch-cell" title={group.branchName}>{group.branchName || "—"}</span></td>
-                        <td><span className="admin-community-member-count"><FiUsers /> {formatNumber(group.memberCount)}</span></td>
-                        <td><span className={`admin-community-status-pill ${group.active ? "is-active" : "is-inactive"}`}><i />{group.active ? "Active" : "Inactive"}</span></td>
-                        <td className="admin-community-date">{formatDate(group.createdAt)}</td>
-                        <td className="admin-community-date">{formatDate(group.updatedAt)}</td>
-                        <td>
-                          <div className="admin-community-actions">
-                            <button type="button" onClick={() => openEditForm(group)} title={`Edit ${group.name}`} aria-label={`Edit ${group.name}`}><FiEdit2 /></button>
-                            <button
-                              type="button"
-                              role="switch"
-                              className={`admin-community-status-switch ${group.active ? "is-on" : ""}`}
-                              aria-checked={group.active}
-                              aria-label={`${group.active ? "Deactivate" : "Activate"} ${group.name}`}
-                              disabled={togglingId === group.id}
-                              onClick={() => changeGroupStatus(group)}
-                            ><span /></button>
-                            <div className="admin-community-actions-menu-wrap">
-                              <button type="button" aria-label={`More actions for ${group.name}`} aria-expanded={openActionId === group.id} onClick={() => setOpenActionId((id) => id === group.id ? null : group.id)}><FiMoreVertical /></button>
-                              {openActionId === group.id && <div className="admin-community-actions-menu">
-                                <button type="button" onClick={() => openEditForm(group)}><FiEdit2 /> Edit group</button>
-                                <button type="button" disabled={togglingId === group.id} onClick={() => changeGroupStatus(group)}>{group.active ? <FiXCircle /> : <FiCheckCircle />}{group.active ? "Deactivate" : "Activate"}</button>
-                              </div>}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <footer className="admin-community-pagination">
-                <span>Showing {startRow} to {endRow} of {totalElements} groups</span>
-                <div className="admin-community-pagination-controls">
-                  <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1 || loading} aria-label="Previous page"><FiChevronLeft /></button>
-                  {pageButtons.map((value) => (
-                    <button key={value} type="button" className={value === page ? "is-current" : ""} aria-current={value === page ? "page" : undefined} onClick={() => setPage(value)} disabled={loading}>{value}</button>
-                  ))}
-                  <button type="button" onClick={() => setPage((current) => Math.min(totalVisiblePages, current + 1))} disabled={page >= totalPages || loading} aria-label="Next page"><FiChevronRight /></button>
-                  <label className="admin-community-page-size">
-                    <select value={pageSize} onChange={(event) => setPageSize(Number(event.target.value))} aria-label="Groups per page">
-                      <option value={10}>10 per page</option>
-                      <option value={20}>20 per page</option>
-                      <option value={50}>50 per page</option>
-                    </select>
-                    <FiChevronDown />
-                  </label>
-                </div>
-              </footer>
-            </section>
+            <AdminCommunityGroupTable
+              loading={loading}
+              groups={groups}
+              startRow={startRow}
+              debouncedSearch={debouncedSearch}
+              universityFilter={universityFilter}
+              statusFilter={statusFilter}
+              formOpen={formOpen}
+              openCreateForm={openCreateForm}
+              searchValue={searchValue}
+              setSearchValue={setSearchValue}
+              setUniversityFilter={setUniversityFilter}
+              universities={universities}
+              setStatusFilter={setStatusFilter}
+              openEditForm={openEditForm}
+              togglingId={togglingId}
+              changeGroupStatus={changeGroupStatus}
+              openActionId={openActionId}
+              setOpenActionId={setOpenActionId}
+              page={page}
+              setPage={setPage}
+              totalElements={totalElements}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+            />
             <footer className="admin-community-footer"><span>© {new Date().getFullYear()} NotesWala Admin</span><span>Community management workspace</span></footer>
           </div>
 
-          {formOpen && (
-            <aside className="admin-community-editor" aria-label={editingGroup ? "Edit community group" : "Create new community group"}>
-              <header className="admin-community-editor-heading">
-                <div className="admin-community-editor-title-icon"><FiUsers /></div>
-                <div><h2>{editingGroup ? "Edit Group" : "Create New Group"}</h2><p>{editingGroup ? "Update group details and student visibility." : "Create a university group for student discussions."}</p></div>
-                <button type="button" onClick={closeForm} disabled={saving} aria-label="Close form" title="Close"><FiX /></button>
-              </header>
-
-              <form className="admin-community-form" onSubmit={saveGroup}>
-                <label className="admin-community-field">
-                  <span>University <b>*</b></span>
-                  <select required value={form.universityId} onChange={(event) => updateForm("universityId", event.target.value)} disabled={saving || loadingMasterData}>
-                    <option value="">Select university</option>
-                    {universities.map((university) => <option value={university.id} key={university.id}>{university.name}</option>)}
-                  </select>
-                </label>
-
-                <label className="admin-community-field">
-                  <span>Branch <b>*</b></span>
-                  <select required value={form.branchId} onChange={(event) => updateForm("branchId", event.target.value)} disabled={saving || !form.universityId || loadingBranches}>
-                    <option value="">{loadingBranches ? "Loading branches…" : "Select branch"}</option>
-                    {branches.map((branch) => <option value={branch.id} key={branch.id}>{branch.name}</option>)}
-                  </select>
-                </label>
-
-                <label className="admin-community-field">
-                  <span>Semester <b>*</b></span>
-                  <select required value={form.semesterId} onChange={(event) => updateForm("semesterId", event.target.value)} disabled={saving || loadingMasterData}>
-                    <option value="">Select semester</option>
-                    {semesters.map((semester) => <option value={semester.id} key={semester.id}>{semester.name}</option>)}
-                  </select>
-                </label>
-
-                <label className="admin-community-field">
-                  <span>Group Name <b>*</b></span>
-                  <input
-                    value={form.name}
-                    onChange={(event) => updateForm("name", event.target.value)}
-                    maxLength={120}
-                    required
-                    autoComplete="off"
-                    placeholder="e.g. SPPU Computer Engineering"
-                    disabled={saving}
-                  />
-                </label>
-
-                <label className="admin-community-field">
-                  <span>Description</span>
-                  <textarea
-                    value={form.description}
-                    onChange={(event) => updateForm("description", event.target.value)}
-                    maxLength={500}
-                    rows={4}
-                    placeholder="Provide a clear description about this group…"
-                    disabled={saving}
-                  />
-                  <small className="admin-community-character-count">{form.description.length}/500</small>
-                </label>
-
-                <fieldset className="admin-community-icon-upload">
-                  <legend>Group Icon</legend>
-                  <label className={`admin-community-icon-drop ${iconPreview || editingGroup?.iconUrl ? "has-image" : ""}`}>
-                    <input type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" onChange={(event) => setIconFile(event.target.files?.[0] || null)} disabled={saving} />
-                    {iconPreview || (!iconFile && editingGroup?.iconUrl) ? (
-                      <img src={iconPreview || editingGroup.iconUrl} alt="Group icon preview" />
-                    ) : <FiImage />}
-                    <strong>{iconFile ? iconFile.name : "Click to upload group icon"}</strong>
-                    <small>PNG, JPG or WebP up to 2 MB</small>
-                    <span><FiUploadCloud /> Choose File</span>
-                  </label>
-                  {iconFile && <button className="admin-community-clear-icon" type="button" onClick={() => setIconFile(null)} disabled={saving}>Remove selected image</button>}
-                </fieldset>
-
-                <fieldset className="admin-community-status-field">
-                  <legend>Status</legend>
-                  <label className={form.active ? "is-selected" : ""}>
-                    <input type="radio" name="community-group-status" checked={form.active} onChange={() => updateForm("active", true)} disabled={saving} />
-                    <FiCheckCircle />
-                    <span><strong>Active</strong><small>Group will be visible to eligible students.</small></span>
-                  </label>
-                  <label className={!form.active ? "is-selected is-inactive" : ""}>
-                    <input type="radio" name="community-group-status" checked={!form.active} onChange={() => updateForm("active", false)} disabled={saving} />
-                    <FiXCircle />
-                    <span><strong>Inactive</strong><small>Group will be hidden from students.</small></span>
-                  </label>
-                </fieldset>
-
-                <div className="admin-community-form-actions">
-                  <button type="button" className="admin-community-secondary-button" onClick={closeForm} disabled={saving}>Cancel</button>
-                  <button type="submit" className="admin-community-primary-button" disabled={saving || loadingMasterData || loadingBranches}>
-                    {saving ? <span className="admin-community-button-spinner" /> : <FiPlus />}
-                    {saving ? "Saving…" : editingGroup ? "Save Changes" : "Create Group"}
-                  </button>
-                </div>
-              </form>
-            </aside>
-          )}
+          <AdminCommunityGroupEditor
+            formOpen={formOpen}
+            editingGroup={editingGroup}
+            closeForm={closeForm}
+            saving={saving}
+            saveGroup={saveGroup}
+            form={form}
+            updateForm={updateForm}
+            universities={universities}
+            loadingMasterData={loadingMasterData}
+            branches={branches}
+            loadingBranches={loadingBranches}
+            semesters={semesters}
+            iconPreview={iconPreview}
+            iconFile={iconFile}
+            setIconFile={setIconFile}
+          />
         </main>
       </div>
     </div>
   );
 }
 
-function MetricCard({ icon, tone, label, value, note }) {
-  return (
-    <article className="admin-community-metric">
-      <span className={`admin-community-metric-icon tone-${tone}`}>{icon}</span>
-      <span className="admin-community-metric-copy">
-        <span>{label}</span>
-        <strong>{value}</strong>
-        <small>{note}</small>
-      </span>
-    </article>
-  );
-}
