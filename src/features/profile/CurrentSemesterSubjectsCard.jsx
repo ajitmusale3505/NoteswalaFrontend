@@ -251,14 +251,14 @@ function SubjectSelectionModal({ subjects, selectedIds, onClose, onSaved }) {
   );
 }
 
-export default function CurrentSemesterSubjectsCard({ academic }) {
+export default function CurrentSemesterSubjectsCard({ academic, onEditAcademic }) {
   const [subjects, setSubjects] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
 
   const load = async () => {
-    if (!academic?.semesterId) {
+    if (!academic?.semesterId || !academic?.programId || !academic?.examPatternId) {
       setSubjects([]);
       setSelectedIds([]);
       setLoading(false);
@@ -337,14 +337,23 @@ export default function CurrentSemesterSubjectsCard({ academic }) {
           </div>
           <div className="semester-subject-header-actions">
             {academic?.semesterName && <span className="semester-badge"><FiBookOpen /> {academic.semesterName}</span>}
-            <button type="button" className="profile-edit-btn" onClick={() => setEditing(true)} disabled={loading || !academic?.semesterId}>
+            <button type="button" className="profile-edit-btn" onClick={() => setEditing(true)} disabled={loading || !academic?.semesterId || !academic?.programId || !academic?.examPatternId}>
               <FiEdit3 /> Edit
             </button>
           </div>
         </header>
 
         {!academic?.semesterId ? (
-          <div className="semester-subject-state"><FiBookOpen /><strong>Select your current semester in Academic Information first.</strong></div>
+          <div className="semester-subject-state"><FiBookOpen /><strong>Select your current semester in Academic Information first.</strong>
+            {onEditAcademic && <button type="button" className="profile-edit-btn" onClick={onEditAcademic}>Update Academic Information</button>}
+          </div>
+        ) : (!academic?.programId || !academic?.examPatternId) ? (
+          <div className="semester-subject-state semester-subject-context-missing">
+            <FiBookOpen />
+            <strong>Academic program and exam pattern are required to load your curriculum subjects.</strong>
+            <span>Update these details in Academic Information. We will then load the regular, elective, honor and practical subjects for your current semester.</span>
+            {onEditAcademic && <button type="button" className="profile-edit-btn" onClick={onEditAcademic}>Set Program & Exam Pattern</button>}
+          </div>
         ) : loading ? (
           <div className="semester-subject-state"><span className="semester-loading-dot" /> Loading subjects for {academic.semesterName || "your semester"}...</div>
         ) : (

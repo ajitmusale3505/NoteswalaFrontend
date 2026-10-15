@@ -7,8 +7,8 @@ import {
 import toast from "react-hot-toast";
 import {
   createAcademicProfile, getAcademicYearsByUniversity, getBranchesByCollege,
-  getCollegesByUniversity, getSemestersByAcademicYear, getUniversities,
-  updateAcademicProfile
+  getCollegesByUniversity, getExamPatternsByUniversity, getProgramsByUniversity,
+  getSemestersByAcademicYear, getUniversities, updateAcademicProfile
 } from "../../services/academicService";
 import { CITY_BY_STATE, INDIAN_STATES } from "./locationData";
 
@@ -35,27 +35,44 @@ function Chip({value,selected,onClick}){return <button type="button" className={
 
 export default function ProfileCompletionModal({user,academic,onCompleted}){
  const [step,setStep]=useState(1),[saving,setSaving]=useState(false);
- const [universities,setUniversities]=useState([]),[colleges,setColleges]=useState([]),[branches,setBranches]=useState([]),[years,setYears]=useState([]),[semesters,setSemesters]=useState([]);
+ const [universities,setUniversities]=useState([]),[colleges,setColleges]=useState([]),[branches,setBranches]=useState([]),[years,setYears]=useState([]),[programs,setPrograms]=useState([]),[examPatterns,setExamPatterns]=useState([]),[semesters,setSemesters]=useState([]);
  const [regularSel,setRegularSel]=useState([]),[electiveSel,setElectiveSel]=useState([]),[practicalSel,setPracticalSel]=useState([]),[honorSel,setHonorSel]=useState([]);
  const [goal,setGoal]=useState("Academic Support"),[interestSel,setInterestSel]=useState(["Web Development","AI & ML","Operating Systems"]);
  const [notifications,setNotifications]=useState([true,true,true,true]);
  const [form,setForm]=useState({
    universityId:academic?.universityId||"",collegeId:academic?.collegeId||"",branchId:academic?.branchId||"",
+   programId:academic?.programId||"",examPatternId:academic?.examPatternId||"",
    academicYearId:academic?.academicYearId||"",semesterId:academic?.semesterId||"",
    currentYear:academic?.currentYear?String(academic.currentYear):"",graduationYear:academic?.graduationYear||"",
    phoneNumber:academic?.phoneNumber||"",gender:academic?.gender||"",state:academic?.state||"",city:academic?.city||""
  });
 
  useEffect(()=>{getUniversities().then(r=>setUniversities(list(r))).catch(()=>toast.error("Unable to load universities."));},[]);
- useEffect(()=>{if(!form.universityId)return;Promise.all([getCollegesByUniversity(form.universityId),getAcademicYearsByUniversity(form.universityId)]).then(([a,b])=>{setColleges(list(a));setYears(list(b));}).catch(()=>toast.error("Unable to load academic data."));},[form.universityId]);
+ useEffect(()=>{
+   if(!form.universityId){
+     setColleges([]);setYears([]);setPrograms([]);setExamPatterns([]);
+     return;
+   }
+   Promise.all([
+     getCollegesByUniversity(form.universityId),
+     getAcademicYearsByUniversity(form.universityId),
+     getProgramsByUniversity(form.universityId),
+     getExamPatternsByUniversity(form.universityId)
+   ]).then(([collegeResponse,yearResponse,programResponse,patternResponse])=>{
+     setColleges(list(collegeResponse));
+     setYears(list(yearResponse));
+     setPrograms(list(programResponse));
+     setExamPatterns(list(patternResponse));
+   }).catch(()=>toast.error("Unable to load academic programs and curriculum options."));
+ },[form.universityId]);
  useEffect(()=>{if(!form.collegeId)return;getBranchesByCollege(form.collegeId).then(r=>setBranches(list(r))).catch(()=>toast.error("Unable to load branches."));},[form.collegeId]);
  useEffect(()=>{if(!form.academicYearId)return;getSemestersByAcademicYear(form.academicYearId).then(r=>setSemesters(list(r))).catch(()=>toast.error("Unable to load semesters."));},[form.academicYearId]);
- useEffect(()=>{if(!academic)return;setForm(f=>({...f,universityId:academic.universityId||f.universityId,collegeId:academic.collegeId||f.collegeId,branchId:academic.branchId||f.branchId,academicYearId:academic.academicYearId||f.academicYearId,semesterId:academic.semesterId||f.semesterId,currentYear:academic.currentYear?String(academic.currentYear):f.currentYear,graduationYear:academic.graduationYear||f.graduationYear,phoneNumber:academic.phoneNumber||f.phoneNumber,gender:academic.gender||f.gender,state:academic.state||f.state,city:academic.city||f.city}));},[academic]);
+ useEffect(()=>{if(!academic)return;setForm(f=>({...f,universityId:academic.universityId||f.universityId,collegeId:academic.collegeId||f.collegeId,branchId:academic.branchId||f.branchId,programId:academic.programId||f.programId,examPatternId:academic.examPatternId||f.examPatternId,academicYearId:academic.academicYearId||f.academicYearId,semesterId:academic.semesterId||f.semesterId,currentYear:academic.currentYear?String(academic.currentYear):f.currentYear,graduationYear:academic.graduationYear||f.graduationYear,phoneNumber:academic.phoneNumber||f.phoneNumber,gender:academic.gender||f.gender,state:academic.state||f.state,city:academic.city||f.city}));},[academic]);
 
  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
  const toggle=(setter,v)=>setter(a=>a.includes(v)?a.filter(x=>x!==v):[...a,v]);
  const valid=()=>{
-   if(step===1 && (!form.universityId||!form.collegeId||!form.branchId||!form.academicYearId||!form.currentYear||!form.state||!form.city)){toast.error("Please complete all required academic and location details.");return false;}
+   if(step===1 && (!form.universityId||!form.collegeId||!form.branchId||!form.programId||!form.academicYearId||!form.examPatternId||!form.currentYear||!form.state||!form.city)){toast.error("Please complete University, College, Branch, Academic Program, Academic Year, Exam Pattern and location details.");return false;}
    if(step===2 && (!/^[6-9]\d{9}$/.test(form.phoneNumber)||!form.gender)){toast.error("Enter a valid Indian mobile number and select gender.");return false;}
    if(step===3 && !form.semesterId){toast.error("Select your current semester.");return false;}
    return true;
@@ -74,6 +91,8 @@ export default function ProfileCompletionModal({user,academic,onCompleted}){
      universityId:String(form.universityId),
      collegeId:String(form.collegeId),
      branchId:String(form.branchId),
+     programId:String(form.programId),
+     examPatternId:String(form.examPatternId),
      academicYearId:String(form.academicYearId),
      semesterId:String(form.semesterId),
      graduationYear,
@@ -119,9 +138,11 @@ export default function ProfileCompletionModal({user,academic,onCompleted}){
        {step===1&&<section className="pc-screen">
          <header><h1>Academic <em>Details</em></h1><p>Tell us about your university and college so we can show you the most relevant content for your branch and semester.</p></header>
          <div className="pc-grid academic">
-           <Field label="University" icon={FiBookOpen} value={form.universityId} onChange={v=>setForm(f=>({...f,universityId:v,collegeId:"",branchId:"",academicYearId:"",semesterId:""}))} options={universities} placeholder="Select university"/>
+           <Field label="University" icon={FiBookOpen} value={form.universityId} onChange={v=>setForm(f=>({...f,universityId:v,collegeId:"",branchId:"",programId:"",examPatternId:"",academicYearId:"",semesterId:""}))} options={universities} placeholder="Select university"/>
            <div className="pc-note"><FiAward/><span>Your academic details help us personalize your learning experience.</span></div>
            <Field label="College" icon={FiBriefcase} value={form.collegeId} onChange={v=>setForm(f=>({...f,collegeId:v,branchId:""}))} options={colleges} placeholder="Select college" disabled={!form.universityId}/>
+           <Field label="Academic Program" icon={FiAward} value={form.programId} onChange={v=>set("programId",v)} options={programs} placeholder="Select academic program" disabled={!form.universityId}/>
+           <Field label="Exam Pattern" icon={FiBookOpen} value={form.examPatternId} onChange={v=>set("examPatternId",v)} options={examPatterns} placeholder="Select exam pattern" disabled={!form.universityId}/>
            <Field label="State" icon={FiMapPin} value={form.state} onChange={v=>setForm(f=>({...f,state:v,city:""}))} options={INDIAN_STATES.map(x=>({value:x,label:x}))} placeholder="Select state"/>
            <Field label="City" icon={FiMapPin} value={form.city} onChange={v=>set("city",v)} options={(CITY_BY_STATE[form.state]||[]).map(x=>({value:x,label:x}))} placeholder="Select city" disabled={!form.state}/>
            <Field label="Branch / Department" icon={FiBookOpen} value={form.branchId} onChange={v=>set("branchId",v)} options={branches} placeholder="Select branch" disabled={!form.collegeId}/>

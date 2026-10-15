@@ -12,6 +12,12 @@ export const getExamPatternsByUniversity=(universityId)=>apiClient.get("/exam-pa
     String(pattern.universityId ?? pattern.university?.id ?? "") === String(universityId)
   )
 }));
+export const getProgramsByUniversity=(universityId)=>apiClient.get("/programs").then((response)=>({
+  ...response,
+  data: (response.data?.data || response.data || []).filter((program)=>
+    String(program.universityId ?? program.university?.id ?? "") === String(universityId)
+  )
+}));
 export const getSemestersByAcademicYear=(id)=>apiClient.get(`/semesters/academic-year/${id}`);
 export const createAcademicProfile=(payload)=>apiClient.post("/user-profile",payload);
 export const updateAcademicProfile=(id,payload)=>apiClient.put(`/user-profile/${id}`,payload);
