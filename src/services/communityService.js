@@ -2,9 +2,10 @@ import { apiClient } from "./api";
 
 const root = "/community/channels";
 
-export const getUniversityCommunity = () => apiClient.get(`${root}/university`);
-export const getUniversityMembers = (limit = 8, page = 0) =>
-  apiClient.get(`${root}/university/members`, { params: { limit, page } });
+// Returns only the user's two eligible groups, computed from the authenticated academic profile.
+export const getCommunityGroups = () => apiClient.get(`${root}/groups`);
+export const getCommunityMembers = (channelId, limit = 8, page = 0) =>
+  apiClient.get(`${root}/${channelId}/members`, { params: { limit, page } });
 export const getCommunityMessages = (channelId, params = {}) =>
   apiClient.get(`${root}/${channelId}/messages`, { params });
 export const getPinnedCommunityMessage = (channelId) =>

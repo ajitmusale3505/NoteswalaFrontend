@@ -9,8 +9,8 @@ import toast from "react-hot-toast";
 import HomeNavbar from "../home/components/HomeNavbar";
 import ProfileCompletionGate from "../profile/ProfileCompletionGate";
 import {
-  getCommunityAttachments, getCommunityMessages, getPinnedCommunityMessage,
-  getUniversityCommunity, getUniversityMembers, postCommunityMessage,
+  getCommunityAttachments, getCommunityGroups, getCommunityMembers, getCommunityMessages, getPinnedCommunityMessage,
+  postCommunityMessage,
   uploadCommunityAttachment,
 } from "../../services/communityService";
 import "../../styles/community.css";
@@ -96,6 +96,7 @@ function responsePage(response) {
 
 function CommunityPageContent() {
   const [room, setRoom] = useState(null);
+  const [groups, setGroups] = useState([]);
   const [messages, setMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const [membersPage, setMembersPage] = useState(0);
@@ -146,43 +147,71 @@ function CommunityPageContent() {
 
   useEffect(() => {
     let mounted = true;
-    const loadCommunity = async () => {
-      setLoading(true);
+    const loadGroups = async () => {
       setLoadError("");
       try {
-        const roomResponse = await getUniversityCommunity();
-        const currentRoom = unwrap(roomResponse);
-        if (!currentRoom?.id) throw new Error("Your university community is not available yet.");
-        if (!mounted) return;
-        setRoom(currentRoom);
-
-        const results = await Promise.allSettled([
-          reloadLatest(currentRoom.id, true),
-          getUniversityMembers(8),
-          getCommunityAttachments(currentRoom.id, 5),
-          getPinnedCommunityMessage(currentRoom.id),
-        ]);
-        if (!mounted) return;
-
-        if (results[1].status === "fulfilled") {
-          const memberPage = responsePage(results[1].value);
-          setMembers(memberPage.content || []);
-          setMembersPage(0);
-          setMembersTotalPages(memberPage.totalPages || 1);
+        const response = await getCommunityGroups();
+        const availableGroups = unwrap(response);
+        if (!Array.isArray(availableGroups) || availableGroups.length !== 2) {
+          throw new Error("Your profile must have a valid university, college and branch to access the two community groups.");
         }
-        if (results[2].status === "fulfilled") setAttachments(unwrap(results[2].value) || []);
-        if (results[3].status === "fulfilled") setPinnedMessage(unwrap(results[3].value));
-        const firstFailure = results.find((result) => result.status === "rejected");
-        if (firstFailure && results[0] === firstFailure) setLoadError(errorMessage(firstFailure.reason));
+        if (!mounted) return;
+        setGroups(availableGroups);
+        setRoom(availableGroups[0]);
       } catch (error) {
-        if (mounted) setLoadError(errorMessage(error));
-      } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoadError(errorMessage(error));
+          setLoading(false);
+        }
       }
     };
-    loadCommunity();
+    loadGroups();
     return () => { mounted = false; };
-  }, [reloadLatest]);
+  }, []);
+
+  useEffect(() => {
+    if (!room?.id) return undefined;
+    let mounted = true;
+    setLoading(true);
+    setLoadError("");
+    shouldStickToBottomRef.current = true;
+
+    const loadSelectedGroup = async () => {
+      const results = await Promise.allSettled([
+        getCommunityMessages(room.id, { page: 0, size: INITIAL_MESSAGE_LIMIT }),
+        getCommunityMembers(room.id, 8, 0),
+        getCommunityAttachments(room.id, 5),
+        getPinnedCommunityMessage(room.id),
+      ]);
+      if (!mounted) return;
+
+      if (results[0].status === "fulfilled") {
+        const messagePage = responsePage(results[0].value);
+        setMessages(sortMessages(messagePage.content || []));
+        setHasOlderMessages((messagePage.totalPages || 0) > 1);
+      } else {
+        setMessages([]);
+        setHasOlderMessages(false);
+        setLoadError(errorMessage(results[0].reason));
+      }
+
+      if (results[1].status === "fulfilled") {
+        const memberPage = responsePage(results[1].value);
+        setMembers(memberPage.content || []);
+        setMembersPage(0);
+        setMembersTotalPages(memberPage.totalPages || 1);
+      } else {
+        setMembers([]);
+        setMembersTotalPages(1);
+      }
+      setAttachments(results[2].status === "fulfilled" ? unwrap(results[2].value) || [] : []);
+      setPinnedMessage(results[3].status === "fulfilled" ? unwrap(results[3].value) : null);
+      setLoading(false);
+    };
+
+    loadSelectedGroup();
+    return () => { mounted = false; };
+  }, [room?.id]);
 
   useEffect(() => {
     if (!room?.id) return undefined;
@@ -234,7 +263,7 @@ function CommunityPageContent() {
     if (activeSection !== "members" || !room?.id) return undefined;
     let active = true;
     setMembersLoading(true);
-    getUniversityMembers(30, 0)
+    getCommunityMembers(room.id, 30, 0)
       .then((response) => {
         if (!active) return;
         const page = responsePage(response);
@@ -256,7 +285,7 @@ function CommunityPageContent() {
     if (membersLoading || nextPage >= membersTotalPages) return;
     setMembersLoading(true);
     try {
-      const page = responsePage(await getUniversityMembers(30, nextPage));
+      const page = responsePage(await getCommunityMembers(room.id, 30, nextPage));
       const incoming = page.content || [];
       setMembers((current) => {
         const knownIds = new Set(current.map((member) => member.userId));
@@ -366,8 +395,31 @@ function CommunityPageContent() {
 
   const activeMembersCount = Number(room?.memberCount || 0);
   const universityName = room?.universityName || "University Community";
+  const collegeName = room?.collegeName || "Your College";
   const branchName = room?.branchName || "Student";
   const semesterName = displaySemester(room?.semesterName);
+  const isUniversityBranchGroup = room?.groupType === "UNIVERSITY_BRANCH";
+  const groupKindTitle = isUniversityBranchGroup ? "University Branch Group" : "College Branch Group";
+  const groupTitle = room?.displayName || `${branchName} · ${groupKindTitle}`;
+  const chatInstitutionName = isUniversityBranchGroup ? universityName : collegeName;
+
+  const selectGroup = (nextGroup) => {
+    if (!nextGroup?.id || Number(nextGroup.id) === Number(room?.id)) return;
+    shouldStickToBottomRef.current = true;
+    setRoom(nextGroup);
+    setMessages([]);
+    setMembers([]);
+    setAttachments([]);
+    setPinnedMessage(null);
+    setDraft("");
+    setSelectedFile(null);
+    setHasOlderMessages(false);
+    setActiveSection("chat");
+    setSearchOpen(false);
+    setSearchTerm("");
+    setEmojiOpen(false);
+    setLoadError("");
+  };
   const filteredMessages = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return messages;
@@ -436,11 +488,32 @@ function CommunityPageContent() {
           <aside className="community-left-panel">
             <section className="community-group-summary">
               <div className="community-large-seal"><FiHome /></div>
-              <h2>{universityName}</h2>
+              <h2>{groupTitle}</h2>
               <p className="community-member-count"><span className="community-verified"><FiCheck /></span>{activeMembersCount.toLocaleString("en-IN")} members <i /> Official group</p>
               <div className="community-learner-context"><span><FiShield /> {branchName}</span><span><FiBookOpen /> {semesterName}</span></div>
             </section>
-            <nav className="community-side-nav" aria-label="University community sections">
+            <section className="community-group-switcher" aria-label="Your two community groups">
+              <div className="community-group-switcher-heading">YOUR GROUPS <span>2</span></div>
+              {groups.map((group) => {
+                const universityGroup = group.groupType === "UNIVERSITY_BRANCH";
+                const title = universityGroup ? "University Branch Group" : "College Branch Group";
+                const subtitle = universityGroup ? group.universityName : group.collegeName;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={Number(room?.id) === Number(group.id) ? "active" : ""}
+                    onClick={() => selectGroup(group)}
+                    aria-pressed={Number(room?.id) === Number(group.id)}
+                  >
+                    <span className="community-group-switcher-icon">{universityGroup ? <FiBookOpen /> : <FiHome />}</span>
+                    <span className="community-group-switcher-copy"><strong>{title}</strong><small>{subtitle}</small></span>
+                    {Number(room?.id) === Number(group.id) && <FiCheck className="community-group-switcher-check" />}
+                  </button>
+                );
+              })}
+            </section>
+            <nav className="community-side-nav" aria-label="Community sections">
               {tabs.map(({ id, label, icon: Icon }) => (
                 <button type="button" key={id} className={activeSection === id ? "active" : ""} onClick={() => setActiveSection(id)}>
                   <Icon /><span>{label}</span>
@@ -448,15 +521,15 @@ function CommunityPageContent() {
                 </button>
               ))}
             </nav>
-            <div className="community-left-note"><FiShield /><span>Only students in this university can access this community.</span></div>
+            <div className="community-left-note"><FiShield /><span>Only these two groups matching your university, college and branch are available to you.</span></div>
           </aside>
 
           <section className="community-chat-card">
             <header className="community-chat-header">
               <div className="community-header-seal"><FiHome /></div>
               <div className="community-header-copy">
-                <h2>{universityName}</h2>
-                <p>{activeMembersCount.toLocaleString("en-IN")} members <i /> {branchName} <i /> {semesterName}</p>
+                <h2>{chatInstitutionName}</h2>
+                <p>{activeMembersCount.toLocaleString("en-IN")} members <i /> {groupKindTitle} <i /> {semesterName}</p>
               </div>
               {searchOpen && (
                 <input
@@ -602,15 +675,15 @@ function CommunityPageContent() {
               <h3><FiClock /> Group Details</h3>
               <div className="community-info-identity">
                 <div className="community-detail-seal"><FiHome /></div>
-                <div><strong>{universityName}</strong><small>{activeMembersCount.toLocaleString("en-IN")} members</small></div>
+                <div><strong>{groupTitle}</strong><small>{activeMembersCount.toLocaleString("en-IN")} members</small></div>
                 <span className="community-official-badge"><i /> Official Group</span>
               </div>
-              <p className="community-info-description">The official community for students at {universityName}. Discuss academics, share resources, get updates and help each other.</p>
+              <p className="community-info-description">{isUniversityBranchGroup ? "The branch community for " + branchName + " students from all colleges under " + universityName + "." : "The branch community for " + branchName + " students from " + collegeName + "."} Discuss academics, share resources, get updates and help each other.</p>
               <dl>
                 <div><dt>Branch</dt><dd>{branchName}</dd></div>
                 <div><dt>Semester</dt><dd>{semesterName}</dd></div>
-                <div><dt>Type</dt><dd>University Group</dd></div>
-                <div><dt>Visibility</dt><dd>University Students Only</dd></div>
+                <div><dt>Type</dt><dd>{groupKindTitle}</dd></div>
+                <div><dt>Visibility</dt><dd>{isUniversityBranchGroup ? "University + Branch" : "College + Branch"}</dd></div>
               </dl>
             </section>
 
