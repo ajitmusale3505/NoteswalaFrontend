@@ -2,7 +2,7 @@ import { Client } from "@stomp/stompjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FiAlertCircle, FiArrowDown, FiBookOpen, FiCheck, FiChevronRight, FiClock,
-  FiDownload, FiFileText, FiHome, FiMessageCircle,
+  FiDownload, FiFileText, FiHome, FiInfo, FiMaximize2, FiMinimize2, FiMessageCircle,
   FiPaperclip, FiBookmark, FiSearch, FiSend, FiShield, FiSmile, FiUsers, FiX,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -108,6 +108,8 @@ function CommunityPageContent() {
   const [loadError, setLoadError] = useState("");
   const [connection, setConnection] = useState("connecting");
   const [activeSection, setActiveSection] = useState("chat");
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [fullScreenChat, setFullScreenChat] = useState(false);
   const [draft, setDraft] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [sending, setSending] = useState(false);
@@ -468,7 +470,7 @@ function CommunityPageContent() {
   };
 
   return (
-    <div className="community-page">
+    <div className={`community-page ${fullScreenChat ? "is-chat-fullscreen" : ""}`}>
       <HomeNavbar brandName="NotesWala" />
       <main className="community-main">
         <section className="community-hero">
@@ -484,7 +486,7 @@ function CommunityPageContent() {
           </div>
         </section>
 
-        <div className="community-layout">
+        <div className={`community-layout ${detailsOpen ? "details-open" : "details-hidden"}`}>
           <aside className="community-left-panel">
             <section className="community-group-summary">
               <div className="community-large-seal"><FiHome /></div>
@@ -544,6 +546,38 @@ function CommunityPageContent() {
               <div className="community-header-actions">
                 <button type="button" title="Search messages" aria-label="Search messages" onClick={() => { setSearchOpen((open) => !open); setSearchTerm(""); }}><FiSearch /></button>
                 <button type="button" title="View pinned announcement" aria-label="View pinned announcement" onClick={() => setActiveSection("announcements")}><FiBookmark /></button>
+                <button
+                  type="button"
+                  className={detailsOpen && !fullScreenChat ? "is-active" : ""}
+                  title={detailsOpen && !fullScreenChat ? "Hide group details" : "Show group details"}
+                  aria-label={detailsOpen && !fullScreenChat ? "Hide group details" : "Show group details"}
+                  aria-pressed={detailsOpen && !fullScreenChat}
+                  onClick={() => {
+                    if (fullScreenChat) {
+                      setFullScreenChat(false);
+                      setDetailsOpen(true);
+                    } else {
+                      setDetailsOpen((open) => !open);
+                    }
+                  }}
+                ><FiInfo /></button>
+                <button
+                  type="button"
+                  className={fullScreenChat ? "is-active" : ""}
+                  title={fullScreenChat ? "Exit full screen" : "Open chat in full screen"}
+                  aria-label={fullScreenChat ? "Exit full screen chat" : "Open chat in full screen"}
+                  aria-pressed={fullScreenChat}
+                  onClick={() => {
+                    const next = !fullScreenChat;
+                    setFullScreenChat(next);
+                    if (next) {
+                      setDetailsOpen(false);
+                      setActiveSection("chat");
+                      setSearchOpen(false);
+                      setEmojiOpen(false);
+                    }
+                  }}
+                >{fullScreenChat ? <FiMinimize2 /> : <FiMaximize2 />}</button>
                 <span className={`community-connection ${connection}`} title={connection === "connected" ? "Live connection active" : "Connecting to live chat"} />
               </div>
             </header>
