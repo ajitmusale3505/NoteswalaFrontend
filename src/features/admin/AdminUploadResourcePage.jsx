@@ -368,6 +368,10 @@ export default function AdminUploadResourcePage() {
       navigate("/admin/categories");
       return;
     }
+    if (label === "Manage Groups") {
+      navigate("/admin/community-groups");
+      return;
+    }
     if (label === "Resource Library") {
       toast("Resource Library management is not part of this screen.");
       return;

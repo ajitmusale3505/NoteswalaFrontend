@@ -7,10 +7,12 @@ import ResourcesPage from "../features/resources/ResourcesPage";
 import SubjectPage from "../features/subjects/SubjectPage";
 import ResourceViewerPage from "../features/resources/ResourceViewerPage";
 import ProfilePage from "../features/profile/ProfilePage";
+import CommunityPage from "../features/community/CommunityPage";
 import AdminDashboardPage from "../features/admin/AdminDashboardPage";
 import AdminRoute from "../features/admin/AdminRoute";
 import AdminUploadResourcePage from "../features/admin/AdminUploadResourcePage";
 import AdminManageCategoriesPage from "../features/admin/AdminManageCategoriesPage";
+import AdminCommunityGroupsPage from "../features/admin/AdminCommunityGroupsPage";
 import AuthRoute from "./AuthRoute";
 
 export default function AppRoutes() {
@@ -29,12 +31,14 @@ export default function AppRoutes() {
         <Route path="/resources/:subjectCode" element={<SubjectPage />} />
         <Route path="/resources/:subjectCode/:resourceId" element={<ResourceViewerPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/community" element={<CommunityPage />} />
       </Route>
 
       {/* Admin routes retain their existing server-verified role guard. */}
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/resources/upload" element={<AdminRoute><AdminUploadResourcePage /></AdminRoute>} />
       <Route path="/admin/categories" element={<AdminRoute><AdminManageCategoriesPage /></AdminRoute>} />
+      <Route path="/admin/community-groups" element={<AdminRoute><AdminCommunityGroupsPage /></AdminRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

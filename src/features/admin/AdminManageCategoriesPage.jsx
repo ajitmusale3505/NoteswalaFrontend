@@ -134,6 +134,8 @@ export default function AdminManageCategoriesPage() {
       navigate("/admin/categories");
     } else if (label === "Upload Resources") {
       navigate("/admin/resources/upload");
+    } else if (label === "Manage Groups") {
+      navigate("/admin/community-groups");
     } else {
       toast(`${label} is part of the admin workspace.`, { icon: "ℹ️", duration: 2500 });
     }

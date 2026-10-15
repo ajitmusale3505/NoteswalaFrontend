@@ -5,7 +5,7 @@ import { getCurrentUser, getUserAcademicProfile, getPersonalProfile } from "../.
 import { homeNavItems } from "../homeData";
 import { logout } from "../../../services/authService";
 
-export default function HomeNavbar({ user: userProp = null, academic: academicProp = null, loading: userLoading = false }) {
+export default function HomeNavbar({ user: userProp = null, academic: academicProp = null, loading: userLoading = false, brandName = "EduHub" }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(userProp);
@@ -81,14 +81,14 @@ export default function HomeNavbar({ user: userProp = null, academic: academicPr
 
   return (
     <header className="home-navbar">
-      <a className="home-brand" href="/home" aria-label="EduHub home">
+      <a className="home-brand" href="/home" aria-label={`${brandName} home`}>
         <span className="home-brand-mark"><FiBookOpen /></span>
-        <span>EduHub</span>
+        <span>{brandName}</span>
       </a>
       <nav className="home-nav">
         {homeNavItems.map(([label, href, Icon]) => {
-          const target = label === "Home" ? "/home" : label === "Resources" ? "/resources" : href;
-          const active = label === "Home" ? pathname === "/home" || pathname === "/dashboard" : label === "Resources" && pathname.startsWith("/resources");
+          const target = label === "Home" ? "/home" : label === "Resources" ? "/resources" : label === "Community" ? "/community" : href;
+          const active = label === "Home" ? pathname === "/home" || pathname === "/dashboard" : label === "Resources" ? pathname.startsWith("/resources") : label === "Community" && pathname.startsWith("/community");
           return <a key={label} href={target} className={active ? "active" : ""}><Icon /><span>{label}</span></a>;
         })}
       </nav>
