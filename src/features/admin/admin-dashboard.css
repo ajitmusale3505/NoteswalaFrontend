@@ -64,7 +64,7 @@
 .admin-user-email{display:block;margin-top:5px;color:#7488a5;font-size:11px}
 .admin-user-popover button{display:flex;align-items:center;gap:9px;width:100%;margin-top:14px;padding:10px 0 0;border:0;border-top:1px solid #edf1f6;background:transparent;color:#9d3e3e;text-align:left;font-size:12px}
 .admin-dashboard-content{display:flex;flex:1;flex-direction:column;gap:12px;min-width:0;padding:0 17px 10px;overflow-x:hidden}
-.admin-welcome-banner{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:132px;margin:0 -1px;overflow:hidden;padding:17px 15px 14px;background:linear-gradient(90deg,#fff 0%,#fff 43%,#fdfcf9 68%,#fff8f0 100%);border-bottom:1px solid #eff0f1}
+.admin-welcome-banner{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:158px;margin:0 -1px;overflow:hidden;padding:17px 15px 14px;background:linear-gradient(90deg,#fff 0%,#fff 43%,#fdfcf9 68%,#fff8f0 100%);border-bottom:1px solid #eff0f1}
 .admin-welcome-copy{position:relative;z-index:2;max-width:60%}
 .admin-welcome-copy>p{margin:0 0 6px;color:#a14b00;font:400 15px "Libre Baskerville",serif}
 .admin-welcome-copy h1{margin:0;color:#102c56;font:400 clamp(31px,3.2vw,45px)/1.15 "Libre Baskerville",serif;letter-spacing:-.055em}
