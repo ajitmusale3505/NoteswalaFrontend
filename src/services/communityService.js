@@ -8,6 +8,14 @@ export const getCommunityMembers = (channelId, size = 8, page = 0) =>
   apiClient.get(`${root}/${channelId}/members`, { params: { size, page } });
 export const getCommunityMessages = (channelId, params = {}) =>
   apiClient.get(`${root}/${channelId}/messages`, { params });
+export const searchCommunityMessages = (channelId, query, page = 0, size = 10) =>
+  apiClient.get(`${root}/${channelId}/messages/search`, {
+    params: { query, page, size: Math.min(Math.max(1, size), 20) },
+  });
+export const getCommunityMessageContext = (channelId, messageId, size = 30) =>
+  apiClient.get(`${root}/${channelId}/messages/${messageId}/context`, {
+    params: { size: Math.min(Math.max(1, size), 50) },
+  });
 export const getPinnedCommunityMessage = (channelId) =>
   apiClient.get(`${root}/${channelId}/pinned`);
 export const getCommunityAttachments = (channelId, limit = 5) =>

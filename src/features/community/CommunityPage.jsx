@@ -9,8 +9,8 @@ import toast from "react-hot-toast";
 import HomeNavbar from "../home/components/HomeNavbar";
 import ProfileCompletionGate from "../profile/ProfileCompletionGate";
 import {
-  getCommunityAttachments, getCommunityGroups, getCommunityMembers, getCommunityMessages, getPinnedCommunityMessage,
-  postCommunityMessage,
+  getCommunityAttachments, getCommunityGroups, getCommunityMembers, getCommunityMessages, getCommunityMessageContext,
+  getPinnedCommunityMessage, searchCommunityMessages, postCommunityMessage,
   uploadCommunityAttachment,
 } from "../../services/communityService";
 import "../../styles/community.css";
@@ -117,6 +117,15 @@ function CommunityPageContent() {
   const [hasOlderMessages, setHasOlderMessages] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchPage, setSearchPage] = useState(0);
+  const [searchTotalPages, setSearchTotalPages] = useState(0);
+  const [searchTotalElements, setSearchTotalElements] = useState(0);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [searchOpeningId, setSearchOpeningId] = useState(null);
+  const [focusedMessageId, setFocusedMessageId] = useState(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const messageScrollRef = useRef(null);
@@ -129,6 +138,68 @@ function CommunityPageContent() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  // Debounce keystrokes before contacting the server; stale requests are ignored below.
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const timer = window.setTimeout(() => setDebouncedSearchTerm(searchTerm.trim()), 280);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm, searchOpen]);
+
+  useEffect(() => {
+    if (!searchOpen || activeSection !== "chat" || !room?.id) return undefined;
+
+    const query = searchTerm.trim();
+    const settledQuery = debouncedSearchTerm.trim();
+    if (query !== settledQuery) {
+      setSearchLoading(true);
+      return undefined;
+    }
+    if (settledQuery.length < 2) {
+      setSearchLoading(false);
+      setSearchResults([]);
+      setSearchTotalElements(0);
+      setSearchTotalPages(0);
+      setSearchError("");
+      return undefined;
+    }
+
+    let active = true;
+    setSearchLoading(true);
+    setSearchError("");
+    searchCommunityMessages(room.id, settledQuery, searchPage, 10)
+      .then((response) => {
+        if (!active) return;
+        const payload = unwrap(response);
+        const results = Array.isArray(payload?.content) ? payload.content : [];
+        setSearchResults(results);
+        setSearchTotalElements(Number(payload?.totalElements) || 0);
+        setSearchTotalPages(Number(payload?.totalPages) || 0);
+      })
+      .catch((error) => {
+        if (!active) return;
+        setSearchResults([]);
+        setSearchTotalElements(0);
+        setSearchTotalPages(0);
+        setSearchError(errorMessage(error));
+      })
+      .finally(() => {
+        if (active) setSearchLoading(false);
+      });
+
+    return () => { active = false; };
+  }, [searchOpen, activeSection, room?.id, searchTerm, debouncedSearchTerm, searchPage]);
+
+  useEffect(() => {
+    if (focusedMessageId == null || activeSection !== "chat") return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      const target = messageScrollRef.current?.querySelector(
+        `[data-message-id="${String(focusedMessageId)}"]`
+      );
+      target?.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [focusedMessageId, messages, activeSection]);
 
   const loadMessagePage = useCallback(async (channelId, params = {}) => {
     const response = await getCommunityMessages(channelId, params);
@@ -417,17 +488,52 @@ function CommunityPageContent() {
     setSelectedFile(null);
     setHasOlderMessages(false);
     setActiveSection("chat");
-    setSearchOpen(false);
-    setSearchTerm("");
+    closeMessageSearch();
+    setFocusedMessageId(null);
     setEmojiOpen(false);
     setLoadError("");
   };
-  const filteredMessages = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return messages;
-    return messages.filter((message) =>
-      `${message.authorName || ""} ${message.content || ""}`.toLowerCase().includes(term));
-  }, [messages, searchTerm]);
+  // Search results are server-side and independent from the live timeline.
+  const filteredMessages = useMemo(() => messages, [messages]);
+
+  const closeMessageSearch = () => {
+    setSearchOpen(false);
+    setSearchTerm("");
+    setDebouncedSearchTerm("");
+    setSearchResults([]);
+    setSearchPage(0);
+    setSearchTotalPages(0);
+    setSearchTotalElements(0);
+    setSearchError("");
+    setSearchOpeningId(null);
+  };
+
+  const openSearchResult = async (result) => {
+    if (!room?.id || !result?.id || searchOpeningId != null) return;
+    setSearchOpeningId(result.id);
+    try {
+      const response = await getCommunityMessageContext(room.id, result.id, 30);
+      const payload = unwrap(response);
+      const contextMessages = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.content) ? payload.content : [];
+      if (!contextMessages.length) {
+        throw new Error("Message context is no longer available in this group.");
+      }
+
+      shouldStickToBottomRef.current = false;
+      setMessages(sortMessages(contextMessages));
+      setHasOlderMessages(true);
+      setFocusedMessageId(result.id);
+      setShowJumpToLatest(true);
+      setActiveSection("chat");
+      closeMessageSearch();
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setSearchOpeningId(null);
+    }
+  };
 
   const tabs = [
     { id: "chat", label: "Chat", icon: FiMessageCircle },
@@ -442,7 +548,7 @@ function CommunityPageContent() {
     );
     const messageFiles = attachments.filter((attachment) => Number(attachment.messageId) === Number(message.id));
     return (
-      <article className={`community-message-row ${isMine ? "mine" : ""}`} key={message.id || message.clientMessageId}>
+      <article className={`community-message-row ${isMine ? "mine" : ""} ${focusedMessageId != null && String(focusedMessageId) === String(message.id) ? "is-search-target" : ""}`} key={message.id || message.clientMessageId} data-message-id={message.id}>
         {!isMine && <div className="community-avatar message-avatar">{initials(message.authorName)}</div>}
         <div className="community-message-stack">
           <div className="community-message-bubble">
@@ -533,18 +639,17 @@ function CommunityPageContent() {
                 <h2>{chatInstitutionName}</h2>
                 <p>{activeMembersCount.toLocaleString("en-IN")} members <i /> {groupKindTitle} <i /> {semesterName}</p>
               </div>
-              {searchOpen && (
-                <input
-                  className="community-header-search"
-                  autoFocus
-                  aria-label="Search loaded messages"
-                  placeholder="Search loaded messages..."
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                />
-              )}
               <div className="community-header-actions">
-                <button type="button" title="Search messages" aria-label="Search messages" onClick={() => { setSearchOpen((open) => !open); setSearchTerm(""); }}><FiSearch /></button>
+                <button type="button" className={searchOpen ? "is-active" : ""} title={searchOpen ? "Close message search" : "Search message history"} aria-label={searchOpen ? "Close message search" : "Search message history"} aria-pressed={searchOpen} onClick={() => {
+                  if (searchOpen) closeMessageSearch();
+                  else {
+                    setActiveSection("chat");
+                    setSearchOpen(true);
+                    setSearchTerm("");
+                    setDebouncedSearchTerm("");
+                    setSearchPage(0);
+                  }
+                }}><FiSearch /></button>
                 <button type="button" title="View pinned announcement" aria-label="View pinned announcement" onClick={() => setActiveSection("announcements")}><FiBookmark /></button>
                 <button
                   type="button"
@@ -582,6 +687,89 @@ function CommunityPageContent() {
               </div>
             </header>
 
+            {searchOpen && activeSection === "chat" && (
+              <section className="community-message-search-panel" aria-label="Search group messages">
+                <form className="community-message-search-form" onSubmit={(event) => {
+                  event.preventDefault();
+                  setDebouncedSearchTerm(searchTerm.trim());
+                  setSearchPage(0);
+                }}>
+                  <span className="community-message-search-icon"><FiSearch /></span>
+                  <input
+                    autoFocus
+                    value={searchTerm}
+                    onChange={(event) => {
+                      setSearchTerm(event.target.value);
+                      setSearchPage(0);
+                    }}
+                    maxLength={100}
+                    placeholder="Search this group's message history..."
+                    aria-label="Search messages by text or sender"
+                  />
+                  {searchTerm && (
+                    <button type="button" className="community-search-clear" title="Clear search" aria-label="Clear search" onClick={() => {
+                      setSearchTerm("");
+                      setDebouncedSearchTerm("");
+                      setSearchPage(0);
+                    }}><FiX /></button>
+                  )}
+                  <kbd>ENTER</kbd>
+                  <button type="button" className="community-search-close" title="Close search" aria-label="Close message search" onClick={closeMessageSearch}><FiX /></button>
+                </form>
+                <div className="community-search-caption">
+                  <span>Search all available history</span><i /> <span>Messages and sender names</span>
+                  {searchTerm.trim().length >= 2 && !searchLoading && !searchError && (
+                    <strong>{searchTotalElements.toLocaleString("en-IN")} {searchTotalElements === 1 ? "match" : "matches"}</strong>
+                  )}
+                </div>
+                {searchTerm.trim().length < 2 ? (
+                  <div className="community-search-prompt">
+                    <span><FiSearch /></span>
+                    <div><strong>Find a conversation</strong><p>Enter at least 2 characters to search message text and sender names across this group.</p></div>
+                  </div>
+                ) : searchLoading ? (
+                  <div className="community-search-status"><span className="community-search-spinner" />Searching message history…</div>
+                ) : searchError ? (
+                  <div className="community-search-status is-error"><FiAlertCircle /><span>{searchError}</span></div>
+                ) : searchResults.length === 0 ? (
+                  <div className="community-search-prompt is-empty">
+                    <span><FiSearch /></span>
+                    <div><strong>No messages found</strong><p>Try a different word, name, or shorter phrase.</p></div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="community-search-results" aria-live="polite">
+                      {searchResults.map((result) => (
+                        <button
+                          key={result.id}
+                          type="button"
+                          className="community-search-result"
+                          onClick={() => openSearchResult(result)}
+                          disabled={searchOpeningId != null}
+                        >
+                          <span className="community-search-result-avatar">{initials(result.authorName)}</span>
+                          <span className="community-search-result-main">
+                            <span className="community-search-result-heading"><strong>{result.authorName || "Student"}</strong><time><FiClock />{formatDate(result.createdAt)}{result.createdAt ? ` · ${formatTime(result.createdAt)}` : ""}</time></span>
+                            <span className="community-search-result-excerpt">{result.content || "Attachment or empty message"}</span>
+                          </span>
+                          <span className="community-search-result-action">{searchOpeningId === result.id ? <span className="community-search-spinner" /> : <FiChevronRight />}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {searchTotalPages > 1 && (
+                      <footer className="community-search-pagination">
+                        <span>Page {searchPage + 1} of {searchTotalPages}</span>
+                        <div>
+                          <button type="button" disabled={searchPage <= 0 || searchLoading} onClick={() => setSearchPage((value) => Math.max(0, value - 1))}>Previous</button>
+                          <button type="button" disabled={searchPage >= searchTotalPages - 1 || searchLoading} onClick={() => setSearchPage((value) => Math.min(searchTotalPages - 1, value + 1))}>Next</button>
+                        </div>
+                      </footer>
+                    )}
+                  </>
+                )}
+              </section>
+            )}
+
             {loading ? (
               <div className="community-state"><span className="community-spinner" /><p>Loading your university community…</p></div>
             ) : loadError && !room ? (
@@ -616,8 +804,8 @@ function CommunityPageContent() {
                       }) : (
                         <div className="community-empty-chat">
                           <span><FiMessageCircle /></span>
-                          <h3>{searchTerm ? "No matching messages" : "Start a conversation"}</h3>
-                          <p>{searchTerm ? "Try another search term." : `Say hello to students from ${universityName}.`}</p>
+                          <h3>{searchOpen ? "Search your message history" : "Start a conversation"}</h3>
+                          <p>{searchOpen ? "Search results will appear in the panel above." : `Say hello to students from ${universityName}.`}</p>
                         </div>
                       )}
                     </div>
