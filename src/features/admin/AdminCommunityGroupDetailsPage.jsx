@@ -272,7 +272,7 @@ function AdminCommunityGroupDetailsPage() {
         <AdminSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} activeItem="Manage Groups" onSelect={selectNavigation} />
         <div className="admin-workspace">
           <AdminTopbar collapsed={sidebarCollapsed} searchValue={globalSearch} onSearchChange={setGlobalSearch} />
-          <main className="admin-gd-failure">
+          <main className="admin-dashboard-content admin-gd-failure">
             <FiAlertTriangle />
             <h1>Group details unavailable</h1>
             <p>This group may have been removed, or your administrator session could not load its details.</p>
@@ -288,7 +288,7 @@ function AdminCommunityGroupDetailsPage() {
       <AdminSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} activeItem="Manage Groups" onSelect={selectNavigation} />
       <div className="admin-workspace">
         <AdminTopbar collapsed={sidebarCollapsed} searchValue={globalSearch} onSearchChange={setGlobalSearch} />
-        <main className="admin-gd-page">
+        <main className="admin-dashboard-content admin-gd-page">
           <div className="admin-gd-main-column">
             <nav className="admin-gd-breadcrumb" aria-label="Breadcrumb">
               <button type="button" onClick={() => navigate("/admin")}><FiHome /> Dashboard</button>
