@@ -33,7 +33,7 @@ function AdminCommunityGroupTable(props) {
     loading, groups, startRow, debouncedSearch, universityFilter, statusFilter, formOpen,
     openCreateForm, searchValue, setSearchValue, setUniversityFilter, universities,
     setStatusFilter, openEditForm, togglingId, changeGroupStatus, openActionId,
-    setOpenActionId, page, setPage, totalElements, totalPages, pageSize, setPageSize,
+    setOpenActionId, page, setPage, totalElements, totalPages, pageSize, setPageSize, onOpenGroup,
   } = props;
   const totalVisiblePages = Math.max(1, totalPages);
   const endRow = Math.min(page * pageSize, totalElements);
@@ -108,7 +108,7 @@ function AdminCommunityGroupTable(props) {
                             <td>
                               <div className="admin-community-group-name-cell">
                                 <AdminCommunityGroupIcon group={group} />
-                                <span><strong title={group.name}>{group.name}</strong><small>{group.semesterName || "Semester not set"}</small></span>
+                                <button type="button" className="admin-community-group-open-link" onClick={() => onOpenGroup?.(group)} title={`Open ${group.name}`}><strong>{group.name}</strong><small>{group.semesterName || "Semester not set"}</small></button>
                               </div>
                             </td>
                             <td><span className="admin-community-university-short">{group.universityShortCode || "—"}</span></td>

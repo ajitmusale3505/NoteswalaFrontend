@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FiChevronRight } from "react-icons/fi";
 import AdminSidebar from "./components/AdminSidebar";
@@ -9,6 +9,7 @@ import AdminCommunityGroupTable from "./components/community-groups/AdminCommuni
 import AdminCommunityGroupEditor from "./components/community-groups/AdminCommunityGroupEditor";
 import {
   createAdminCommunityGroup,
+  getAdminCommunityGroup,
   getAdminCommunityGroupSummary,
   getAdminCommunityGroups,
   getCommunityBranchesByUniversity,
@@ -50,6 +51,7 @@ function getErrorMessage(error, fallback) {
 
 export default function AdminCommunityGroupsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return localStorage.getItem("noteswala_admin_sidebar_collapsed") === "true"; }
     catch { return false; }
@@ -231,6 +233,26 @@ export default function AdminCommunityGroupsPage() {
     setOpenActionId(null);
   }, []);
 
+  useEffect(() => {
+    const editId = new URLSearchParams(location.search).get("edit");
+    if (!editId) return undefined;
+    let active = true;
+
+    getAdminCommunityGroup(editId)
+      .then((response) => {
+        const record = unwrap(response);
+        if (active && record?.id) openEditForm(record);
+      })
+      .catch((error) => {
+        if (active) toast.error(getErrorMessage(error, "Could not load this group for editing."));
+      })
+      .finally(() => {
+        if (active) navigate("/admin/community-groups", { replace: true });
+      });
+
+    return () => { active = false; };
+  }, [location.search, navigate, openEditForm]);
+
   const closeForm = useCallback(() => {
     if (saving) return;
     setFormOpen(false);
@@ -371,6 +393,7 @@ export default function AdminCommunityGroupsPage() {
               totalPages={totalPages}
               pageSize={pageSize}
               setPageSize={setPageSize}
+              onOpenGroup={(group) => navigate(`/admin/community-groups/${group.id}`)}
             />
             <footer className="admin-community-footer"><span>© {new Date().getFullYear()} NotesWala Admin</span><span>Community management workspace</span></footer>
           </div>

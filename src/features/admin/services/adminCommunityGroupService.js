@@ -3,6 +3,10 @@ import { apiClient } from "../../../services/api";
 const root = "/admin/community-groups";
 
 export const getAdminCommunityGroups = (params = {}) => apiClient.get(root, { params });
+export const getAdminCommunityGroup = (groupId) => apiClient.get(`${root}/${groupId}`);
+export const getAdminCommunityGroupStatistics = (groupId) => apiClient.get(`${root}/${groupId}/statistics`);
+export const getAdminCommunityGroupMembers = (groupId, params = {}) => apiClient.get(`${root}/${groupId}/members`, { params });
+export const getAdminCommunityGroupMessages = (groupId, params = {}) => apiClient.get(`${root}/${groupId}/messages`, { params });
 export const getAdminCommunityGroupSummary = () => apiClient.get(`${root}/summary`);
 export const createAdminCommunityGroup = (payload) => apiClient.post(root, payload);
 export const updateAdminCommunityGroup = (groupId, payload) => apiClient.put(`${root}/${groupId}`, payload);
