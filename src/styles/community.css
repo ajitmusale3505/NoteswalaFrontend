@@ -197,3 +197,93 @@
 @media(max-width:700px){.community-main{gap:8px;padding:0 8px 10px}.community-hero{height:auto;min-height:120px;flex-basis:auto;gap:12px;padding:15px}.community-hero-icon{flex:0 0 55px;height:55px;border-radius:12px;font-size:28px}.community-hero-copy{max-width:none;padding-right:0}.community-hero-copy h1{font-size:22px}.community-hero-copy p{margin-top:5px;font-size:10px;line-height:1.4}.community-hero-motto,.community-hero-university{display:none}.community-layout{display:flex;flex-direction:column;gap:8px;min-height:0}.community-left-panel{padding:0;display:block;overflow:visible}.community-group-summary,.community-left-note{display:none}.community-group-switcher{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:0;padding:6px 6px 0}.community-group-switcher-heading{grid-column:1/-1;padding:0 2px}.community-group-switcher>button{min-height:57px;gap:5px;padding:6px}.community-group-switcher-icon{display:none}.community-group-switcher-copy strong{font-size:9px;white-space:normal;line-height:1.25}.community-group-switcher-copy small{font-size:8px}.community-group-switcher-check{font-size:11px}.community-side-nav{flex-direction:row;gap:4px;margin:0;padding:6px;overflow-x:auto}.community-side-nav button{flex:1 0 auto;justify-content:center;gap:6px;height:38px;padding:0 10px;border-left:0;border-bottom:2px solid transparent;font:500 10px "DM Sans",sans-serif;white-space:nowrap}.community-side-nav button.active{border-left:0;border-bottom-color:#bc792f}.community-side-nav button>svg{font-size:15px}.community-chat-card{min-height:calc(100dvh - 226px);height:calc(100dvh - 226px);flex:1}.community-chat-header{height:58px;flex-basis:58px;padding-inline:9px;gap:8px}.community-header-seal{width:37px;height:37px;font-size:20px}.community-header-copy h2{font-size:11px}.community-header-copy p{font-size:8px}.community-header-actions button{width:28px;height:30px;font-size:16px}.community-header-actions{gap:0}.community-header-search{position:absolute;z-index:5;right:10px;top:58px;width:calc(100% - 20px);background:#fff}.community-pinned-banner{margin:6px 6px 0;padding:7px;gap:7px}.community-pinned-banner>svg{font-size:14px}.community-pinned-banner strong{font-size:9px}.community-pinned-banner p{font-size:9px}.community-pinned-banner button{font-size:8px}.community-messages{padding:12px 8px;gap:9px}.community-avatar.message-avatar{width:29px;height:29px;flex-basis:29px;font-size:9px}.community-message-row{gap:6px}.community-message-stack{max-width:calc(100% - 35px)}.community-message-bubble{padding:8px 9px 19px;min-width:0}.community-message-meta{font-size:8px;gap:4px}.community-message-meta strong{font-size:9px}.community-message-bubble p{font-size:11px}.community-composer{margin:7px 6px 0;padding:4px;gap:1px}.community-composer>button:not(.community-send-button){width:25px;flex-basis:25px;font-size:16px}.community-composer-input{height:35px;padding-inline:6px;font-size:10px}.community-send-button{height:34px;width:34px;flex-basis:34px;font-size:15px}.community-chat-footer{padding:6px 9px 8px;font-size:8px}.community-chat-footer span:last-child{display:none}.community-right-panel{display:flex;gap:8px}.community-info-card{height:auto}.community-info-identity{grid-template-columns:56px minmax(0,1fr)}.community-detail-seal{width:52px;height:52px;font-size:25px}.community-info-identity strong{font-size:10px}.community-detail-view{padding:16px}.community-view-heading h3{font-size:16px}}
 @media(max-width:390px){.community-side-nav button{font-size:9px;padding-inline:7px}.community-header-copy p{max-width:150px}.community-connection{display:none}.community-message-meta span:nth-of-type(1){display:none}.community-message-meta i{display:none}}
 @media(prefers-reduced-motion:reduce){.community-spinner,.community-send-spinner{animation-duration:2s}.community-side-nav button{transition:none}}
+
+
+/* Keep the community workbench fitted to the viewport. The message timeline
+   scrolls independently so the composer stays visible, like a messaging app. */
+.community-page{
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+}
+.community-page>.home-navbar{flex:0 0 68px}
+.community-main{
+  flex:1 1 0;
+  min-height:0;
+  overflow:hidden;
+}
+.community-hero{flex:0 0 126px}
+.community-layout{
+  height:auto;
+  min-height:0;
+  max-height:none;
+  flex:1 1 0;
+  overflow:hidden;
+  align-items:stretch;
+}
+.community-left-panel,
+.community-chat-card,
+.community-right-panel{
+  height:100%;
+  min-height:0;
+}
+.community-left-panel,
+.community-right-panel{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.community-chat-card{overflow:hidden}
+.community-messages{
+  min-height:0;
+  overscroll-behavior:contain;
+}
+.community-chat-footer{flex:0 0 auto}
+
+@media(max-width:980px){
+  .community-layout{
+    height:auto;
+    min-height:0;
+    flex:1 1 0;
+    overflow:hidden;
+  }
+  /* Group information, members and files are already available in the chat
+     tabs, so keep the limited-height tablet viewport dedicated to the chat. */
+  .community-right-panel{display:none}
+  .community-chat-card{height:100%;min-height:0}
+}
+
+@media(max-width:700px){
+  .community-page{height:100dvh;min-height:0;overflow:hidden}
+  .community-page>.home-navbar{flex:0 0 64px}
+  .community-main{
+    flex:1 1 0;
+    min-height:0;
+    overflow:hidden;
+    padding:0 8px 8px;
+    gap:8px;
+  }
+  .community-hero{flex:0 0 auto}
+  .community-layout{
+    display:flex;
+    flex:1 1 0;
+    flex-direction:column;
+    height:0;
+    min-height:0;
+    overflow:hidden;
+    gap:8px;
+  }
+  .community-left-panel{
+    flex:0 0 auto;
+    height:auto;
+    min-height:0;
+    overflow:visible;
+  }
+  .community-chat-card{
+    flex:1 1 0;
+    height:auto;
+    min-height:0;
+    overflow:hidden;
+  }
+  .community-right-panel{display:none}
+  .community-messages{flex:1 1 0;min-height:0}
+}
