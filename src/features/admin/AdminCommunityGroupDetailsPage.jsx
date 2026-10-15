@@ -308,7 +308,7 @@ function AdminCommunityGroupDetailsPage() {
                   <GroupImage group={group} />
                   <div className="admin-gd-title-block">
                     <div className="admin-gd-title-line">
-                      <h1>{initialLoading ? "Loading community group…" : group?.universityName || group?.name}</h1>
+                      <h1>{initialLoading ? "Loading community group…" : group?.name || group?.universityName}</h1>
                       {group && <span className={`admin-gd-status ${group.active ? "is-active" : "is-inactive"}`}><i /> {group.active ? "Active" : "Inactive"}</span>}
                     </div>
                     <p>{group?.description || "Official university community space for student discussions."}</p>
@@ -491,7 +491,7 @@ function AdminCommunityGroupDetailsPage() {
           <aside className="admin-gd-right-rail">
             <section className="admin-gd-rail-card">
               <div className="admin-gd-rail-heading"><FiClipboard /><h2>Group Information</h2></div>
-              <div className="admin-gd-rail-identity"><GroupImage group={group} compact /><div><strong>{group?.universityName || group?.name || "Community Group"}</strong><small>{formatNumber(stats?.totalMembers ?? group?.memberCount)} members</small><span className={`admin-gd-status ${group?.active ? "is-active" : "is-inactive"}`}><i /> {group?.active ? "Active" : "Inactive"}</span></div></div>
+              <div className="admin-gd-rail-identity"><GroupImage group={group} compact /><div><strong>{group?.name || group?.universityName || "Community Group"}</strong><small>{formatNumber(stats?.totalMembers ?? group?.memberCount)} members</small><span className={`admin-gd-status ${group?.active ? "is-active" : "is-inactive"}`}><i /> {group?.active ? "Active" : "Inactive"}</span></div></div>
               <p className="admin-gd-rail-description">{group?.description || "A dedicated space for students in the selected academic scope to discuss and share learning resources."}</p>
               <dl className="admin-gd-rail-detail-list">
                 <div><dt>University</dt><dd>{group?.universityShortCode || group?.universityName || "—"}</dd></div>
